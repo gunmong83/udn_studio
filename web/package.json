@@ -9,10 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "gsap": "^3.12.5",
     "vue": "^3.4.37"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",
-    "vite": "^5.4.1"
+    "vite": "^5.4.8"
   }
 }
