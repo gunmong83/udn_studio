@@ -90,7 +90,7 @@ export default {
         ease: 'power1.inOut',
       });
 
-      lineRef.style.cursor = 'pointer'; // 버튼처럼 변경
+      textRef.style.cursor = 'pointer'; // 버튼처럼 변경
     
     },
 
@@ -118,7 +118,7 @@ export default {
         backgroundColor: '#ffffff',
       });
 
-      lineRef.style.cursor = 'default';
+      textRef.style.cursor = 'default';
 
     },
     calcLineCoord() {
@@ -160,6 +160,7 @@ export default {
         height: `${size}vw`,
         backgroundColor: '#ffffff',
         position: 'absolute',
+        fontSize: '0vw',
         top: `${8.5 + row * spacingY}vw`,
         left: `${19.5 + col * spacingX - size / 2}vw`,
         backgroundColor: 'transparent',
