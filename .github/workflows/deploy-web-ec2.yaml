@@ -1,0 +1,91 @@
+name: Deploy to EC2 (clone -> build Dockerfile -> docker run)
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ec2
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -euo pipefail
+
+            # ---- configurable ----
+            APP_DIR="${{ secrets.APP_DIR }}"
+            REPO_SSH="git@github.com:${{ github.repository }}.git"
+            BRANCH="main"
+
+            IMAGE_NAME="${{ secrets.IMAGE_NAME }}"
+            CONTAINER_NAME="${{ secrets.CONTAINER_NAME }}"
+            PORTS="${{ secrets.PORTS }}"      # e.g. "80:8080"
+            ENV_VARS="${{ secrets.ENV_VARS || '' }}"  # e.g. "A=1,B=2"
+            # ----------------------
+
+            mkdir -p "$APP_DIR"
+            cd "$APP_DIR"
+
+            # GitHub host key (avoid interactive prompt)
+            mkdir -p ~/.ssh
+            touch ~/.ssh/known_hosts
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+
+            REPO_DIR="$(basename '${{ github.repository }}')"
+
+            # 1) clone or update
+            if [ ! -d "$REPO_DIR/.git" ]; then
+              echo "Cloning repo..."
+              git clone --branch "$BRANCH" "$REPO_SSH" "$REPO_DIR"
+            else
+              echo "Updating repo..."
+              cd "$REPO_DIR"
+              git fetch origin "$BRANCH"
+              git reset --hard "origin/$BRANCH"
+              cd ..
+            fi
+
+            cd "$REPO_DIR"
+
+            # 2) build image using docker/Dockerfile
+            echo "Building Docker image..."
+            sudo docker build \
+              -f docker/Dockerfile \
+              -t "${IMAGE_NAME}:${{ github.sha }}" \
+              -t "${IMAGE_NAME}:latest" \
+              .
+
+            # 3) stop/remove existing container (if any)
+            echo "Replacing container if exists..."
+            sudo docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
+
+            # 4) docker run
+            # Build --env flags from ENV_VARS (comma-separated)
+            ENV_FLAGS=""
+            if [ -n "${ENV_VARS:-}" ]; then
+              IFS=',' read -ra PAIRS <<< "$ENV_VARS"
+              for kv in "${PAIRS[@]}"; do
+                ENV_FLAGS="$ENV_FLAGS --env $kv"
+              done
+            fi
+
+            echo "Running container..."
+            sudo docker run -d \
+              --name "$CONTAINER_NAME" \
+              --restart unless-stopped \
+              -p "$PORTS" \
+              $ENV_FLAGS \
+              "${IMAGE_NAME}:${{ github.sha }}"
+
+            echo "Done."
+            sudo docker ps --filter "name=$CONTAINER_NAME"
