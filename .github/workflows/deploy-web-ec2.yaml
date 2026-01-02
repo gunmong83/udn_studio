@@ -25,6 +25,12 @@ jobs:
             # ---- configurable ----
             APP_DIR="${{ secrets.APP_DIR }}"
             REPO_SSH="git@github.com:${{ github.repository }}.git"
+            # Use GITHUB_TOKEN (if provided) to clone via HTTPS to avoid SSH key requirement.
+            GH_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+            REPO_URL="$REPO_SSH"
+            if [ -n "${GH_TOKEN:-}" ]; then
+              REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+            fi
             BRANCH="main"
 
             IMAGE_NAME="${{ secrets.IMAGE_NAME }}"
@@ -43,15 +49,27 @@ jobs:
 
             REPO_DIR="$(basename '${{ github.repository }}')"
 
-            # 1) clone or update
+            # 1) clone or update (use token-based HTTPS if GH_TOKEN available)
             if [ ! -d "$REPO_DIR/.git" ]; then
               echo "Cloning repo..."
-              git clone --branch "$BRANCH" "$REPO_SSH" "$REPO_DIR"
+              git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$REPO_DIR"
+              # Avoid leaving token in .git/config — set remote to token-less URL for safety
+              if [ -n "${GH_TOKEN:-}" ]; then
+                cd "$REPO_DIR"
+                git remote set-url origin "https://github.com/${{ github.repository }}.git" || true
+                cd ..
+              fi
             else
               echo "Updating repo..."
               cd "$REPO_DIR"
-              git fetch origin "$BRANCH"
-              git reset --hard "origin/$BRANCH"
+              if [ -n "${GH_TOKEN:-}" ]; then
+                # Use extra header to authenticate fetch/reset without persisting token in config
+                git -c http.extraHeader="AUTHORIZATION: bearer ${GH_TOKEN}" fetch origin "$BRANCH"
+                git -c http.extraHeader="AUTHORIZATION: bearer ${GH_TOKEN}" reset --hard "origin/$BRANCH"
+              else
+                git fetch origin "$BRANCH"
+                git reset --hard "origin/$BRANCH"
+              fi
               cd ..
             fi
 
