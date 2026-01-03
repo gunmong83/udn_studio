@@ -45,7 +45,7 @@ export default {
 <style scoped>
 .portfolio {
   padding: 6vw 0;
-  background: #0b0b0b;
+  background: #000;
   color: #fff;
   width: 100vw;
   box-sizing: border-box;

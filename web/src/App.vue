@@ -185,6 +185,7 @@ export default {
   min-height: 100vh; /* section height */
   width: 100vw;
   overflow: visible;
+  background-color: #000;
 }
 .background1 {
   position: relative; /* make it size to its content (the img) */
@@ -193,6 +194,7 @@ export default {
   margin: 0;
   z-index: 0;
   border: 0;
+  background-color: #000; /* fill gaps with black */
   overflow: visible;
 }
 .bg-img {
