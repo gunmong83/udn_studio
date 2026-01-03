@@ -68,7 +68,14 @@ jobs:
                 git -c http.extraHeader="AUTHORIZATION: bearer ${GH_TOKEN}" reset --hard "origin/$BRANCH"
               else
                 git fetch origin "$BRANCH"
-                git reset --hard "origin/$BRANCH"
+                git reset --hard "origin/$BRANCH"                # If no GH_TOKEN, ensure origin uses SSH to avoid HTTPS credential prompts
+                if [ -z "${GH_TOKEN:-}" ]; then
+                  CURRENT_URL="$(git remote get-url origin || true)"
+                  if echo "$CURRENT_URL" | grep -q '^https://'; then
+                    echo "Switching origin to SSH URL"
+                    git remote set-url origin "$REPO_SSH"
+                  fi
+                fi
               fi
               cd ..
             fi
