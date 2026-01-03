@@ -1,10 +1,15 @@
 <template>
   <div class="app">
     <div class="background1">
-      <div class="line" v-for="(line, index) in lines" :key="index" :ref="'line-' + index" :style="getLineStyle(index)">
-      </div>
-      <div class="intersection" v-for="(line, index) in lines" :key="index" :style="getInterAreaStyle(index)"
-        :ref="'text-' + index" @mouseenter="handleMouseEnter(index)" @mouseleave="handleMouseLeave(index)">
+      <img class="bg-img" src="/src/assets/main_background.png" alt="background" />
+
+      <!-- Decorative overlay (lines and interactive areas) -->
+      <div class="overlay">
+        <div class="line" v-for="(line, index) in lines" :key="index" :ref="'line-' + index" :style="getLineStyle(index)">
+        </div>
+        <div class="intersection" v-for="(line, index) in lines" :key="index" :style="getInterAreaStyle(index)"
+          :ref="'text-' + index" @mouseenter="handleMouseEnter(index)" @mouseleave="handleMouseLeave(index)">
+        </div>
       </div>
     </div>
   </div>
@@ -175,19 +180,32 @@ export default {
 </script>
 
 <style scoped>
-.background1 {
+.app {
+  position: relative;
+  min-height: 100vh; /* section height */
   width: 100vw;
-  height: 250vh;
+  overflow: visible;
+}
+.background1 {
+  position: relative; /* make it size to its content (the img) */
+  width: 100vw;
   padding: 0;
   margin: 0;
-  left: 0;
-  top: 0;
+  z-index: 0;
+  border: 0;
+  overflow: visible;
+}
+.bg-img {
+  display: block;
+  width: 100vw; /* match viewport width */
+  height: auto; /* preserve aspect ratio, prevents cropping */
+}
+.overlay {
   position: absolute;
-  border: 0px solid #ff0000;
-  display: flex;
-  background: url('/src/assets/main_background.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  overflow-y: scroll;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto; /* keep interactions */
 }
 </style>
