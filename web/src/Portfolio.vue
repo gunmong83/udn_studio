@@ -4,7 +4,7 @@
       <h2 class="title">Portfolio</h2>
       <div class="grid">
         <article v-for="(product, i) in products" :key="i" class="card">
-          <a :href="product.url" target="_blank" rel="noopener noreferrer">
+          <a :href="product.url" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">
             <div class="thumb">
               <img :src="product.image" :alt="product.title" />
             </div>
@@ -31,7 +31,7 @@ export default {
           {
             title: 'Studio UDN - Product',
             price: 'See store',
-            image: 'https://via.placeholder.com/600x600?text=Studio+UDN',
+            image: '/src/assets/product_sample.png',
             description: 'Click to view the product on the Smart Store.',
             url: 'https://smartstore.naver.com/studioudn/products/12907475385',
           },
@@ -78,7 +78,7 @@ export default {
 }
 .thumb {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 5; /* taller card to fit vertical artwork */
   overflow: hidden;
   display:flex;
   align-items:center;
@@ -86,9 +86,10 @@ export default {
   background: #111;
 }
 .thumb img {
-  width: 100%;
+  width: auto; /* allow natural width, scale by height */
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* show full image, no cropping */
+  display: block;
 }
 .meta {
   padding: 1.2vw;
