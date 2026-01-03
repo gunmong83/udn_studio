@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import sampleImage from './assets/product_sample.png'
+
 export default {
   name: 'Portfolio',
   props: {
@@ -31,7 +33,7 @@ export default {
           {
             title: 'Studio UDN - Product',
             price: 'See store',
-            image: '/src/assets/product_sample.png',
+            image: sampleImage,
             description: 'Click to view the product on the Smart Store.',
             url: 'https://smartstore.naver.com/studioudn/products/12907475385',
           },
