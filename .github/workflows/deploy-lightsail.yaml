@@ -25,7 +25,7 @@ jobs:
             APP_DIR="${{ secrets.APP_DIR || '/home/admin/source/udn_studio' }}"
             BRANCH="main"
             REPO_SSH="git@github.com:${{ github.repository }}.git"
-            GH_TOKEN="${{ secrets.GITHUB_TOKEN:-"" }}"
+            GH_TOKEN="${{ secrets.GITHUB_TOKEN || '' }}"
             REPO_URL="$REPO_SSH"
             if [ -n "$GH_TOKEN" ]; then
               REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
