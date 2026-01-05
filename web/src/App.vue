@@ -73,6 +73,36 @@ export default {
     this.animateLines();
   },
   methods: {
+    scrollToNextImage() {
+      const targets = Array.from(document.querySelectorAll('.bg-map'));
+      if (!targets.length) {
+        return;
+      }
+      const currentY = window.scrollY;
+      const next = targets.find((el) => el.offsetTop > currentY + 5);
+      if (next) {
+        next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      const portfolio = document.querySelector('#portfolio');
+      if (portfolio) {
+        portfolio.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+    scrollToPrevImage() {
+      const targets = Array.from(document.querySelectorAll('.bg-map'));
+      if (!targets.length) {
+        return;
+      }
+      const currentY = window.scrollY;
+      const previous = targets
+        .slice()
+        .reverse()
+        .find((el) => el.offsetTop < currentY - 5);
+      if (previous) {
+        previous.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
     animateLines() {
       const timeline = gsap.timeline({ repeatDelay: 0.3 });
       const rows = 3;
