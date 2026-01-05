@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: SSH deploy to EC2
         uses: appleboy/ssh-action@v1
