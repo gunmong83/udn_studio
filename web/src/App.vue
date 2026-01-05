@@ -14,7 +14,12 @@
         </div>
       </div>
 
-      <img class="bg-map" src="/src/assets/homepage_map.png" alt="homepage map" />
+      <img class="bg-map" src="/src/assets/introduce_images/homepage_map.png" alt="homepage map" />
+      <img class="bg-map" src="/src/assets/introduce_images/introduce_1.jpg" alt="introduce 1" />
+      <img class="bg-map" src="/src/assets/introduce_images/introduce_2.jpg" alt="introduce 2" />
+      <img class="bg-map" src="/src/assets/introduce_images/introduce_3.jpg" alt="introduce 3" />
+      <img class="bg-map" src="/src/assets/introduce_images/introduce_4.jpg" alt="introduce 4" />
+      <img class="bg-map" src="/src/assets/introduce_images/introduce_5.jpg" alt="introduce 5" />
     </div>
   </div>
 </template>
