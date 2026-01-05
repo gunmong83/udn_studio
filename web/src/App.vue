@@ -1,16 +1,20 @@
 <template>
   <div class="app">
     <div class="background1">
-      <img class="bg-img" src="/src/assets/main_background.png" alt="background" />
+      <div class="background-main">
+        <img class="bg-img" src="/src/assets/main_background.png" alt="background" />
 
-      <!-- Decorative overlay (lines and interactive areas) -->
-      <div class="overlay">
-        <div class="line" v-for="(line, index) in lines" :key="index" :ref="'line-' + index" :style="getLineStyle(index)">
-        </div>
-        <div class="intersection" v-for="(line, index) in lines" :key="index" :style="getInterAreaStyle(index)"
-          :ref="'text-' + index" @mouseenter="handleMouseEnter(index)" @mouseleave="handleMouseLeave(index)">
+        <!-- Decorative overlay (lines and interactive areas) -->
+        <div class="overlay">
+          <div class="line" v-for="(line, index) in lines" :key="index" :ref="'line-' + index" :style="getLineStyle(index)">
+          </div>
+          <div class="intersection" v-for="(line, index) in lines" :key="index" :style="getInterAreaStyle(index)"
+            :ref="'text-' + index" @mouseenter="handleMouseEnter(index)" @mouseleave="handleMouseLeave(index)">
+          </div>
         </div>
       </div>
+
+      <img class="bg-map" src="/src/assets/homepage_map.png" alt="homepage map" />
     </div>
   </div>
 </template>
@@ -197,10 +201,18 @@ export default {
   background-color: #0b0b0b; /* fill gaps with softer black */
   overflow: visible;
 }
+.background-main {
+  position: relative;
+}
 .bg-img {
   display: block;
   width: 100vw; /* match viewport width */
   height: auto; /* preserve aspect ratio, prevents cropping */
+}
+.bg-map {
+  display: block;
+  width: 100vw;
+  height: auto;
 }
 .overlay {
   position: absolute;
