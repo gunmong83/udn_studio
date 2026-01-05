@@ -33,11 +33,19 @@ jobs:
             set -euo pipefail
             IMAGE="gunmong/udn_home"
             CONTAINER="stdudioudn-home"
+            CERT_DIR="/opt/udn_certs"
+
+            sudo mkdir -p "$CERT_DIR"
+            echo "${{ secrets.TLS_FULLCHAIN_PEM }}" | sudo tee "$CERT_DIR/fullchain.pem" >/dev/null
+            echo "${{ secrets.TLS_PRIVKEY_PEM }}" | sudo tee "$CERT_DIR/privkey.pem" >/dev/null
+            sudo chmod 600 "$CERT_DIR/fullchain.pem" "$CERT_DIR/privkey.pem"
 
             docker pull "$IMAGE"
             docker rm -f "$CONTAINER" 2>/dev/null || true
             docker run -d \
               --name "$CONTAINER" \
               --restart unless-stopped \
-              -p 80:8080 \
+              -p 80:80 \
+              -p 443:443 \
+              -v "$CERT_DIR:/etc/nginx/certs:ro" \
               "$IMAGE"
