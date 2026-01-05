@@ -9,13 +9,14 @@
           <div class="line" v-for="(line, index) in lines" :key="index" :ref="'line-' + index" :style="getLineStyle(index)">
           </div>
           <div class="intersection" v-for="(line, index) in lines" :key="index" :style="getInterAreaStyle(index)"
-            :ref="'text-' + index" @mouseenter="handleMouseEnter(index)" @mouseleave="handleMouseLeave(index)">
+            :ref="'text-' + index" @mouseenter="handleMouseEnter(index)" @mouseleave="handleMouseLeave(index)"
+            @click="handleLineClick(index)">
           </div>
         </div>
       </div>
 
-      <img class="bg-map" src="/src/assets/introduce_images/homepage_map.png" alt="homepage map" />
-      <img class="bg-map" src="/src/assets/introduce_images/introduce_1.jpg" alt="introduce 1" />
+      <img id="homepage-map" class="bg-map" src="/src/assets/introduce_images/homepage_map.png" alt="homepage map" />
+      <img id="introduce-1" class="bg-map" src="/src/assets/introduce_images/introduce_1.jpg" alt="introduce 1" />
       <img class="bg-map" src="/src/assets/introduce_images/introduce_2.jpg" alt="introduce 2" />
       <img class="bg-map" src="/src/assets/introduce_images/introduce_3.jpg" alt="introduce 3" />
       <img class="bg-map" src="/src/assets/introduce_images/introduce_4.jpg" alt="introduce 4" />
@@ -35,6 +36,34 @@ export default {
       lines: new Array(12).fill(null), // 12개의 라인 생성
       isMouseOver: [], // 각 라인의 애니메이션 타임라인 저장
       lineCoord: [],
+      lineLabels: [
+        'Homepage<br>Map',
+        'Contents',
+        'Portfolio',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ],
+      lineTargets: [
+        '#homepage-map',
+        '#introduce-1',
+        '#portfolio',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+      ],
     };
   },
   created() {
@@ -74,6 +103,11 @@ export default {
       });
     },
     handleMouseEnter(index) {
+      const label = this.lineLabels[index];
+      if (!label) {
+        return;
+      }
+
       // 현재 라인의 애니메이션 멈춤
       const lineRef = this.$refs[`line-${index}`][0];
       const textRef = this.$refs[`text-${index}`][0];
@@ -100,7 +134,7 @@ export default {
         textAlign: 'center',
         fontSize: '2vw',
         color: '#ffffff',
-        innerHTML: 'PORTFOLIO',
+        innerHTML: label,
         ease: 'power1.inOut',
       });
 
@@ -109,6 +143,10 @@ export default {
     },
 
     handleMouseLeave(index) {
+      if (!this.lineLabels[index]) {
+        return;
+      }
+
       const lineRef = this.$refs[`line-${index}`][0];
       const textRef = this.$refs[`text-${index}`][0];
       this.isMouseOver[index] = false;
@@ -134,6 +172,17 @@ export default {
 
       textRef.style.cursor = 'default';
 
+    },
+    handleLineClick(index) {
+      const target = this.lineTargets[index];
+      if (!target) {
+        return;
+      }
+      const el = document.querySelector(target);
+      if (!el) {
+        return;
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
     calcLineCoord() {
       const rows = 3;
