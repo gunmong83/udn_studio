@@ -1,14 +1,22 @@
 <template>
   <div class="home-wrapper">
     <!-- Existing App component used as a showcase item -->
-    <ShowcaseItem />
+    <ShowcaseItem ref="showcase" />
 
     <!-- Portfolio cards placed below the showcase -->
     <Portfolio />
 
-    <button v-if="showTopButton" class="top-button" type="button" aria-label="Back to top" @click="scrollToTop">
-      <span class="top-arrow">▲</span>
-    </button>
+    <div v-if="showTopButton" class="floating-buttons">
+      <button class="top-label-button" type="button" aria-label="Back to top" @click="scrollToTop">
+        Top
+      </button>
+      <button class="top-button" type="button" aria-label="Previous image" @click="scrollToPrev">
+        <span class="top-arrow">▲</span>
+      </button>
+      <button class="next-button" type="button" aria-label="Next image" @click="scrollToNext">
+        <span class="next-arrow">▼</span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -41,6 +49,16 @@ export default {
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
+    scrollToPrev() {
+      if (this.$refs.showcase && this.$refs.showcase.scrollToPrevImage) {
+        this.$refs.showcase.scrollToPrevImage();
+      }
+    },
+    scrollToNext() {
+      if (this.$refs.showcase && this.$refs.showcase.scrollToNextImage) {
+        this.$refs.showcase.scrollToNextImage();
+      }
+    },
   },
 } 
 </script>
@@ -53,10 +71,45 @@ export default {
   width: 100vw;
   overflow-x: hidden;
 } 
-.top-button {
+.floating-buttons {
   position: fixed;
   right: 3vw;
   bottom: 3vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+.top-label-button {
+  width: 52px;
+  height: 36px;
+  border-radius: 18px;
+  border: 0;
+  outline: none;
+  background: rgba(20,20,20,0.8);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+.top-label-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+}
+.top-label-button:focus,
+.top-label-button:focus-visible {
+  outline: none;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+}
+.top-button {
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -72,11 +125,45 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 10;
   transition: transform .2s ease, box-shadow .2s ease;
   box-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }
 .top-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  line-height: 1;
+}
+.next-button {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 0;
+  outline: none;
+  background: rgba(20,20,20,0.8);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+.next-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+}
+.next-button:focus,
+.next-button:focus-visible {
+  outline: none;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+}
+.next-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,12 +181,25 @@ export default {
   box-shadow: 0 8px 18px rgba(0,0,0,0.5);
 }
 @media (max-width: 768px) {
-  .top-button {
+  .floating-buttons {
     right: 5vw;
     bottom: 6vw;
+    gap: 10px;
+  }
+  .top-label-button {
+    width: 44px;
+    height: 32px;
+    font-size: 12px;
+  }
+  .top-button {
     width: 44px;
     height: 44px;
     font-size: 22px;
+  }
+  .next-button {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
   }
 }
 </style>

@@ -41,6 +41,8 @@ import portfolio1 from './assets/portfolio_images/portfolio_1.png'
 import portfolio2 from './assets/portfolio_images/portfolio_2.jpg'
 import portfolio3 from './assets/portfolio_images/portfolio_3.jpg'
 import portfolio4 from './assets/portfolio_images/portfolio_4.jpg'
+import portfolio5 from './assets/portfolio_images/portfolio_5.jpg'
+import portfolio6 from './assets/portfolio_images/portfolio_6.jpg'
 
 export default {
   name: 'Portfolio',
@@ -70,6 +72,16 @@ export default {
         {
           title: 'Studio UDN - Artwork',
           image: portfolio4,
+          description: 'View artwork.',
+        },
+        {
+          title: 'Studio UDN - Artwork',
+          image: portfolio5,
+          description: 'View artwork.',
+        },
+        {
+          title: 'Studio UDN - Artwork',
+          image: portfolio6,
           description: 'View artwork.',
         },
       ],
