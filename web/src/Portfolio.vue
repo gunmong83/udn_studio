@@ -72,15 +72,15 @@
 
     <v-dialog v-model="overlayOpen" class="overlay" max-width="1200">
       <v-card class="overlay-card">
-        <v-btn
-          class="overlay-close"
-          variant="text"
-          icon="mdi-close-box"
-          @click="closeOverlay"
-          aria-label="Close image"
-        />
         <div v-if="overlayTitle" class="overlay-header">
           <div class="overlay-title">{{ overlayTitle }}</div>
+          <v-btn
+            class="overlay-close"
+            variant="text"
+            icon="mdi-close-box"
+            @click="closeOverlay"
+            aria-label="Close image"
+          />
         </div>
         <v-img class="overlay-image" :src="overlayImage" :alt="overlayAlt" contain />
         <v-card-text v-if="overlayDesc" class="overlay-desc">
@@ -280,10 +280,18 @@ export default {
   padding: clamp(16px, 2vw, 28px);
   position: relative;
   border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+}
+.overlay :deep(.v-overlay__scrim) {
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(6px);
 }
 .overlay-header {
   display: flex;
+  align-items: center;
   justify-content: center;
+  position: relative;
   margin-bottom: clamp(8px, 1vw, 12px);
 }
 .overlay-title {
@@ -300,11 +308,15 @@ export default {
   color: rgba(255,255,255,0.8);
   padding: clamp(10px, 1.2vw, 18px) 0 0;
   text-align: left;
+  font-family: "Space Grotesk", "DM Sans", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 .overlay-close {
   position: absolute;
-  top: clamp(10px, 1.6vw, 20px);
-  right: clamp(10px, 1.6vw, 20px);
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   color: #fff;
   z-index: 2;
 }
