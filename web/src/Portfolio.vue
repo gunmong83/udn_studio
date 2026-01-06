@@ -95,6 +95,7 @@ import portfolio3 from './assets/portfolio_images/portfolio_3.jpg'
 import portfolio4 from './assets/portfolio_images/portfolio_4.jpg'
 import portfolio5 from './assets/portfolio_images/portfolio_5.jpg'
 import portfolio6 from './assets/portfolio_images/portfolio_6.jpg'
+import portfolio7 from './assets/portfolio_images/portfolio_7.jpg'
 
 export default {
   name: 'Portfolio',
@@ -140,6 +141,12 @@ export default {
           cert: 'Poster',
           image: portfolio6,
           description: 'A poster commissioned by the Jung-gu Youth Center in Seoul. The typography was designed to suit Deoksugung Stone Wall Road, a historically significant site in Korea, and Korean traditional mother-of-pearl (najeon) material was incorporated. Rather than creating graphics from scratch, the visual work focused on editing, proofreading, and layout arrangement. Although the commission was originally for a single poster, strong enthusiasm led to the production of a second version, resulting in two poster designs.',
+        },
+        {
+          title: '[ Menbal Kindergarten ]',
+          cert: 'Total Branding',
+          image: portfolio7,
+          description: 'Logo and T-shirt production. The logo was printed large on the back to enhance visibility—so that children and teachers can recognize one another and not lose track of each other, even by their backs rather than their faces.',
         },
       ],
     };
