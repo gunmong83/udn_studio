@@ -243,6 +243,7 @@ export default {
   top: clamp(10px, 1.6vw, 20px);
   right: clamp(10px, 1.6vw, 20px);
   color: #fff;
+  z-index: 2;
 }
 @media (max-width: 768px) {
   .title { font-size: clamp(22px, 7vw, 32px); }
