@@ -26,7 +26,7 @@
             :rel="product.url ? 'noopener noreferrer' : undefined"
             :referrerpolicy="product.url ? 'no-referrer' : undefined"
             :ripple="!!product.url"
-            @click="product.url ? null : openOverlay(product.image, product.title)"
+            @click="product.url ? null : openOverlay(product.image, product.title, product.description)"
           >
             <v-chip
               class="card-label"
@@ -46,9 +46,9 @@
             <v-card-title class="product-title">
               <span class="product-title-text">{{ product.title }}</span>
             </v-card-title>
-            <div v-if="product.cert" class="brand-mark">
-              <span class="brand-mark-text">{{ product.cert }}</span>
-            </div>
+            <v-card-subtitle v-if="product.cert" class="cert">
+              {{ product.cert }}
+            </v-card-subtitle>
             <div class="meta-row">
               <v-card-subtitle v-if="product.price" class="price">
                 {{ product.price }}
@@ -65,9 +65,6 @@
                 aria-label="Open product in new tab"
               />
             </div>
-            <v-card-text v-if="!product.url && product.description" class="desc">
-              {{ product.description }}
-            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -82,7 +79,13 @@
           @click="closeOverlay"
           aria-label="Close image"
         />
+        <div v-if="overlayTitle" class="overlay-header">
+          <div class="overlay-title">{{ overlayTitle }}</div>
+        </div>
         <v-img class="overlay-image" :src="overlayImage" :alt="overlayAlt" contain />
+        <v-card-text v-if="overlayDesc" class="overlay-desc">
+          {{ overlayDesc }}
+        </v-card-text>
       </v-card>
     </v-dialog>
   </section>
@@ -104,6 +107,8 @@ export default {
       overlayOpen: false,
       overlayImage: '',
       overlayAlt: '',
+      overlayDesc: '',
+      overlayTitle: '',
       products: [
         {
           title: 'UDN Calendar 2026 제철달력 령令',
@@ -152,13 +157,17 @@ export default {
     };
   },
   methods: {
-    openOverlay(image, alt) {
+    openOverlay(image, alt, description) {
       this.overlayImage = image;
       this.overlayAlt = alt || 'Artwork';
+      this.overlayTitle = alt || '';
+      this.overlayDesc = description || '';
       this.overlayOpen = true;
     },
     closeOverlay() {
       this.overlayOpen = false;
+      this.overlayDesc = '';
+      this.overlayTitle = '';
     },
   },
 };
@@ -223,7 +232,7 @@ export default {
 }
 .product-title {
   font-size: clamp(16px, 1.2vw, 22px);
-  padding: clamp(14px, 1.2vw, 22px) clamp(14px, 1.2vw, 22px) 0;
+  padding: clamp(0px, 1.2vw, 0px) clamp(0px, 1.2vw, 0px) 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -233,22 +242,12 @@ export default {
   display: inline-flex;
   align-items: center;
 }
-.brand-mark {
-  display: flex;
-  justify-content: flex-end;
-  padding: 2px clamp(14px, 1.2vw, 22px) 0;
-}
-.brand-mark-text {
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.35);
-  color: rgba(255,255,255,0.75);
-  line-height: 1;
-  font-weight: 500;
-  font-family: "Space Grotesk", "DM Sans", "Helvetica Neue", Arial, sans-serif;
+.cert {
+  text-align: center;
+  font-size: clamp(12px, 0.9vw, 14px);
+  color: rgba(255,255,255,0.72);
+  padding: clamp(5px, 1.2vw, 5px) clamp(5px, 1.2vw, 5px) 0;
+  margin-top: -8px;
 }
 .price {
   font-weight: 600;
@@ -276,21 +275,31 @@ export default {
   top: 50%;
   transform: translateY(-50%);
 }
-.desc {
-  font-size: clamp(13px, 0.9vw, 16px);
-  color: rgba(255,255,255,0.75);
-  padding: 0 clamp(14px, 1.2vw, 22px) clamp(12px, 1.1vw, 18px);
-  margin-top: -12px;
-}
 .overlay-card {
   background: rgba(10,10,10,0.95);
   padding: clamp(16px, 2vw, 28px);
   position: relative;
   border-radius: 12px;
 }
+.overlay-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: clamp(8px, 1vw, 12px);
+}
+.overlay-title {
+  font-size: clamp(16px, 1.2vw, 20px);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
 .overlay-image {
   border-radius: 10px;
   max-height: 80vh;
+}
+.overlay-desc {
+  font-size: clamp(13px, 0.9vw, 16px);
+  color: rgba(255,255,255,0.8);
+  padding: clamp(10px, 1.2vw, 18px) 0 0;
+  text-align: left;
 }
 .overlay-close {
   position: absolute;
