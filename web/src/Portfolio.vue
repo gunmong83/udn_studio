@@ -16,7 +16,10 @@
         >
           <v-card
             class="portfolio-card"
-            :class="{ 'portfolio-card--art': !product.url }"
+            :class="{
+              'portfolio-card--art': !product.url,
+              'portfolio-card--product': !!product.url,
+            }"
             elevation="2"
             :href="product.url || undefined"
             :target="product.url ? '_blank' : undefined"
@@ -41,8 +44,11 @@
               contain
             />
             <v-card-title class="product-title">
-              {{ product.title }}
+              <span class="product-title-text">{{ product.title }}</span>
             </v-card-title>
+            <div v-if="product.cert" class="brand-mark">
+              <span class="brand-mark-text">{{ product.cert }}</span>
+            </div>
             <div class="meta-row">
               <v-card-subtitle v-if="product.price" class="price">
                 {{ product.price }}
@@ -106,29 +112,34 @@ export default {
           url: 'https://smartstore.naver.com/studioudn/products/12907475385',
         },
         {
-          title: '느리게',
+          title: '[ NeRyGe : To Slow ]',
+          cert: 'Total Branding',
           image: portfolio2,
-          description: 'View artwork.',
+          description: 'the cake house in Naju, Jeonam, Korea convey the meaning of speed in right time, NeRyGe, on its logo with its cakebox and businesscard ',
         },
         {
-          title: '토브',
+          title: '[ the TOV ]',
+          cert: 'Total Branding',
           image: portfolio3,
-          description: 'View artwork.',
+          description: 'publishing company in Gwaheon, Kyunggido, Korea A Hangul logo design inspired by Korean Palgwe (which can be seen on South Korean  lag, the Eight Trigrams) representing book and barcode as well as the Korean word TOV',
         },
         {
-          title: 'Luivis BeBe',
+          title: '[ Louivis BeBe ]',
+          cert: 'Total Branding',
           image: portfolio4,
-          description: 'View artwork.',
+          description: 'A party, catering, and banquet company that primarily prepares first-birthday celebrations for children and milestone birthday banquets for adults, serving as a bridge that connects past and present, and links tradition with modernity.',
         },
         {
-          title: '개인전 포스터 - 안선영',
+          title: '[ Flowing Lines, Staying Moon ]',
+          cert: 'Exhibition Poster',
           image: portfolio5,
-          description: 'View artwork.',
+          description: 'Reimagining the painterly style of artist Yuyeon, the lines were set in motion while the moon was made to linger. A business card composed of luminous lines was also produced as part of the project.',
         },
         {
-          title: '전시회 브로셔 - 유유자적 민화',
+          title: '[ The 10th YAHO Festival ]',
+          cert: 'Poster',
           image: portfolio6,
-          description: 'View artwork.',
+          description: 'A poster commissioned by the Jung-gu Youth Center in Seoul. The typography was designed to suit Deoksugung Stone Wall Road, a historically significant site in Korea, and Korean traditional mother-of-pearl (najeon) material was incorporated. Rather than creating graphics from scratch, the visual work focused on editing, proofreading, and layout arrangement. Although the commission was originally for a single poster, strong enthusiasm led to the production of a second version, resulting in two poster designs.',
         },
       ],
     };
@@ -206,27 +217,63 @@ export default {
 .product-title {
   font-size: clamp(16px, 1.2vw, 22px);
   padding: clamp(14px, 1.2vw, 22px) clamp(14px, 1.2vw, 22px) 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.product-title-text {
+  display: inline-flex;
+  align-items: center;
+}
+.brand-mark {
+  display: flex;
+  justify-content: flex-end;
+  padding: 2px clamp(14px, 1.2vw, 22px) 0;
+}
+.brand-mark-text {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.75);
+  line-height: 1;
+  font-weight: 500;
+  font-family: "Space Grotesk", "DM Sans", "Helvetica Neue", Arial, sans-serif;
 }
 .price {
   font-weight: 600;
   opacity: 0.9;
   padding: 0 clamp(14px, 1.2vw, 22px);
   font-size: clamp(14px, 1vw, 18px);
+  text-align: center;
+  width: 100%;
 }
 .meta-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 0 clamp(10px, 1.2vw, 18px) clamp(6px, 0.6vw, 12px);
+  padding: 0 clamp(10px, 1.2vw, 18px) clamp(12px, 1.2vw, 20px);
+  position: relative;
+}
+.portfolio-card--product .meta-row {
+  padding-bottom: clamp(16px, 1.6vw, 24px);
 }
 .external-link {
   color: rgba(255,255,255,0.85);
+  position: absolute;
+  right: clamp(8px, 1.2vw, 16px);
+  top: 50%;
+  transform: translateY(-50%);
 }
 .desc {
   font-size: clamp(13px, 0.9vw, 16px);
   color: rgba(255,255,255,0.75);
-  padding: 0 clamp(14px, 1.2vw, 22px) clamp(14px, 1.2vw, 22px);
+  padding: 0 clamp(14px, 1.2vw, 22px) clamp(12px, 1.1vw, 18px);
+  margin-top: -12px;
 }
 .overlay-card {
   background: rgba(10,10,10,0.95);
