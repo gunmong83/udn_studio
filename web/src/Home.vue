@@ -1,23 +1,23 @@
 <template>
-  <div class="home-wrapper">
-    <!-- Existing App component used as a showcase item -->
-    <ShowcaseItem ref="showcase" />
+  <v-app>
+    <v-main>
+      <div class="home-wrapper">
+        <!-- Existing App component used as a showcase item -->
+        <ShowcaseItem ref="showcase" />
 
-    <!-- Portfolio cards placed below the showcase -->
-    <Portfolio />
+        <!-- Portfolio cards placed below the showcase -->
+        <Portfolio />
 
-    <div v-if="showTopButton" class="floating-buttons">
-      <button class="top-label-button" type="button" aria-label="Back to top" @click="scrollToTop">
-        Top
-      </button>
-      <button class="top-button" type="button" aria-label="Previous image" @click="scrollToPrev">
-        <span class="top-arrow">▲</span>
-      </button>
-      <button class="next-button" type="button" aria-label="Next image" @click="scrollToNext">
-        <span class="next-arrow">▼</span>
-      </button>
-    </div>
-  </div>
+        <div v-if="showTopButton" class="floating-buttons">
+          <button class="top-label-button" type="button" aria-label="Back to top" @click="scrollToTop">
+            Top
+          </button>
+          <v-btn class="top-button" icon="mdi-menu-up" aria-label="Previous image" @click="scrollToPrev" />
+          <v-btn class="next-button" icon="mdi-menu-down" aria-label="Next image" @click="scrollToNext" />
+        </div>
+      </div>
+    </v-main>
+  </v-app>
 </template>
 
 <script>

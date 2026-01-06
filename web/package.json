@@ -10,10 +10,13 @@
   },
   "dependencies": {
     "gsap": "^3.12.5",
+    "vuetify": "^3.7.6",
+    "@mdi/font": "^7.4.47",
     "vue": "^3.4.37"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",
-    "vite": "^5.4.8"
+    "vite": "^5.4.8",
+    "vite-plugin-vuetify": "^2.0.3"
   }
 }
