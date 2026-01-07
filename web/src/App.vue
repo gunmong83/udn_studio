@@ -16,11 +16,34 @@
       </div>
 
       <img id="homepage-map" class="bg-map" src="/src/assets/introduce_images/homepage_map.png" alt="homepage map" />
-      <img id="introduce-1" class="bg-map" src="/src/assets/introduce_images/introduce_1.jpg" alt="introduce 1" />
-      <img class="bg-map" src="/src/assets/introduce_images/introduce_2.jpg" alt="introduce 2" />
-      <img class="bg-map" src="/src/assets/introduce_images/introduce_3.jpg" alt="introduce 3" />
-      <img class="bg-map" src="/src/assets/introduce_images/introduce_4.jpg" alt="introduce 4" />
-      <img class="bg-map" src="/src/assets/introduce_images/introduce_5.jpg" alt="introduce 5" />
+      <div class="introduce-scroll-wrap">
+        <div
+          class="introduce-scroll"
+          ref="introduceScroll"
+          @scroll="handleIntroduceScroll"
+        >
+          <img
+            v-for="(image, index) in introduceImages"
+            :key="image.src"
+            class="bg-map introduce-image"
+            :id="image.id"
+            :src="image.src"
+            :alt="image.alt"
+          />
+        </div>
+        <div class="introduce-dots" aria-hidden="true">
+          <v-icon
+            v-for="(image, index) in introduceImages"
+            :key="`dot-${image.src}`"
+            class="introduce-dot"
+            :class="{ 'introduce-dot--active': index === activeIntroduce }"
+            size="12"
+            @click="scrollIntroduceTo(index)"
+          >
+            {{ index === activeIntroduce ? 'mdi-circle' : 'mdi-circle-outline' }}
+          </v-icon>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +59,14 @@ export default {
       lines: new Array(12).fill(null), // 12개의 라인 생성
       isMouseOver: [], // 각 라인의 애니메이션 타임라인 저장
       lineCoord: [],
+      introduceImages: [
+        { id: 'introduce-1', src: '/src/assets/introduce_images/introduce_1.jpg', alt: 'introduce 1' },
+        { id: null, src: '/src/assets/introduce_images/introduce_2.jpg', alt: 'introduce 2' },
+        { id: null, src: '/src/assets/introduce_images/introduce_3.jpg', alt: 'introduce 3' },
+        { id: null, src: '/src/assets/introduce_images/introduce_4.jpg', alt: 'introduce 4' },
+        { id: null, src: '/src/assets/introduce_images/introduce_5.jpg', alt: 'introduce 5' },
+      ],
+      activeIntroduce: 0,
       lineLabels: [
         'Homepage<br>Map',
         'Contents',
@@ -71,8 +102,24 @@ export default {
   },
   mounted() {
     this.animateLines();
+    this.handleIntroduceScroll();
   },
   methods: {
+    handleIntroduceScroll() {
+      const el = this.$refs.introduceScroll;
+      if (!el || !el.clientWidth) {
+        return;
+      }
+      const index = Math.round(el.scrollLeft / el.clientWidth);
+      this.activeIntroduce = Math.min(this.introduceImages.length - 1, Math.max(0, index));
+    },
+    scrollIntroduceTo(index) {
+      const el = this.$refs.introduceScroll;
+      if (!el || !el.clientWidth) {
+        return;
+      }
+      el.scrollTo({ left: el.clientWidth * index, behavior: 'smooth' });
+    },
     scrollToNextImage() {
       const targets = Array.from(document.querySelectorAll('.bg-map'));
       if (!targets.length) {
@@ -297,6 +344,40 @@ export default {
   display: block;
   width: 100vw;
   height: auto;
+}
+.introduce-scroll-wrap {
+  position: relative;
+  width: 100vw;
+  overflow: hidden;
+}
+.introduce-scroll {
+  display: flex;
+  width: 100vw;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.introduce-scroll::-webkit-scrollbar {
+  display: none;
+}
+.introduce-image {
+  flex: 0 0 100vw;
+  scroll-snap-align: start;
+}
+.introduce-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 2vw;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+.introduce-dot {
+  color: rgba(255, 255, 255, 0.55);
+}
+.introduce-dot--active {
+  color: #ffffff;
 }
 .overlay {
   position: absolute;
