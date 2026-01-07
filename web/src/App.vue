@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <img id="homepage-map" class="bg-map" src="/src/assets/introduce_images/homepage_map.png" alt="homepage map" />
+      <img id="homepage-map" class="bg-map" :src="homepageMap" alt="homepage map" />
       <div class="introduce-scroll-wrap">
         <div
           class="introduce-scroll"
@@ -51,6 +51,12 @@
 <script>
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import homepageMap from './assets/introduce_images/homepage_map.png';
+import introduce1 from './assets/introduce_images/introduce_1.jpg';
+import introduce2 from './assets/introduce_images/introduce_2.jpg';
+import introduce3 from './assets/introduce_images/introduce_3.jpg';
+import introduce4 from './assets/introduce_images/introduce_4.jpg';
+import introduce5 from './assets/introduce_images/introduce_5.jpg';
 
 export default {
   name: 'App',
@@ -59,12 +65,13 @@ export default {
       lines: new Array(12).fill(null), // 12개의 라인 생성
       isMouseOver: [], // 각 라인의 애니메이션 타임라인 저장
       lineCoord: [],
+      homepageMap,
       introduceImages: [
-        { id: 'introduce-1', src: '/src/assets/introduce_images/introduce_1.jpg', alt: 'introduce 1' },
-        { id: null, src: '/src/assets/introduce_images/introduce_2.jpg', alt: 'introduce 2' },
-        { id: null, src: '/src/assets/introduce_images/introduce_3.jpg', alt: 'introduce 3' },
-        { id: null, src: '/src/assets/introduce_images/introduce_4.jpg', alt: 'introduce 4' },
-        { id: null, src: '/src/assets/introduce_images/introduce_5.jpg', alt: 'introduce 5' },
+        { id: 'introduce-1', src: introduce1, alt: 'introduce 1' },
+        { id: null, src: introduce2, alt: 'introduce 2' },
+        { id: null, src: introduce3, alt: 'introduce 3' },
+        { id: null, src: introduce4, alt: 'introduce 4' },
+        { id: null, src: introduce5, alt: 'introduce 5' },
       ],
       activeIntroduce: 0,
       lineLabels: [
