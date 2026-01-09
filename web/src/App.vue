@@ -16,7 +16,7 @@
       </div>
 
       <img id="homepage-map" class="bg-map" :src="homepageMap" alt="homepage map" />
-      <div class="introduce-scroll-wrap">
+      <div id="introduce" class="introduce-scroll-wrap">
         <div
           class="introduce-scroll"
           ref="introduceScroll"
@@ -37,7 +37,6 @@
             :key="`dot-${image.src}`"
             class="introduce-dot"
             :class="{ 'introduce-dot--active': index === activeIntroduce }"
-            size="12"
             @click="scrollIntroduceTo(index)"
           >
             {{ index === activeIntroduce ? 'mdi-circle' : 'mdi-circle-outline' }}
@@ -90,16 +89,16 @@ export default {
       ],
       lineTargets: [
         '#homepage-map',
-        '#introduce-1',
+        '#introduce',
         '#portfolio',
         '#homepage-map',
-        '#introduce-1',
+        '#introduce',
         '#portfolio',
         '#homepage-map',
-        '#introduce-1',
+        '#introduce',
         '#portfolio',
         '#homepage-map',
-        '#introduce-1',
+        '#introduce',
         '#portfolio',
       ],
     };
@@ -128,7 +127,8 @@ export default {
       el.scrollTo({ left: el.clientWidth * index, behavior: 'smooth' });
     },
     scrollToNextImage() {
-      const targets = Array.from(document.querySelectorAll('.bg-map'));
+      const selectors = ['#homepage-map', '#introduce', '#portfolio'];
+      const targets = selectors.map((selector) => document.querySelector(selector)).filter(Boolean);
       if (!targets.length) {
         return;
       }
@@ -136,15 +136,11 @@ export default {
       const next = targets.find((el) => el.offsetTop > currentY + 5);
       if (next) {
         next.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        return;
-      }
-      const portfolio = document.querySelector('#portfolio');
-      if (portfolio) {
-        portfolio.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     },
     scrollToPrevImage() {
-      const targets = Array.from(document.querySelectorAll('.bg-map'));
+      const selectors = ['#homepage-map', '#introduce', '#portfolio'];
+      const targets = selectors.map((selector) => document.querySelector(selector)).filter(Boolean);
       if (!targets.length) {
         return;
       }
@@ -381,6 +377,7 @@ export default {
   gap: 6px;
 }
 .introduce-dot {
+  font-size: clamp(2px, 0.8vw, 12px);
   color: rgba(255, 255, 255, 0.55);
 }
 .introduce-dot--active {
