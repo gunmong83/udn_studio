@@ -154,7 +154,11 @@ export default {
         this.lineTimeline.kill();
       }
 
-      const timeline = gsap.timeline({ repeat: -1, repeatDelay: 0.3 });
+      const timeline = gsap.timeline({
+        repeat: -1,
+        repeatDelay: 2,
+        repeatRefresh: true,
+      });
       for (let row = 0; row < ROWS; row += 1) {
         const lineIndices = Array.from({ length: COLS }, (_, col) => row * COLS + col);
         if (row % 2 === 1) {
