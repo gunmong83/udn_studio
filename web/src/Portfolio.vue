@@ -26,7 +26,7 @@
             :rel="product.url ? 'noopener noreferrer' : undefined"
             :referrerpolicy="product.url ? 'no-referrer' : undefined"
             :ripple="!!product.url"
-            @click="product.url ? null : openOverlay(product.image, product.title, product.description)"
+            @click="product.url ? null : openOverlay(product)"
           >
             <v-chip
               class="card-label"
@@ -82,7 +82,39 @@
             aria-label="Close image"
           />
         </div>
-        <v-img class="overlay-image" :src="overlayImage" :alt="overlayAlt" contain />
+        <div v-if="overlayGallery.length" class="overlay-gallery">
+          <div
+            class="overlay-gallery-scroll"
+            ref="overlayGalleryScroll"
+            @scroll="handleOverlayScroll"
+          >
+            <img
+              v-for="(image, index) in overlayGallery"
+              :key="`gallery-${index}`"
+              class="overlay-gallery-image"
+              :src="image"
+              :alt="`${overlayAlt} ${index + 1}`"
+            />
+          </div>
+          <div class="overlay-gallery-dots" aria-hidden="true">
+            <v-icon
+              v-for="(image, index) in overlayGallery"
+              :key="`gallery-dot-${index}`"
+              class="overlay-gallery-dot"
+              :class="{ 'overlay-gallery-dot--active': index === activeGallery }"
+              @click="scrollOverlayTo(index)"
+            >
+              {{ index === activeGallery ? 'mdi-circle' : 'mdi-circle-outline' }}
+            </v-icon>
+          </div>
+        </div>
+        <v-img
+          v-else
+          class="overlay-image"
+          :src="overlayImage"
+          :alt="overlayAlt"
+          contain
+        />
         <v-card-text v-if="overlayDesc" class="overlay-desc">
           {{ overlayDesc }}
         </v-card-text>
@@ -94,6 +126,11 @@
 <script>
 import portfolio1 from './assets/portfolio_images/portfolio_1.png';
 import portfolio2 from './assets/portfolio_images/portfolio_2.jpg';
+import portfolio2Image1 from './assets/portfolio_images/portfolio_2/1.jpg';
+import portfolio2Image2 from './assets/portfolio_images/portfolio_2/2.jpg';
+import portfolio2Image3 from './assets/portfolio_images/portfolio_2/3.jpeg';
+import portfolio2Image4 from './assets/portfolio_images/portfolio_2/4.jpeg';
+import portfolio2Image5 from './assets/portfolio_images/portfolio_2/5.jpeg';
 import portfolio3 from './assets/portfolio_images/portfolio_3.jpg';
 import portfolio4 from './assets/portfolio_images/portfolio_4.jpg';
 import portfolio5 from './assets/portfolio_images/portfolio_5.jpg';
@@ -109,6 +146,8 @@ export default {
       overlayAlt: '',
       overlayDesc: '',
       overlayTitle: '',
+      overlayGallery: [],
+      activeGallery: 0,
       products: [
         {
           title: 'UDN Calendar 2026 제철달력 령令',
@@ -121,6 +160,14 @@ export default {
           title: '[ NeRyGe : To Slow ]',
           cert: 'Total Branding',
           image: portfolio2,
+          gallery: [
+            portfolio2,
+            portfolio2Image1,
+            portfolio2Image2,
+            portfolio2Image3,
+            portfolio2Image4,
+            portfolio2Image5,
+          ],
           description: 'the cake house in Naju, Jeonam, Korea convey the meaning of speed in right time, NeRyGe, on its logo with its cakebox and businesscard ',
         },
         {
@@ -157,17 +204,42 @@ export default {
     };
   },
   methods: {
-    openOverlay(image, title, description) {
-      this.overlayImage = image;
-      this.overlayAlt = title || 'Artwork';
-      this.overlayTitle = title || '';
-      this.overlayDesc = description || '';
+    openOverlay(product) {
+      this.overlayImage = product.image;
+      this.overlayAlt = product.title || 'Artwork';
+      this.overlayTitle = product.title || '';
+      this.overlayDesc = product.description || '';
+      this.overlayGallery = Array.isArray(product.gallery) ? product.gallery : [];
+      this.activeGallery = 0;
       this.overlayOpen = true;
+      this.$nextTick(() => {
+        const el = this.$refs.overlayGalleryScroll;
+        if (el && el.scrollLeft) {
+          el.scrollLeft = 0;
+        }
+      });
     },
     closeOverlay() {
       this.overlayOpen = false;
       this.overlayDesc = '';
       this.overlayTitle = '';
+      this.overlayGallery = [];
+      this.activeGallery = 0;
+    },
+    handleOverlayScroll() {
+      const el = this.$refs.overlayGalleryScroll;
+      if (!el || !el.clientWidth) {
+        return;
+      }
+      const index = Math.round(el.scrollLeft / el.clientWidth);
+      this.activeGallery = Math.min(this.overlayGallery.length - 1, Math.max(0, index));
+    },
+    scrollOverlayTo(index) {
+      const el = this.$refs.overlayGalleryScroll;
+      if (!el || !el.clientWidth) {
+        return;
+      }
+      el.scrollTo({ left: el.clientWidth * index, behavior: 'smooth' });
     },
   },
 };
@@ -302,6 +374,44 @@ export default {
 .overlay-image {
   border-radius: 10px;
   max-height: 80vh;
+}
+.overlay-gallery {
+  position: relative;
+}
+.overlay-gallery-scroll {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-radius: 10px;
+}
+.overlay-gallery-scroll::-webkit-scrollbar {
+  display: none;
+}
+.overlay-gallery-image {
+  flex: 0 0 100%;
+  max-height: 80vh;
+  width: 100%;
+  object-fit: contain;
+  scroll-snap-align: start;
+  background: #111;
+}
+.overlay-gallery-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 1.2vw;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+.overlay-gallery-dot {
+  font-size: clamp(2px, 0.8vw, 12px);
+  color: rgba(255, 255, 255, 0.55);
+}
+.overlay-gallery-dot--active {
+  color: #ffffff;
 }
 .overlay-desc {
   font-size: clamp(13px, 0.9vw, 16px);
