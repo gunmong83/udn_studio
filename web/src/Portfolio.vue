@@ -8,7 +8,7 @@
       <v-row class="portfolio-grid" dense>
         <v-col
           v-for="(product, i) in products"
-          :key="i"
+          :key="product.title"
           cols="12"
           sm="6"
           md="4"
@@ -92,13 +92,13 @@
 </template>
 
 <script>
-import portfolio1 from './assets/portfolio_images/portfolio_1.png'
-import portfolio2 from './assets/portfolio_images/portfolio_2.jpg'
-import portfolio3 from './assets/portfolio_images/portfolio_3.jpg'
-import portfolio4 from './assets/portfolio_images/portfolio_4.jpg'
-import portfolio5 from './assets/portfolio_images/portfolio_5.jpg'
-import portfolio6 from './assets/portfolio_images/portfolio_6.jpg'
-import portfolio7 from './assets/portfolio_images/portfolio_7.jpg'
+import portfolio1 from './assets/portfolio_images/portfolio_1.png';
+import portfolio2 from './assets/portfolio_images/portfolio_2.jpg';
+import portfolio3 from './assets/portfolio_images/portfolio_3.jpg';
+import portfolio4 from './assets/portfolio_images/portfolio_4.jpg';
+import portfolio5 from './assets/portfolio_images/portfolio_5.jpg';
+import portfolio6 from './assets/portfolio_images/portfolio_6.jpg';
+import portfolio7 from './assets/portfolio_images/portfolio_7.jpg';
 
 export default {
   name: 'Portfolio',
@@ -157,10 +157,10 @@ export default {
     };
   },
   methods: {
-    openOverlay(image, alt, description) {
+    openOverlay(image, title, description) {
       this.overlayImage = image;
-      this.overlayAlt = alt || 'Artwork';
-      this.overlayTitle = alt || '';
+      this.overlayAlt = title || 'Artwork';
+      this.overlayTitle = title || '';
       this.overlayDesc = description || '';
       this.overlayOpen = true;
     },

@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import ShowcaseItem from './App.vue'
-import Portfolio from './Portfolio.vue' 
+import ShowcaseItem from './App.vue';
+import Portfolio from './Portfolio.vue';
 
 export default {
   name: 'Home',
@@ -60,7 +60,7 @@ export default {
       }
     },
   },
-} 
+};
 </script>
 
 <style scoped>

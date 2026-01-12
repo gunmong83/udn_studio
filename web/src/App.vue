@@ -49,7 +49,6 @@
 
 <script>
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import homepageMap from './assets/introduce_images/homepage_map.png';
 import introduce1 from './assets/introduce_images/introduce_1.jpg';
 import introduce2 from './assets/introduce_images/introduce_2.jpg';
@@ -57,13 +56,35 @@ import introduce3 from './assets/introduce_images/introduce_3.jpg';
 import introduce4 from './assets/introduce_images/introduce_4.jpg';
 import introduce5 from './assets/introduce_images/introduce_5.jpg';
 
+const ROWS = 3;
+const COLS = 4;
+const TOTAL_LINES = ROWS * COLS;
+const LINE_LABELS_BASE = ['Homepage<br>Map', 'Contents', 'Portfolio'];
+const SECTION_SELECTORS = ['#homepage-map', '#introduce', '#portfolio'];
+const LINE_SPACING = { x: 20.5, y: 19.5 };
+const LINE_OFFSET = { top: 5, left: 19.5 };
+const INTERSECTION_OFFSET = { top: 8.5, left: 19.5 };
+const INTERSECTION_SIZE = 10;
+const LINE_STYLE = {
+  width: '0.15vw',
+  height: '17vw',
+  backgroundColor: '#ffffff',
+};
+
+const createRepeatingList = (values, count) =>
+  Array.from({ length: count }, (_, index) => values[index % values.length]);
+
+const getScrollTargets = () =>
+  SECTION_SELECTORS.map((selector) => document.querySelector(selector)).filter(Boolean);
+
 export default {
   name: 'App',
   data() {
     return {
-      lines: new Array(12).fill(null), // 12개의 라인 생성
-      isMouseOver: [], // 각 라인의 애니메이션 타임라인 저장
+      lines: Array.from({ length: TOTAL_LINES }, (_, index) => index),
+      isMouseOver: Array.from({ length: TOTAL_LINES }, () => false),
       lineCoord: [],
+      lineTimeline: null,
       homepageMap,
       introduceImages: [
         { id: 'introduce-1', src: introduce1, alt: 'introduce 1' },
@@ -73,42 +94,19 @@ export default {
         { id: null, src: introduce5, alt: 'introduce 5' },
       ],
       activeIntroduce: 0,
-      lineLabels: [
-        'Homepage<br>Map',
-        'Contents',
-        'Portfolio',
-        'Homepage<br>Map',
-        'Contents',
-        'Portfolio',
-        'Homepage<br>Map',
-        'Contents',
-        'Portfolio',
-        'Homepage<br>Map',
-        'Contents',
-        'Portfolio',
-      ],
-      lineTargets: [
-        '#homepage-map',
-        '#introduce',
-        '#portfolio',
-        '#homepage-map',
-        '#introduce',
-        '#portfolio',
-        '#homepage-map',
-        '#introduce',
-        '#portfolio',
-        '#homepage-map',
-        '#introduce',
-        '#portfolio',
-      ],
+      lineLabels: createRepeatingList(LINE_LABELS_BASE, TOTAL_LINES),
+      lineTargets: createRepeatingList(SECTION_SELECTORS, TOTAL_LINES),
     };
   },
   created() {
-    this.calcLineCoord();
+    this.lineCoord = this.buildLineCoord();
   },
   mounted() {
-    this.animateLines();
+    this.startLineAnimation();
     this.handleIntroduceScroll();
+  },
+  beforeUnmount() {
+    this.stopLineAnimation();
   },
   methods: {
     handleIntroduceScroll() {
@@ -127,8 +125,7 @@ export default {
       el.scrollTo({ left: el.clientWidth * index, behavior: 'smooth' });
     },
     scrollToNextImage() {
-      const selectors = ['#homepage-map', '#introduce', '#portfolio'];
-      const targets = selectors.map((selector) => document.querySelector(selector)).filter(Boolean);
+      const targets = getScrollTargets();
       if (!targets.length) {
         return;
       }
@@ -139,8 +136,7 @@ export default {
       }
     },
     scrollToPrevImage() {
-      const selectors = ['#homepage-map', '#introduce', '#portfolio'];
-      const targets = selectors.map((selector) => document.querySelector(selector)).filter(Boolean);
+      const targets = getScrollTargets();
       if (!targets.length) {
         return;
       }
@@ -153,34 +149,42 @@ export default {
         previous.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     },
-    animateLines() {
-      const timeline = gsap.timeline({ repeatDelay: 0.3 });
-      const rows = 3;
-      const cols = 4;
-      for (let row = 0; row < rows; row++) {
-        const lineIndices = Array.from({ length: cols }, (_, col) => row * cols + col);
+    startLineAnimation() {
+      if (this.lineTimeline) {
+        this.lineTimeline.kill();
+      }
 
+      const timeline = gsap.timeline({ repeat: -1, repeatDelay: 0.3 });
+      for (let row = 0; row < ROWS; row += 1) {
+        const lineIndices = Array.from({ length: COLS }, (_, col) => row * COLS + col);
         if (row % 2 === 1) {
-          // 짝수 행일 경우 순서를 반대로
           lineIndices.reverse();
         }
 
         lineIndices.forEach((index, i) => {
-          const lineRef = this.$refs[`line-${index}`][0];
-          timeline.to(lineRef, {
-            rotation: "-=90", // 90도씩 추가로 회전
-            duration: 0.5, // 각 라인의 회전 애니메이션 지속 시간
-            ease: "power1.inOut", // 부드러운 애니메이션 효과
-          }, i === 0 ? '-=0.0' : '-=0.4');
+          const lineRef = this.$refs[`line-${index}`]?.[0];
+          if (!lineRef) {
+            return;
+          }
+          timeline.to(
+            lineRef,
+            {
+              rotation: '-=90',
+              duration: 0.5,
+              ease: 'power1.inOut',
+            },
+            i === 0 ? '-=0.0' : '-=0.4',
+          );
         });
       }
 
-      // 애니메이션이 끝나면 다시 시작하도록 설정
-      timeline.eventCallback("onComplete", () => {
-        setTimeout(() => {
-          this.animateLines();
-        }, 2000); // 2초 대기
-      });
+      this.lineTimeline = timeline;
+    },
+    stopLineAnimation() {
+      if (this.lineTimeline) {
+        this.lineTimeline.kill();
+        this.lineTimeline = null;
+      }
     },
     handleMouseEnter(index) {
       const label = this.lineLabels[index];
@@ -188,25 +192,28 @@ export default {
         return;
       }
 
-      // 현재 라인의 애니메이션 멈춤
-      const lineRef = this.$refs[`line-${index}`][0];
-      const textRef = this.$refs[`text-${index}`][0];
+      const lineRef = this.$refs[`line-${index}`]?.[0];
+      const textRef = this.$refs[`text-${index}`]?.[0];
+      if (!lineRef || !textRef) {
+        return;
+      }
+
       this.isMouseOver[index] = true;
       const timeline = gsap.timeline();
 
       timeline.to(lineRef, {
-        x: `-5vw`,
+        x: '-5vw',
         duration: 0.5,
         width: '10vw',
         color: 'transparent',
         backgroundColor: 'transparent',
       });
-      
+
       timeline.call(() => {
         if (!this.isMouseOver[index]) {
           timeline.pause();
         }
-      })
+      });
 
       timeline.to(textRef, {
         duration: 0.5,
@@ -218,20 +225,22 @@ export default {
         ease: 'power1.inOut',
       });
 
-      textRef.style.cursor = 'pointer'; // 버튼처럼 변경
-    
+      textRef.style.cursor = 'pointer';
     },
-
     handleMouseLeave(index) {
       if (!this.lineLabels[index]) {
         return;
       }
 
-      const lineRef = this.$refs[`line-${index}`][0];
-      const textRef = this.$refs[`text-${index}`][0];
+      const lineRef = this.$refs[`line-${index}`]?.[0];
+      const textRef = this.$refs[`text-${index}`]?.[0];
+      if (!lineRef || !textRef) {
+        return;
+      }
+
       this.isMouseOver[index] = false;
       const timeline = gsap.timeline();
-      
+
       timeline.to(textRef, {
         duration: 0.5,
         fontSize: '0vw',
@@ -241,17 +250,16 @@ export default {
         if (this.isMouseOver[index]) {
           timeline.pause();
         }
-      })
+      });
       timeline.to(lineRef, {
-        x: "0vw",
+        x: '0vw',
         duration: 0.5,
-        width: '0.15vw',
+        width: LINE_STYLE.width,
         color: '#ffffff',
         backgroundColor: '#ffffff',
       });
 
       textRef.style.cursor = 'default';
-
     },
     handleLineClick(index) {
       const target = this.lineTargets[index];
@@ -264,55 +272,48 @@ export default {
       }
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
-    calcLineCoord() {
-      const rows = 3;
-      const cols = 4;
-      const spacingX = 20.5; // X 축 간격 설정 (vw 단위)
-      const spacingY = 19.5; // Y 축 간격 설정 (vw 단위)
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          const top = 5 + row * spacingY;
-          const left = 19.5 + col * spacingX;
-          const degree = (row % 2) ? "135deg" : "45deg";
-          this.lineCoord.push({ top, left, degree });
+    buildLineCoord() {
+      const coords = [];
+      for (let row = 0; row < ROWS; row += 1) {
+        for (let col = 0; col < COLS; col += 1) {
+          const top = LINE_OFFSET.top + row * LINE_SPACING.y;
+          const left = LINE_OFFSET.left + col * LINE_SPACING.x;
+          const degree = row % 2 ? '135deg' : '45deg';
+          coords.push({ top, left, degree });
         }
       }
+      return coords;
     },
     getLineStyle(index) {
-      const { top, left, degree } = this.lineCoord[index];
+      const coord = this.lineCoord[index];
+      if (!coord) {
+        return {};
+      }
       return {
-        width: '0.15vw',
-        height: '17vw',
-        backgroundColor: '#ffffff',
+        ...LINE_STYLE,
         position: 'absolute',
-        top : `${top}vw`,
-        left : `${left}vw`,
-        transform: `rotate(${degree})`, // 초기 45도 회전
+        top: `${coord.top}vw`,
+        left: `${coord.left}vw`,
+        transform: `rotate(${coord.degree})`,
       };
     },
     getInterAreaStyle(index) {
-      const rows = 3;
-      const cols = 4;
-      const size = 10;
-      const row = Math.floor(index / cols);
-      const col = index % cols;
-      const spacingX = 20.5; // X 축 간격 설정 (vw 단위)
-      const spacingY = 19.5; // Y 축 간격 설정 (vh 단위)
+      const row = Math.floor(index / COLS);
+      const col = index % COLS;
       return {
-        width: `${size}vw`,
-        height: `${size}vw`,
-        backgroundColor: '#ffffff',
+        width: `${INTERSECTION_SIZE}vw`,
+        height: `${INTERSECTION_SIZE}vw`,
         position: 'absolute',
         fontSize: '0vw',
-        top: `${8.5 + row * spacingY}vw`,
-        left: `${19.5 + col * spacingX - size / 2}vw`,
+        top: `${INTERSECTION_OFFSET.top + row * LINE_SPACING.y}vw`,
+        left: `${INTERSECTION_OFFSET.left + col * LINE_SPACING.x - INTERSECTION_SIZE / 2}vw`,
         backgroundColor: 'transparent',
         border: '0px solid #ffffff',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
       };
-    }
+    },
   },
 };
 </script>
