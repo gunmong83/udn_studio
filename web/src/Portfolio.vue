@@ -126,11 +126,10 @@
 <script>
 import portfolio1 from './assets/portfolio_images/portfolio_1.png';
 import portfolio2 from './assets/portfolio_images/portfolio_2.jpg';
-import portfolio2Image1 from './assets/portfolio_images/portfolio_2/1.jpg';
+import portfolio2Image1 from './assets/portfolio_images/portfolio_2/1.jpeg';
 import portfolio2Image2 from './assets/portfolio_images/portfolio_2/2.jpg';
 import portfolio2Image3 from './assets/portfolio_images/portfolio_2/3.jpeg';
 import portfolio2Image4 from './assets/portfolio_images/portfolio_2/4.jpeg';
-import portfolio2Image5 from './assets/portfolio_images/portfolio_2/5.jpeg';
 import portfolio3 from './assets/portfolio_images/portfolio_3.jpg';
 import portfolio4 from './assets/portfolio_images/portfolio_4.jpg';
 import portfolio5 from './assets/portfolio_images/portfolio_5.jpg';
@@ -165,8 +164,7 @@ export default {
             portfolio2Image1,
             portfolio2Image2,
             portfolio2Image3,
-            portfolio2Image4,
-            portfolio2Image5,
+            portfolio2Image4
           ],
           description: 'the cake house in Naju, Jeonam, Korea convey the meaning of speed in right time, NeRyGe, on its logo with its cakebox and businesscard ',
         },
@@ -377,6 +375,7 @@ export default {
 }
 .overlay-gallery {
   position: relative;
+  padding-bottom: clamp(18px, 2vw, 28px);
 }
 .overlay-gallery-scroll {
   display: flex;
@@ -401,7 +400,7 @@ export default {
 .overlay-gallery-dots {
   position: absolute;
   left: 50%;
-  bottom: 1.2vw;
+  bottom: clamp(6px, 1vw, 12px);
   transform: translateX(-50%);
   display: flex;
   gap: 6px;
