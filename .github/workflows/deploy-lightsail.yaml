@@ -1,4 +1,4 @@
-name: Deploy to Lightsail (git pull -> npm build -> sync to nginx)
+name: Deploy to Lightsail (Local Build & Sync)
 
 on:
   push:
@@ -10,63 +10,51 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy via SSH
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build web app
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy to Lightsail via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
+          port: 22
+          source: "web/dist/*"
+          target: "/tmp/udn_studio_deploy"
+          strip_components: 2
+
+      - name: Move to Nginx Root via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}          # e.g. 54.180.191.104
-          username: ${{ secrets.LIGHTSAIL_USER || secrets.EC2_USER }}      # e.g. admin
-          key: ${{ secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}     # PEM contents as a secret
+          host: ${{ secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
           script: |
-            set -euo pipefail
-
-            APP_DIR="${{ secrets.APP_DIR || '/home/admin/source/udn_studio' }}"
-            BRANCH="main"
-            REPO_SSH="git@github.com:${{ github.repository }}.git"
-            GH_TOKEN="${{ secrets.GITHUB_TOKEN || '' }}"
-            REPO_URL="$REPO_SSH"
-            if [ -n "$GH_TOKEN" ]; then
-              REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
-            fi
-
-            # Ensure repo exists and is on the desired branch
-            if [ -d "$APP_DIR/.git" ]; then
-              cd "$APP_DIR"
-              git fetch origin "$BRANCH"
-              git checkout "$BRANCH"
-              git reset --hard "origin/$BRANCH"
-            else
-              mkdir -p "$APP_DIR"
-              git clone "$REPO_URL" "$APP_DIR"
-              cd "$APP_DIR"
-              git checkout "$BRANCH"
-            fi
-
-            # Ensure swap space exists to prevent OOM (Status 137)
-            if ! swapon --show | grep -q "/swapfile"; then
-              if [ ! -f /swapfile ]; then
-                sudo fallocate -l 1G /swapfile
-                sudo chmod 600 /swapfile
-                sudo mkswap /swapfile
-              fi
-              sudo swapon /swapfile || true
-            fi
-
-            # Build web app
-            cd "$APP_DIR/web"
-            npm ci
-            NODE_OPTIONS=--max-old-space-size=256 npm run build
-
-            # Deploy built assets to nginx root
-            DIST_SRC="$APP_DIR/web/dist/"
+            set -eu
             NGINX_ROOT="/usr/share/nginx/html"
-            if [ ! -d "$DIST_SRC" ]; then
-              echo "dist directory missing after build" >&2
-              exit 1
-            fi
-            sudo rsync -av --delete "$DIST_SRC" "$NGINX_ROOT/"
-
+            TEMP_DIR="/tmp/udn_studio_deploy"
+            
+            # Clean and move files to nginx root
+            sudo rm -rf "${NGINX_ROOT:?}"/*
+            sudo cp -r "$TEMP_DIR"/* "$NGINX_ROOT/"
+            sudo rm -rf "$TEMP_DIR"
+            
             sudo systemctl reload nginx || true
-            echo "Deployment complete."
+            echo "Deployment successful."
