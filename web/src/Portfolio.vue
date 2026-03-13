@@ -39,7 +39,7 @@
             </v-chip>
             <v-img
               :src="product.image"
-              :alt="product.title"
+              :alt="product.title + ' - Studio Undesignated branding project in Korea'"
               class="card-image"
               contain
             />
