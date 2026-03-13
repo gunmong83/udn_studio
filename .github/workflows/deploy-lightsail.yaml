@@ -44,10 +44,20 @@ jobs:
               git checkout "$BRANCH"
             fi
 
+            # Ensure swap space exists to prevent OOM (Status 137)
+            if ! swapon --show | grep -q "/swapfile"; then
+              if [ ! -f /swapfile ]; then
+                sudo fallocate -l 1G /swapfile
+                sudo chmod 600 /swapfile
+                sudo mkswap /swapfile
+              fi
+              sudo swapon /swapfile || true
+            fi
+
             # Build web app
             cd "$APP_DIR/web"
             npm ci
-            NODE_OPTIONS=--max-old-space-size=512 npm run build
+            NODE_OPTIONS=--max-old-space-size=256 npm run build
 
             # Deploy built assets to nginx root
             DIST_SRC="$APP_DIR/web/dist/"
