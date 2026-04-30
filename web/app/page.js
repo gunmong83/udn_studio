@@ -125,6 +125,61 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    let sessionId = window.localStorage.getItem('udn_metrics_session');
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      window.localStorage.setItem('udn_metrics_session', sessionId);
+    }
+
+    const startedAt = Date.now();
+    const path = `${window.location.pathname}${window.location.search}`;
+    const referrer = document.referrer;
+
+    const sendMetric = (event) => {
+      const payload = {
+        sessionId,
+        path,
+        referrer,
+        event,
+        durationSeconds: Math.max(0, Math.round((Date.now() - startedAt) / 1000)),
+      };
+      const body = JSON.stringify(payload);
+
+      if (event === 'end' && navigator.sendBeacon) {
+        navigator.sendBeacon('/api/metrics/events', new Blob([body], { type: 'application/json' }));
+        return;
+      }
+
+      fetch('/api/metrics/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        keepalive: true,
+      }).catch(() => {});
+    };
+
+    sendMetric('pageview');
+    const interval = window.setInterval(() => sendMetric('heartbeat'), 15000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        sendMetric('end');
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', () => sendMetric('end'));
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
     if (lineTimelineRef.current) {
       lineTimelineRef.current.kill();
     }

@@ -7,6 +7,8 @@ DATABASE_URL_VALUE="${DATABASE_URL:-file:/opt/udn_studio/data/dev.db}"
 SITE_URL_VALUE="${NEXT_PUBLIC_SITE_URL:-https://studioundesignated.com}"
 TOSS_CLIENT_KEY_VALUE="${NEXT_PUBLIC_TOSS_CLIENT_KEY:-}"
 TOSS_SECRET_KEY_VALUE="${TOSS_SECRET_KEY:-}"
+METRICS_USERNAME_VALUE="${METRICS_USERNAME:-}"
+METRICS_PASSWORD_VALUE="${METRICS_PASSWORD:-}"
 
 sudo mkdir -p "$APP_ROOT/releases" "$APP_ROOT/data"
 sudo chown -R admin:admin "$APP_ROOT"
@@ -20,6 +22,8 @@ cd "$RELEASE/web"
   printf 'NEXT_PUBLIC_SITE_URL=%s\n' "$SITE_URL_VALUE"
   printf 'NEXT_PUBLIC_TOSS_CLIENT_KEY=%s\n' "$TOSS_CLIENT_KEY_VALUE"
   printf 'TOSS_SECRET_KEY=%s\n' "$TOSS_SECRET_KEY_VALUE"
+  printf 'METRICS_USERNAME=%s\n' "$METRICS_USERNAME_VALUE"
+  printf 'METRICS_PASSWORD=%s\n' "$METRICS_PASSWORD_VALUE"
 } > .env.production
 
 npm ci

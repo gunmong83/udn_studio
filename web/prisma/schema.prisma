@@ -35,3 +35,22 @@ model Payment {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 }
+
+model SiteVisit {
+  id              String    @id @default(cuid())
+  sessionId       String
+  path            String
+  referrer        String?
+  userAgent       String?
+  ipHash          String?
+  startedAt       DateTime  @default(now())
+  lastSeenAt      DateTime  @default(now())
+  endedAt         DateTime?
+  durationSeconds Int?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([sessionId])
+  @@index([path])
+  @@index([startedAt])
+}

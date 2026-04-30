@@ -500,6 +500,132 @@ button {
   font-weight: 600;
 }
 
+.metrics-page {
+  min-height: 100vh;
+  padding: clamp(24px, 5vw, 64px);
+  background: #0b0b0b;
+  color: #fff;
+}
+
+.metrics-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 20px;
+}
+
+.metrics-header h1 {
+  margin: 0;
+  font-size: clamp(32px, 4vw, 56px);
+}
+
+.metrics-header span,
+.metrics-eyebrow {
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.metrics-eyebrow {
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.metrics-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.metrics-summary div,
+.metrics-panel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.metrics-summary div {
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+}
+
+.metrics-summary span,
+.metrics-row span,
+.metrics-table-head,
+.metrics-table-row span:last-child {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.metrics-summary strong {
+  font-size: clamp(26px, 3vw, 40px);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.6fr);
+  gap: 18px;
+}
+
+.metrics-panel {
+  padding: 18px;
+  overflow: hidden;
+}
+
+.metrics-panel h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.metrics-list {
+  display: grid;
+  gap: 10px;
+}
+
+.metrics-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metrics-table {
+  display: grid;
+  overflow-x: auto;
+}
+
+.metrics-table-head,
+.metrics-table-row {
+  display: grid;
+  grid-template-columns: 180px minmax(120px, 1fr) 84px minmax(160px, 1.2fr);
+  gap: 12px;
+  min-width: 760px;
+  padding: 10px 0;
+}
+
+.metrics-table-head {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.metrics-table-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+}
+
+.metrics-empty {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -519,6 +645,16 @@ button {
 }
 
 @media (max-width: 768px) {
+  .metrics-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .metrics-summary,
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
   .portfolio-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

@@ -45,4 +45,6 @@ jobs:
             export NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://studioundesignated.com' }}"
             export NEXT_PUBLIC_TOSS_CLIENT_KEY="${{ secrets.NEXT_PUBLIC_TOSS_CLIENT_KEY }}"
             export TOSS_SECRET_KEY="${{ secrets.TOSS_SECRET_KEY }}"
+            export METRICS_USERNAME="${{ secrets.METRICS_USERNAME }}"
+            export METRICS_PASSWORD="${{ secrets.METRICS_PASSWORD }}"
             bash /tmp/deploy_lightsail_next.sh
