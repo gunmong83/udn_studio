@@ -1,4 +1,4 @@
-name: Deploy to Lightsail (Local Build & Sync)
+name: Deploy to Lightsail
 
 on:
   push:
@@ -10,51 +10,45 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: web/package-lock.json
-
-      - name: Build web app
-        working-directory: web
+      - name: Create deploy bundle
         run: |
-          npm ci
-          npm run build
+          rm -rf deploy_bundle
+          mkdir -p deploy_bundle
+          tar \
+            --exclude='web/node_modules' \
+            --exclude='web/.next' \
+            --exclude='web/prisma/dev.db' \
+            --exclude='web/*.log' \
+            -czf deploy_bundle/udn_next_deploy.tgz web
+          cp deploy_lightsail_next.sh deploy_bundle/
+          cp nginx_https_next.conf deploy_bundle/https.conf
 
-      - name: Deploy to Lightsail via SCP
+      - name: Upload deploy bundle
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
-          username: ${{ secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
-          key: ${{ secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
-          port: 22
-          source: "web/dist/*"
-          target: "/tmp/udn_studio_deploy"
-          strip_components: 2
+          host: ${{ secrets.LIGHTSAIL_UBUNTU_HOST || secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
+          username: ${{ secrets.LIGHTSAIL_UBUNTU_USER || secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
+          key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY || secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
+          source: "deploy_bundle/*"
+          target: "/tmp"
+          strip_components: 1
 
-      - name: Move to Nginx Root via SSH
+      - name: Deploy on Lightsail via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
-          username: ${{ secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
-          key: ${{ secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.LIGHTSAIL_UBUNTU_HOST || secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
+          username: ${{ secrets.LIGHTSAIL_UBUNTU_USER || secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
+          key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY || secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
           script: |
-            set -eu
-            NGINX_ROOT="/usr/share/nginx/html"
-            TEMP_DIR="/tmp/udn_studio_deploy"
-            
-            # Clean and move files to nginx root
-            sudo rm -rf "${NGINX_ROOT:?}"/*
-            sudo cp -r "$TEMP_DIR"/* "$NGINX_ROOT/"
-            sudo rm -rf "$TEMP_DIR"
-            
-            sudo systemctl reload nginx || true
-            echo "Deployment successful."
+            set -euo pipefail
+            export DATABASE_URL="${{ secrets.DATABASE_URL || 'file:/opt/udn_studio/data/dev.db' }}"
+            export NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://studioundesignated.com' }}"
+            export NEXT_PUBLIC_TOSS_CLIENT_KEY="${{ secrets.NEXT_PUBLIC_TOSS_CLIENT_KEY }}"
+            export TOSS_SECRET_KEY="${{ secrets.TOSS_SECRET_KEY }}"
+            bash /tmp/deploy_lightsail_next.sh

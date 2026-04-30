@@ -4,24 +4,34 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_push_deploy:
+  deploy:
     runs-on: self-hosted
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Docker login
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Create deploy bundle
         run: |
-          echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          rm -rf deploy_bundle
+          mkdir -p deploy_bundle
+          tar \
+            --exclude='web/node_modules' \
+            --exclude='web/.next' \
+            --exclude='web/prisma/dev.db' \
+            --exclude='web/*.log' \
+            -czf deploy_bundle/udn_next_deploy.tgz web
+          cp deploy_lightsail_next.sh deploy_bundle/
+          cp nginx_https_next.conf deploy_bundle/https.conf
 
-      - name: Build image (Makefile build-web)
-        run: make build-web
-
-      - name: Push image (Makefile push-web)
-        run: make push-web
+      - name: Upload deploy bundle
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.LIGHTSAIL_UBUNTU_HOST }}
+          username: ${{ secrets.LIGHTSAIL_UBUNTU_USER }}
+          key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY }}
+          source: "deploy_bundle/*"
+          target: "/tmp"
+          strip_components: 1
 
       - name: Deploy on Lightsail via SSH
         uses: appleboy/ssh-action@v1
@@ -31,21 +41,8 @@ jobs:
           key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY }}
           script: |
             set -euo pipefail
-            IMAGE="gunmong/udn_home"
-            CONTAINER="stdudioudn-home"
-            CERT_DIR="/opt/udn_certs"
-
-            sudo mkdir -p "$CERT_DIR"
-            echo "${{ secrets.TLS_FULLCHAIN_PEM }}" | sudo tee "$CERT_DIR/fullchain.pem" >/dev/null
-            echo "${{ secrets.TLS_PRIVKEY_PEM }}" | sudo tee "$CERT_DIR/privkey.pem" >/dev/null
-            sudo chmod 600 "$CERT_DIR/fullchain.pem" "$CERT_DIR/privkey.pem"
-
-            docker pull "$IMAGE"
-            docker rm -f "$CONTAINER" 2>/dev/null || true
-            docker run -d \
-              --name "$CONTAINER" \
-              --restart unless-stopped \
-              -p 80:80 \
-              -p 443:443 \
-              -v "$CERT_DIR:/etc/nginx/certs:ro" \
-              "$IMAGE"
+            export DATABASE_URL="${{ secrets.DATABASE_URL || 'file:/opt/udn_studio/data/dev.db' }}"
+            export NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://studioundesignated.com' }}"
+            export NEXT_PUBLIC_TOSS_CLIENT_KEY="${{ secrets.NEXT_PUBLIC_TOSS_CLIENT_KEY }}"
+            export TOSS_SECRET_KEY="${{ secrets.TOSS_SECRET_KEY }}"
+            bash /tmp/deploy_lightsail_next.sh
