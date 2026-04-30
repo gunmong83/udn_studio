@@ -1,0 +1,7 @@
+.git
+.github
+web/node_modules
+web/.next
+web/prisma/dev.db
+web/*.log
+flat_kids_illustration_gpt_api/output

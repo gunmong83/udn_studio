@@ -1,5 +1,15 @@
-# Vue 3 + Vite
+# Studio UDN Next.js
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Next.js conversion of the Studio Undesignated homepage with API routes for customer and payment records.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Development
+
+```bash
+npm install
+cp .env.example .env
+npm run db:generate
+npm run db:push
+npm run dev
+```
+
+Set `NEXT_PUBLIC_TOSS_CLIENT_KEY` and `TOSS_SECRET_KEY` to connect Toss Payments. Without those keys, the checkout form stores a pending local order for development.
