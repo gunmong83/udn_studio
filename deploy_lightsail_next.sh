@@ -10,12 +10,9 @@ sudo chown -R admin:admin "$APP_ROOT"
 
 mkdir -p "$RELEASE"
 tar -xzf /tmp/udn_next_deploy.tgz -C "$RELEASE"
-cd "$RELEASE/web"
+cd "$RELEASE/app"
 
 printf 'NEXT_PUBLIC_SITE_URL=%s\n' "$SITE_URL_VALUE" > .env.production
-
-npm ci
-NEXT_PUBLIC_SITE_URL="$SITE_URL_VALUE" npm run build
 
 ln -sfn "$RELEASE" "$APP_ROOT/current"
 
@@ -27,12 +24,12 @@ After=network.target
 [Service]
 Type=simple
 User=admin
-WorkingDirectory=/opt/udn_studio/current/web
+WorkingDirectory=/opt/udn_studio/current/app
 Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOSTNAME=127.0.0.1
-EnvironmentFile=/opt/udn_studio/current/web/.env.production
-ExecStart=/usr/bin/npm run start
+EnvironmentFile=/opt/udn_studio/current/app/.env.production
+ExecStart=/usr/bin/node server.js
 Restart=always
 RestartSec=5
 
