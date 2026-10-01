@@ -1,0 +1,43 @@
+import type { Metadata } from "next";
+import "./globals.css";
+import { site } from "@/src/data/site";
+import UtilBar from "@/src/components/layout/UtilBar";
+import Header from "@/src/components/layout/Header";
+import Footer from "@/src/components/layout/Footer";
+
+export const metadata: Metadata = {
+  title: {
+    default: site.title,
+    template: `%s | ${site.nameKo}`,
+  },
+  description: site.description,
+  keywords: site.keywords.split(","),
+  icons: { icon: site.assets.favicon },
+};
+
+// mujagi 구조(가이드 §1): 유틸바 52px(sticky) → 메뉴바 51px(스크롤아웃) → 콘텐츠 → 푸터.
+// 캔버스: 750px 협폭 중앙 정렬(mx-auto) — D-1 amend(2026-09-30, 대표 결정).
+// 파동4 이전: ml-canvas-offset 좌측 고정(x=25). 가역: mx-auto ↔ ml-canvas-offset 스왑.
+// Pretendard: SIL OFL 1.1 — 가이드 §9-2 허용 폰트(jsdelivr CDN).
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="ko">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
+      <body>
+        <div id="wrap" className="mx-auto w-full max-w-canvas">
+          <UtilBar />
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </div>
+      </body>
+    </html>
+  );
+}

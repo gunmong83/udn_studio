@@ -1,0 +1,4 @@
+grant 실효 검증 (2026-09-30 19:58 KST)
+- service-lead pm 허가: write + edit, 패턴 ^(site/|/home/irteam/firm-workspace/studiodesignated/site/), 1440분 (id munz8wvzfahj·munz8xsg5c2t, 통지 munz8ww0s4vc·munz8xsgp6tm·munz964bum22)
+- 본 파일은 write 도구로 site/ 경로에 직접 작성된 검증 마커 — OUTSIDE_EDIT 크래시 없이 통과하면 허가 정상 적용.
+- edit 도구 검증: 본 라인 추가 성공(19:58) — write·edit 양쪽 정상.
