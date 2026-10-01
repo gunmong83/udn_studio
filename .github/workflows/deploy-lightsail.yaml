@@ -32,9 +32,9 @@ jobs:
       - name: Upload deploy bundle
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.LIGHTSAIL_UBUNTU_HOST || secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
-          username: ${{ secrets.LIGHTSAIL_UBUNTU_USER || secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
-          key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY || secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
           source: "deploy_bundle/*"
           target: "/tmp"
           strip_components: 1
@@ -42,9 +42,9 @@ jobs:
       - name: Deploy on Lightsail via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.LIGHTSAIL_UBUNTU_HOST || secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
-          username: ${{ secrets.LIGHTSAIL_UBUNTU_USER || secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
-          key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY || secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.LIGHTSAIL_HOST || secrets.EC2_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USER || secrets.EC2_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY || secrets.EC2_SSH_KEY }}
           script: |
             set -euo pipefail
             export DATABASE_URL="${{ secrets.DATABASE_URL || 'file:/opt/udn_studio/data/dev.db' }}"
