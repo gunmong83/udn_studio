@@ -244,6 +244,12 @@ export const products: Product[] = [
       // qa-visual 미반영 권고 준수 — 미추가. 출처: instagram.com DC9WOdDSmwj 계열 아님·
       // Dd2z6CwEeIP 게시물(원본 바이트 그대로·편집 0).
       { src: "/assets/portfolio_images/ryeong-2027/detail_7.jpg", aspect: "1080/810" },
+      { src: "/assets/portfolio_images/ryeong-2027/new-photos/cover-styled.jpg", aspect: "2829/4964" },
+      { src: "/assets/portfolio_images/ryeong-2027/new-photos/back-panel.jpg", aspect: "3479/3918" },
+      { src: "/assets/portfolio_images/ryeong-2027/new-photos/january-spread.jpg", aspect: "2829/4964" },
+      { src: "/assets/portfolio_images/ryeong-2027/new-photos/standing-lilac.jpg", aspect: "2829/4964" },
+      { src: "/assets/portfolio_images/ryeong-2027/new-photos/march-green.jpg", aspect: "2829/4964" },
+      { src: "/assets/portfolio_images/ryeong-2027/new-photos/january-detail.jpg", aspect: "2829/4964" },
     ],
     // 원문 description 부재(원본 사이트 청크 부재 — 지어내지 않음)
     artistNote: ARTIST_NOTE_RYEONG_2027,
@@ -297,6 +303,57 @@ export const products: Product[] = [
     ],
     description:
       "놀라운 환대 출판 기념\n교보문고 보라쇼\n더토브에서 확인하세요!",
+  },
+  {
+    slug: "rainbow-school-information-session",
+    title: "[ 초등무지개학교 입학설명회 ]",
+    category: "Poster",
+    kind: "work",
+    image: "/assets/portfolio_images/rainbow-school/rep.jpg",
+    aspect: "842/1191",
+    description: "초등무지개학교 입학설명회 포스터",
+  },
+  {
+    slug: "dugeumi-activity-checklist",
+    title: "[ 두근미 활동 체크리스트 ]",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/dugeumi-checklist/rep.jpg",
+    aspect: "4032/3024",
+    description: "두근미 활동 CHECKLIST",
+  },
+  {
+    slug: "picture-books-for-grown-ups",
+    title: "[ 어른을 위한 그림책 공부 ]",
+    category: "Poster",
+    kind: "work",
+    image: "/assets/portfolio_images/picture-books-grown-up/rep.jpg",
+    aspect: "7087/21260",
+    description: "READING PICTURE BOOKS for the GROWN-UP 강좌 포스터",
+  },
+  {
+    slug: "studio-udn-director-card",
+    title: "[ studioUDN 디렉터 명함 ]",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/studio-udn-director-card/rep.jpg",
+    aspect: "3024/4032",
+    description: "studioUDN 디렉터 명함 디자인",
+  },
+  {
+    slug: "udn-food-calendar-2024",
+    title: "[ studioUDN/공동육아 먹거리달력 제작 ]",
+    category: "Calendar",
+    kind: "product",
+    image: "/assets/portfolio_images/udn-food-calendar-2024/new-photos/spread.jpg",
+    aspect: "4032/3024",
+    detailImages: [
+      { src: "/assets/portfolio_images/udn-food-calendar-2024/detail_1.jpg", aspect: "1080/1080" },
+      { src: "/assets/portfolio_images/udn-food-calendar-2024/new-photos/spread.jpg", aspect: "4032/3024" },
+      { src: "/assets/portfolio_images/udn-food-calendar-2024/new-photos/checklist-spread.jpg", aspect: "4032/3024" },
+      { src: "/assets/portfolio_images/udn-food-calendar-2024/new-photos/detail-illustration.jpg", aspect: "2829/4964" },
+    ],
+    description: "공동육아 먹거리달력 제작",
   },
 ];
 
