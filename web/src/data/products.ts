@@ -261,7 +261,7 @@ export const products: Product[] = [
     // designer 감수 확정(mupfk5she6me·2026-10-01 — Poster·work·Book 미신설·연도별 분리
     // 적용·docs/designer/wave7-3-ig-review.md).
     slug: "dubgeuk-after-school-posters",
-    title: "두근두근방과후 교육포스터",
+    title: "[ 두근두근방과후 교육포스터 ]",
     category: "Poster",
     kind: "work",
     image: "/assets/portfolio_images/dubgeuk-after-school-posters/rep.jpg",
@@ -285,7 +285,7 @@ export const products: Product[] = [
     // Total Branding·work·Book 미신설·감수 사유 3[체계 보존·필터 카디널리티·세계관
     // 연속성]·docs/designer/wave7-3-ig-review.md §②).
     slug: "the-tov-books",
-    title: "studioUDN/theTOVbooks/놀라운 환대",
+    title: "[ studioUDN/theTOVbooks/놀라운 환대 ]",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/the-tov-books/rep.jpg",
@@ -297,28 +297,6 @@ export const products: Product[] = [
     ],
     description:
       "놀라운 환대 출판 기념\n교보문고 보라쇼\n더토브에서 확인하세요!",
-  },
-  {
-    // 파동7-3 — 신규 3(권고 채택): 공동육아 먹거리달력(2024 판 — 통과 2장만).
-    // 출처: instagram.com 게시물 DC9XJbry65Q(캐러셀 4장 중 통과 2 — 자식 3·4 얼굴 제외).
-    // 2024 판정 근거(qa-visual 실견): M T W TH F ST 요일 체계(2026의 S M T W T F S와
-    // 상이)·8.15 광복절 표기 — 한국판 2024 실물. 령 2027 선례(연도별 제품 분리)와 동일
-    // 원칙. 캡션 원문: "studioUDN / 공동육아 먹거리달력 제작 / -UDN calendar : Food in
-    // season / 제철음식을 공부하며…내가 필요해서 만들었다."
-    // 스토어 링크·가격 미확보(지어내지 않음 — 선택 필드·2024 종판 아카이브 표시).
-    // designer 감수 확정(mupfk5she6me·2026-10-01 — Calendar·product·연도별 분리 적용
-    // [Calendar는 PRODUCTS 축 전용 — kind 구조적 논거]·docs/designer/wave7-3-ig-review.md §③).
-    slug: "udn-food-calendar-2024",
-    title: "studioUDN/공동육아 먹거리달력 제작",
-    category: "Calendar",
-    kind: "product",
-    image: "/assets/portfolio_images/udn-food-calendar-2024/rep.jpg",
-    aspect: "1080/1080",
-    detailImages: [
-      { src: "/assets/portfolio_images/udn-food-calendar-2024/detail_1.jpg", aspect: "1080/1080" },
-    ],
-    description:
-      "제철음식을 공부하며, 절기음식과 간단한 음식 레시피들을 참고할 수 있는 유용한 달력, 내가 필요해서 만들었다.",
   },
 ];
 
