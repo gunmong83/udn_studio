@@ -85,7 +85,7 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
 
 export default function Footer() {
   return (
-    <footer className="pb-20 pt-[30px]">
+  <footer className="px-3 pb-20 pt-[30px]">
       {/* 4콘텐츠 블록 2×2 (블록 폭 343px 수준·gap 64px — 파동4 §⑤-3) */}
       <div className="grid grid-cols-2 gap-16">
         {BLOCKS.map((block) => (
