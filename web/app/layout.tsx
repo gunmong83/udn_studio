@@ -48,10 +48,8 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+        <script type="application/ld+json">
+          {JSON.stringify({
               "@context": "https://schema.org",
               "@type": "ProfessionalService",
               name: site.name,
@@ -68,9 +66,8 @@ export default function RootLayout({
                   itemOffered: { "@type": "Service", name },
                 })),
               },
-            }),
-          }}
-        />
+          })}
+        </script>
         <div id="wrap" className="mx-auto w-full max-w-canvas">
           <UtilBar />
           <Header />
