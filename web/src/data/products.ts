@@ -323,15 +323,6 @@ export const products: Product[] = [
     description: "두근미 활동 CHECKLIST",
   },
   {
-    slug: "picture-books-for-grown-ups",
-    title: "[ 어른을 위한 그림책 공부 ]",
-    category: "Poster",
-    kind: "work",
-    image: "/assets/portfolio_images/picture-books-grown-up/rep.jpg",
-    aspect: "7087/21260",
-    description: "READING PICTURE BOOKS for the GROWN-UP 강좌 포스터",
-  },
-  {
     slug: "studio-udn-director-card",
     title: "[ studioUDN 디렉터 명함 ]",
     category: "Total Branding",
@@ -394,8 +385,9 @@ export const products: Product[] = [
     detailImages: [
       { src: "/assets/portfolio_images/daedong-bookstore-event/detail_1.jpg", aspect: "1440/1440" },
       { src: "/assets/portfolio_images/daedong-bookstore-event/detail_2.jpg", aspect: "1440/1440" },
+      { src: "/assets/portfolio_images/picture-books-grown-up/rep.jpg", aspect: "7087/21260" },
     ],
-    description: "안양 대동문고 서점이벤트 포스터·X배너",
+    description: "안양 대동문고 서점이벤트 및 어른을 위한 그림책 공부 포스터·X배너",
   },
   {
     slug: "itf-korea-france",
