@@ -340,21 +340,6 @@ export const products: Product[] = [
     aspect: "3024/4032",
     description: "studioUDN 디렉터 명함 디자인",
   },
-  {
-    slug: "udn-food-calendar-2024",
-    title: "[ studioUDN/공동육아 먹거리달력 제작 ]",
-    category: "Calendar",
-    kind: "product",
-    image: "/assets/portfolio_images/udn-food-calendar-2024/new-photos/spread.jpg",
-    aspect: "4032/3024",
-    detailImages: [
-      { src: "/assets/portfolio_images/udn-food-calendar-2024/detail_1.jpg", aspect: "1080/1080" },
-      { src: "/assets/portfolio_images/udn-food-calendar-2024/new-photos/spread.jpg", aspect: "4032/3024" },
-      { src: "/assets/portfolio_images/udn-food-calendar-2024/new-photos/checklist-spread.jpg", aspect: "4032/3024" },
-      { src: "/assets/portfolio_images/udn-food-calendar-2024/new-photos/detail-illustration.jpg", aspect: "2829/4964" },
-    ],
-    description: "공동육아 먹거리달력 제작",
-  },
 ];
 
 export function getProduct(slug: string): Product | undefined {
