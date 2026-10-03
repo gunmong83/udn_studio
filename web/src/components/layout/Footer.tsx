@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { site } from "@/src/data/site";
-import { useLang } from "@/src/lib/store";
-import { uiCopy } from "@/src/lib/i18n";
 
 // 푸터 — mujagi 푸터 실측 (가이드 §5-5):
 // padding 30px 0 80px (파동4 §⑤-3 — px-3 수평 패딩 제거, 0 기준) ·
@@ -16,11 +14,10 @@ import { uiCopy } from "@/src/lib/i18n";
 // 사업자등록번호 등 원본에 없는 수치는 절대 지어내지 않는다.
 
 interface FooterLink {
-  key: keyof typeof import("@/src/lib/i18n").UI_COPY.ko.footer.links;
+  label: string;
   href: string;
   external?: boolean;
   icon?: "threads" | "instagram" | "naver"; // 파동7 소셜 + 파동9 naver(대표 지시 mup7gezbenjf)
-  adminOnly?: boolean;
 }
 
 // simple-icons(CC0 1.0) 글리프 — designer 스펙 §4 복붙(재타이핑 금지 원칙).
@@ -35,34 +32,34 @@ const SOCIAL_ICONS: Record<NonNullable<FooterLink["icon"]>, string> = {
     "M16.273 12.845 7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727v12.845Z",
 };
 
-const BLOCKS: { key: keyof typeof import("@/src/lib/i18n").UI_COPY.ko.footer.sections; links: FooterLink[] }[] = [
+const BLOCKS: { title: string; links: FooterLink[] }[] = [
   {
-    key: "support",
+    title: "고객지원",
     links: [
-      { key: "contact", href: "mailto:studioudn@naver.com?subject=Studio%20UDN%20문의" },
-      { key: "notice", href: "/notice" },
-      { key: "faq", href: "/faq" },
+      { label: "실시간 문의", href: "mailto:studioudn@naver.com?subject=Studio%20UDN%20문의" },
+      { label: "공지사항", href: "/notice" },
+      { label: "FAQ", href: "/faq" },
     ],
   },
   {
-    key: "business",
+    title: "비지니스",
     links: [
-      { key: "email", href: "mailto:studioudn@naver.com" },
+      { label: "이메일: studioudn@naver.com", href: "mailto:studioudn@naver.com" },
     ],
   },
   {
-    key: "member",
+    title: "회원",
     links: [
-      { key: "mypage", href: "/mypage" },
-      { key: "orders", href: "/orders" },
-      { key: "admin", href: "/admin", adminOnly: true },
+      { label: "마이페이지", href: "/mypage" },
+      { label: "주문 & 배송조회", href: "/orders" },
+      { label: "관리자 센터", href: "/admin" },
     ],
   },
   {
-    key: "social",
+    title: "소셜",
     links: [
       {
-        key: "smartstore",
+        label: "스마트스토어",
         href: "https://smartstore.naver.com/studioudn",
         external: true,
         // 파동9(mup7hs1uj77i·대표 지시 mup7gezbenjf "소셜 스마트 스토어 앞에도 네이버 로고인
@@ -72,13 +69,13 @@ const BLOCKS: { key: keyof typeof import("@/src/lib/i18n").UI_COPY.ko.footer.sec
       // 파동7 — 대표 제공 소셜 URL(envelope mup25o02ou86·스펙 §3). 원본 실측 없음 주석은
       // URL을 대표가 직접 제공했으므로 해소 — 지어내지 않는다 원칙 유지(출처: 대표 발화).
       {
-        key: "threads",
+        label: "Threads",
         href: "https://www.threads.com/@design_studio_undesignated",
         external: true,
         icon: "threads",
       },
       {
-        key: "instagram",
+        label: "Instagram",
         href: "https://www.instagram.com/design_studio_undesignated/",
         external: true,
         icon: "instagram",
@@ -90,20 +87,19 @@ const BLOCKS: { key: keyof typeof import("@/src/lib/i18n").UI_COPY.ko.footer.sec
 export default function Footer() {
   const sessionState = useSession();
   const isAdmin = sessionState?.data?.user?.role === "admin";
-  const copy = uiCopy(useLang());
 
   return (
   <footer className="px-3 pb-20 pt-[30px]">
       {/* 4콘텐츠 블록 2×2 (블록 폭 343px 수준·gap 64px — 파동4 §⑤-3) */}
       <div className="grid grid-cols-2 gap-16">
         {BLOCKS.map((block) => (
-          <div key={block.key}>
+          <div key={block.title}>
             <h3 className="text-label font-bold leading-[30px] text-text">
-              {copy.footer.sections[block.key]}
+              {block.title}
             </h3>
             <ul>
-              {block.links.filter((link) => !link.adminOnly || isAdmin).map((link) => (
-                <li key={link.key}>
+              {block.links.filter((link) => link.label !== "관리자 센터" || isAdmin).map((link) => (
+                <li key={link.label}>
                   {link.external ? (
                     link.icon ? (
                       // 파동7 소셜 — 아이콘+라벨 병기(스펙 §3 템플릿): flex·gap 8px·SVG 16×16
@@ -124,7 +120,7 @@ export default function Footer() {
                         >
                           <path d={SOCIAL_ICONS[link.icon]} />
                         </svg>
-                        {copy.footer.links[link.key]}
+                        {link.label}
                       </a>
                     ) : (
                       <a
@@ -133,7 +129,7 @@ export default function Footer() {
                         rel="noopener noreferrer"
                         className="text-body leading-[26px] text-ink-strong hover:text-text"
                       >
-                        {copy.footer.links[link.key]}
+                        {link.label}
                       </a>
                     )
                   ) : link.href.startsWith("/") ? (
@@ -141,14 +137,14 @@ export default function Footer() {
                       href={link.href}
                       className="text-body leading-[26px] text-ink-strong hover:text-text"
                     >
-                      {copy.footer.links[link.key]}
+                      {link.label}
                     </Link>
                   ) : (
                     <a
                       href={link.href}
                       className="text-body leading-[26px] text-ink-strong hover:text-text"
                     >
-                      {copy.footer.links[link.key]}
+                      {link.label}
                     </a>
                   )}
                 </li>

@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { clearCart, removeFromCart, setCartQty, useCart, useLang } from "@/src/lib/store";
+import { clearCart, removeFromCart, setCartQty, useCart } from "@/src/lib/store";
 import { getProduct } from "@/src/data/products";
-import { uiCopy } from "@/src/lib/i18n";
 
 // 장바구니 — localStorage mock(추가·삭제·합계). mujagi 문법:
 // 라벨 14px/700 · 링크 밑줄 없음·색 hover(§5-4) · 합계 금액 12px/700(§2-2) ·
@@ -13,7 +12,6 @@ import { uiCopy } from "@/src/lib/i18n";
 
 export default function CartPage() {
   const cart = useCart();
-  const copy = uiCopy(useLang()).commerce;
   const lines = cart
     .map((item) => ({ item, product: getProduct(item.slug) }))
     .filter((l) => l.product);
@@ -24,15 +22,15 @@ export default function CartPage() {
 
   return (
     <div className="w-full px-3 pb-section pt-section">
-      <h1 className="text-label font-bold text-text">{copy.title}</h1>
+      <h1 className="text-label font-bold text-text">CART</h1>
       {lines.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="text-body text-muted">{copy.empty}</p>
+          <p className="text-body text-muted">장바구니가 비어 있습니다.</p>
           <Link
             href="/products"
             className="mt-4 inline-block text-nav text-muted hover:text-text"
           >
-            {copy.browse}
+            PRODUCTS 둘러보기
           </Link>
         </div>
       ) : (
@@ -65,7 +63,7 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={() => setCartQty(item.slug, item.qty - 1)}
-                    aria-label={copy.decrease}
+                    aria-label="수량 감소"
                     className="flex h-7 w-7 items-center justify-center border border-line text-body hover:bg-soft"
                   >
                     −
@@ -74,7 +72,7 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={() => setCartQty(item.slug, item.qty + 1)}
-                    aria-label={copy.increase}
+                    aria-label="수량 증가"
                     className="flex h-7 w-7 items-center justify-center border border-line text-body hover:bg-soft"
                   >
                     +
@@ -85,7 +83,7 @@ export default function CartPage() {
                   onClick={() => removeFromCart(item.slug)}
                   className="ml-2 text-util text-muted hover:text-text"
                 >
-                  {copy.remove}
+                  삭제
                 </button>
               </li>
             ))}
@@ -96,17 +94,17 @@ export default function CartPage() {
               onClick={() => clearCart()}
               className="text-nav text-muted hover:text-text"
             >
-              {copy.clear}
+              전체 비우기
             </button>
             <p className="text-body text-text">
-              {copy.total}{" "}
+              합계{" "}
               <span className="font-bold">{total.toLocaleString("ko-KR")} KRW</span>
             </p>
           </div>
           <Link href="/checkout" className="mt-6 block h-10 w-full bg-text text-center leading-10 text-nav text-bg">
-            {copy.checkout}
+            결제하기
           </Link>
-          <p className="mt-3 text-center text-util text-muted">{copy.note}</p>
+          <p className="mt-3 text-center text-util text-muted">결제 단계에서 배송 정보와 토스 결제를 진행합니다.</p>
         </>
       )}
     </div>
