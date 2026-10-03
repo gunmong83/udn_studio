@@ -95,18 +95,6 @@ export type CategoryFilter = (typeof CATEGORY_FILTERS)[number];
 
 export const products: Product[] = [
   {
-    slug: "test-payment-100",
-    title: "[관리자 테스트] 결제 테스트 상품",
-    category: "Calendar",
-    kind: "product",
-    image: "/assets/portfolio_images/portfolio_1.jpg",
-    aspect: "3012/4799",
-    description: "관리자 결제 흐름 확인용 100원 테스트 상품입니다.",
-    price: 100,
-    priceLabel: "100 KRW",
-    adminOnly: true,
-  },
-  {
     slug: "udn-calendar-2026",
     title: "UDN Calendar 2026 제철달력 령令",
     category: "Calendar",
