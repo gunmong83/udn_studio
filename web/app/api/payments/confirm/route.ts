@@ -30,8 +30,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ order, message: "Already paid" }, { status: 200 });
   }
 
-  const secretKey =
-    process.env.TOSS_SECRET_KEY || "test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R";
+  const secretKey = process.env.TOSS_SECRET_KEY;
+  if (!secretKey) {
+    return NextResponse.json({ error: "결제 서버 설정이 완료되지 않았습니다." }, { status: 503 });
+  }
   const authHeader = `Basic ${Buffer.from(`${secretKey}:`).toString("base64")}`;
 
   // 2. 토스 결제 승인 요청
@@ -66,11 +68,19 @@ export async function POST(request: Request) {
       if (checkRes.ok) {
         const checkData = await checkRes.json().catch(() => null);
         if (checkData?.status === "DONE" && checkData?.orderId === orderId) {
-          const updated = await prisma.order.update({
-            where: { id: order.id },
+          const changed = await prisma.order.updateMany({
+            where: { id: order.id, userId, paymentStatus: "UNPAID", status: "PENDING" },
             data: { paymentKey, paymentStatus: "PAID", status: "PAID" },
-            include: { items: true },
           });
+          if (changed.count !== 1) {
+            const current = await prisma.order.findUnique({ where: { id: order.id }, include: { items: true } });
+            if (current?.paymentStatus === "PAID") {
+              return NextResponse.json({ order: current, payment: checkData }, { status: 200 });
+            }
+            return NextResponse.json({ error: "주문 상태가 변경되어 결제를 완료할 수 없습니다." }, { status: 409 });
+          }
+          const updated = await prisma.order.findUnique({ where: { id: order.id }, include: { items: true } });
+          if (!updated) return NextResponse.json({ error: "Order not found" }, { status: 404 });
           void sendPaymentAdminEmail(updated);
           return NextResponse.json({ order: updated, payment: checkData }, { status: 200 });
         }
@@ -85,9 +95,20 @@ export async function POST(request: Request) {
     );
   }
 
+  if (result?.status !== "DONE") {
+    return NextResponse.json(
+      { error: "결제가 아직 완료되지 않았습니다. 결제 상태를 확인한 뒤 다시 시도해주세요.", code: result?.status },
+      { status: 409 },
+    );
+  }
+
   // 4. 정상 승인 완료 -> DB 상태 업데이트
+  const current = await prisma.order.findFirst({ where: { id: order.id, userId, paymentStatus: "UNPAID", status: "PENDING" } });
+  if (!current) {
+    return NextResponse.json({ error: "주문 상태가 변경되어 결제를 완료할 수 없습니다." }, { status: 409 });
+  }
   const updated = await prisma.order.update({
-    where: { id: order.id },
+    where: { id: current.id },
     data: { paymentKey, paymentStatus: "PAID", status: "PAID" },
     include: { items: true },
   });

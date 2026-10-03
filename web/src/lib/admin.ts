@@ -11,8 +11,11 @@ export function isAdminEmail(email?: string | null): boolean {
 export async function requireAdmin() {
   const session = await auth();
   const email = session?.user?.email?.toLowerCase();
-  if (!email || !isAdminEmail(email)) {
+  if (!session || !email || !isAdminEmail(email)) {
     throw new Error("ADMIN_AUTH_REQUIRED");
   }
+  const { prisma } = await import("@/src/lib/prisma");
+  const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+  if (!user || session.user?.id !== user.id) throw new Error("ADMIN_AUTH_REQUIRED");
   return session;
 }

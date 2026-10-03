@@ -1,6 +1,3 @@
-export const TOSS_TEST_CLIENT_KEY = "test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq";
-export const TOSS_TEST_SECRET_KEY = "test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R";
-
 export interface TossPaymentRequestOptions {
   method?: string; // 기본값 '카드'
   amount: number;
@@ -66,8 +63,8 @@ export async function loadTossPaymentsSDK(): Promise<TossPaymentsFactory> {
  * 토스 결제창을 호출합니다.
  */
 export async function requestTossPayment(options: TossPaymentRequestOptions) {
-  const clientKey =
-    process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || TOSS_TEST_CLIENT_KEY;
+  const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY;
+  if (!clientKey) throw new Error("결제 클라이언트 키가 설정되지 않았습니다.");
   const TossPayments = await loadTossPaymentsSDK();
   const tossPayments = TossPayments(clientKey);
 

@@ -60,7 +60,7 @@ export default function CheckoutPage() {
   const [zonecode, setZonecode] = useState("");
   const [address, setAddress] = useState("");
   const [addressDetail, setAddressDetail] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"카드" | "계좌이체" | "가상계좌">("카드");
+  const [paymentMethod, setPaymentMethod] = useState<"카드" | "계좌이체">("카드");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -439,7 +439,7 @@ export default function CheckoutPage() {
           <section className="border-t border-line pt-6">
             <h2 className="text-nav font-semibold text-text">결제 수단</h2>
             <div className="mt-3 grid grid-cols-3 gap-2">
-              {(["카드", "계좌이체", "가상계좌"] as const).map((method) => (
+              {(["카드", "계좌이체"] as const).map((method) => (
                 <button
                   key={method}
                   type="button"

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { hashPassword } from "@/src/lib/password";
+import { ADMIN_EMAIL } from "@/src/lib/admin";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,7 @@ export async function POST(request: Request) {
     const email = String(body.email ?? "").trim().toLowerCase();
     const password = String(body.password ?? "");
     const name = String(body.name ?? "").trim() || null;
+    if (email === ADMIN_EMAIL) return NextResponse.json({ error: "관리자 계정은 별도 등록이 필요합니다." }, { status: 403 });
     if (!/^\S+@\S+\.\S+$/.test(email)) return NextResponse.json({ error: "올바른 이메일을 입력해주세요." }, { status: 400 });
     if (password.length < 8) return NextResponse.json({ error: "비밀번호는 8자 이상이어야 합니다." }, { status: 400 });
     const exists = await prisma.user.findUnique({ where: { email } });

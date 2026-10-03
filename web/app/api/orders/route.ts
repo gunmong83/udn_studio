@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const items = Array.isArray(body?.items) ? body.items : [];
-  if (!items.length || !body?.recipientName || !body?.phone || !body?.address) {
+  if (!items.length || items.length > 20 || !body?.recipientName || !body?.phone || !body?.address) {
     return NextResponse.json({ error: "Missing order information" }, { status: 400 });
   }
 
@@ -78,8 +78,8 @@ export async function DELETE(request: Request) {
     where: { id: orderId, userId },
   });
   if (!order) return NextResponse.json({ error: "주문을 찾을 수 없습니다." }, { status: 404 });
-  if (order.paymentStatus === "PAID") {
-    return NextResponse.json({ error: "이미 결제된 주문은 취소/환불 절차를 진행해 주세요." }, { status: 400 });
+  if (order.paymentStatus !== "UNPAID" || order.status !== "PENDING" || order.paymentKey) {
+    return NextResponse.json({ error: "결제 정보가 있는 주문은 삭제할 수 없습니다." }, { status: 400 });
   }
 
   await prisma.order.delete({ where: { id: orderId } });

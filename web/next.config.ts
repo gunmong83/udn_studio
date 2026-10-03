@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async headers() {
+    return [{
+      source: "/(.*)",
+      headers: [
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "X-Frame-Options", value: "DENY" },
+        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+      ],
+    }];
+  },
   // 개발 서버 직접 IP 접속 허용 — 파동6 원인 수리(wave6-hero-rootcause.md).
   // Next 16.3.7 dev 의 block-cross-site-dev Origin 검증이 IP 오리진
   // (http://10.85.96.53:3300) 의 HMR WebSocket 을 'Unauthorized' 로 거부해
