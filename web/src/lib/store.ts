@@ -18,7 +18,7 @@ export interface Session {
   email: string;
 }
 
-export type Lang = "ko" | "en" | "jp";
+export type Lang = "ko" | "en";
 
 const CART_KEY = "udn-cart";
 const WISH_KEY = "udn-wishlist";

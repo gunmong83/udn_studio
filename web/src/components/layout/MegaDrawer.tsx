@@ -14,6 +14,8 @@ import { useState } from "react";
 // 1차 PRODUCTS/PORTFOLIO/JOURNAL/ABOUT(서브 없음). GIFTING 블록 제거 —
 // accent #c0392b는 구매 CTA(§3)로 이동(D-3 갱신 — 구매 CTA 1곳만).
 import { WORK_CATEGORY_FILTERS } from "@/src/data/products";
+import { useLang } from "@/src/lib/store";
+import { uiCopy } from "@/src/lib/i18n";
 
 export default function MegaDrawer({
   open,
@@ -23,12 +25,13 @@ export default function MegaDrawer({
   onClose: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const copy = uiCopy(useLang());
   if (!open) return null;
 
   return (
     <aside
       id="aside"
-      aria-label="전체 메뉴"
+      aria-label={copy.drawer.menu}
       className="fixed left-[max(0px,calc(50%_-_400px))] top-[52px] z-[10502] h-[calc(100dvh-52px)] w-[391px] max-w-[calc(100vw-16px)] overflow-y-auto bg-bg shadow-lg"
     >
       {/* 1차 — 스튜디오 UDN (아코디언, 클릭 전개) · 서브 = PORTFOLIO 카테고리 */}
@@ -38,7 +41,7 @@ export default function MegaDrawer({
         onClick={() => setExpanded((v) => !v)}
         className="block w-full px-6 py-5 text-left text-drawer font-normal text-ink-strong hover:font-medium"
       >
-        스튜디오 UDN
+        {copy.drawer.studio}
       </button>
       {expanded &&
         WORK_CATEGORY_FILTERS.map((c) => (
@@ -62,28 +65,36 @@ export default function MegaDrawer({
         onClick={onClose}
         className="block px-6 py-5 text-drawer font-normal text-ink-strong hover:font-medium"
       >
-        PRODUCTS
+        {copy.nav.products}
       </Link>
       <Link
         href="/portfolio"
         onClick={onClose}
         className="block px-6 py-5 text-drawer font-normal text-ink-strong hover:font-medium"
       >
-        PORTFOLIO
+        {copy.nav.portfolio}
       </Link>
       <Link
         href="/journal"
         onClick={onClose}
         className="block px-6 py-5 text-drawer font-normal text-ink-strong hover:font-medium"
       >
-        JOURNAL
+        {copy.nav.journal}
       </Link>
       <Link
         href="/about"
         onClick={onClose}
         className="block px-6 py-5 text-drawer font-normal text-ink-strong hover:font-medium"
       >
-        ABOUT
+        {copy.nav.about}
+      </Link>
+      <div className="border-t border-line my-1" />
+      <Link
+        href="/orders"
+        onClick={onClose}
+        className="block px-6 py-4 text-drawer-sub text-sub hover:text-text"
+      >
+        {copy.drawer.orders}
       </Link>
     </aside>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   setLang,
   useCart,
@@ -15,7 +15,7 @@ import { useSession } from "next-auth/react";
 
 // 유틸바 — mujagi #top_line 실측 (가이드 §4-3).
 // 높이 52px · 배경 #f9f9f9 · 스크롤 시 유일하게 sticky(fixed 전환)되는 바.
-// ☰ 좌측(32×52) + 로고 · 우측: 언어(한국어/English/日本語) + 아이콘군 30×30 ×4
+// ☰ 좌측(32×52) + 로고 · 우측: 언어(한국어/English) + 아이콘군 30×30 ×4
 // (검색·계정·위시리스트·장바구니) — 9항.
 // 파동4 §①-1·판정서 관찰1 — 텍스트 링크 3건(로그인·스튜디오 소개·문의하기) 제거(가역):
 // 전부 중복·dead(로그인=계정 아이콘 / 스튜디오 소개=ABOUT 메뉴 / 문의하기=href="#").
@@ -41,23 +41,15 @@ const LABELS: Record<Lang, Record<LabelKey, string>> = {
     logout: "Sign out",
     greeting: "Welcome",
   },
-  jp: {
-    login: "ログイン",
-    studio: "スタジオ紹介",
-    contact: "お問い合わせ",
-    logout: "ログアウト",
-    greeting: "ようこそ",
-  },
 };
 */
 
 const LANG_LABELS: Record<Lang, string> = {
   ko: "한국어",
   en: "English",
-  jp: "日本語",
 };
 
-const LANGS: Lang[] = ["ko", "en", "jp"];
+const LANGS: Lang[] = ["ko", "en"];
 
 function Badge({ n }: { n: number }) {
   if (n <= 0) return null;
@@ -108,6 +100,9 @@ export default function UtilBar() {
   const sessionState = useSession();
   const session = sessionState?.data ?? null;
   const lang = useLang();
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const cartItems = useCart();
   const wishlist = useWishlist();
@@ -141,7 +136,7 @@ export default function UtilBar() {
 
           {/* 우측: 언어 + 아이콘군 (파동4 §①-1 — 텍스트 링크 3건 제거·9항) */}
           <div className="flex items-center gap-4">
-            {/* 언어 스위처 — mujagi #mj-lang-list 표기(한국어/English/日本語). 표기만 전환 */}
+            {/* 언어 스위처 — 한국어/English 공통 UI 전환 */}
             <div className="hidden items-center gap-2 md:flex">
               {LANGS.map((l) => (
                 <button
@@ -162,6 +157,15 @@ export default function UtilBar() {
 
             {/* 아이콘군 30×30 ×4 — 검색 · 계정 · 위시리스트 · 장바구니 */}
             <div className="flex items-center gap-1">
+              {session?.user?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  title="관리자 센터 (주문/배송/회원 관리)"
+                  className="mr-1 inline-flex h-6 items-center rounded-xs bg-text px-1.5 text-[11px] font-bold text-bg hover:bg-[#444]"
+                >
+                  ADMIN
+                </Link>
+              )}
               <Link
                 href="/search"
                 aria-label="검색"
@@ -170,8 +174,9 @@ export default function UtilBar() {
                 <IconSearch />
               </Link>
               <Link
-                href="/login"
-                aria-label="계정"
+                href={session?.user ? "/mypage" : "/login"}
+                aria-label={session?.user ? "마이페이지 (주문/배송 조회)" : "계정"}
+                title={session?.user ? "마이페이지 (주문/배송 조회)" : "로그인"}
                 className="relative flex h-[30px] w-[30px] items-center justify-center text-text"
               >
                 <IconUser />
