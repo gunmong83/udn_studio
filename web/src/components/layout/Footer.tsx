@@ -40,7 +40,6 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
         label: "실시간 문의",
         href: "https://talk.naver.com/WJJOCY8",
         external: true,
-        icon: "naver",
       },
       { label: "공지사항", href: "/notice" },
       { label: "FAQ", href: "/faq" },
