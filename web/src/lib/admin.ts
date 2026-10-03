@@ -1,6 +1,6 @@
 import { auth } from "@/src/auth";
 
-export const ADMIN_EMAIL = "gunmong83@gmail.com";
+export const ADMIN_EMAIL = "studioudn@naver.com";
 export const ADMIN_EMAILS = [ADMIN_EMAIL];
 
 export function isAdminEmail(email?: string | null): boolean {

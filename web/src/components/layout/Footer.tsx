@@ -36,7 +36,7 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
   {
     title: "고객지원",
     links: [
-      { label: "실시간 문의", href: "mailto:gunmong83@gmail.com?subject=Studio%20UDN%20문의" },
+      { label: "실시간 문의", href: "mailto:studioudn@naver.com?subject=Studio%20UDN%20문의" },
       { label: "공지사항", href: "/notice" },
       { label: "FAQ", href: "/faq" },
     ],
@@ -44,8 +44,8 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
   {
     title: "비지니스",
     links: [
-      { label: "B2B 제휴 문의", href: "mailto:gunmong83@gmail.com?subject=Studio%20UDN%20B2B%20제휴%20문의" },
-      { label: "이메일: gunmong83@gmail.com", href: "mailto:gunmong83@gmail.com" },
+      { label: "B2B 제휴 문의", href: "mailto:studioudn@naver.com?subject=Studio%20UDN%20B2B%20제휴%20문의" },
+      { label: "이메일: studioudn@naver.com", href: "mailto:studioudn@naver.com" },
     ],
   },
   {

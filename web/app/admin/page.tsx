@@ -227,7 +227,7 @@ export default function AdminPage() {
         </div>
         <h2 className="mt-4 text-heading font-bold text-text">관리자 로그인이 필요합니다</h2>
         <p className="mt-2 text-body text-muted">
-          관리자 권한이 있는 계정(gunmong83@gmail.com)으로 로그인해 주세요.
+          관리자 권한이 있는 계정(studioudn@naver.com)으로 로그인해 주세요.
         </p>
         <div className="mt-6 flex flex-col gap-2">
           <Link
@@ -258,7 +258,7 @@ export default function AdminPage() {
           현재 로그인된 계정: <span className="font-semibold text-text">{session?.user?.email}</span>
         </p>
         <p className="mt-1 text-util text-muted">
-          관리자 권한 계정: <span className="font-mono text-text">gunmong83@gmail.com</span>
+          관리자 권한 계정: <span className="font-mono text-text">studioudn@naver.com</span>
         </p>
         <div className="mt-6 flex flex-col gap-2">
           <Link
