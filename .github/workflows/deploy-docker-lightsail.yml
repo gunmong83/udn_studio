@@ -1,0 +1,45 @@
+name: Deploy Docker image to Lightsail
+
+on:
+  workflow_run:
+    workflows: ["Build Docker image"]
+    types: [completed]
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy latest image
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.LIGHTSAIL_UBUNTU_HOST }}
+          username: ${{ secrets.LIGHTSAIL_UBUNTU_USER }}
+          key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY }}
+          script_stop: true
+          script: |
+            set -eu
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:latest"
+            sudo docker pull "$IMAGE"
+            sudo mkdir -p /opt/udn_studio /data
+            if [ ! -f /opt/udn_studio/.env.production ]; then
+              echo "Missing /opt/udn_studio/.env.production" >&2
+              exit 1
+            fi
+            sudo docker rm -f udn-web-new >/dev/null 2>&1 || true
+            sudo docker run -d --name udn-web-new --restart unless-stopped \
+              --env-file /opt/udn_studio/.env.production \
+              -e NODE_ENV=production -e HOSTNAME=0.0.0.0 -e PORT=3000 \
+              -e DATABASE_URL=file:/data/udn.db \
+              -p 127.0.0.1:3001:3000 -v /data:/data "$IMAGE"
+            for i in $(seq 1 30); do
+              if curl -fsS http://127.0.0.1:3001/ >/dev/null; then break; fi
+              sleep 2
+            done
+            curl -fsS http://127.0.0.1:3001/ >/dev/null
+            sudo systemctl stop udn-next || true
+            sudo docker rm -f udn-web >/dev/null 2>&1 || true
+            sudo docker rename udn-web-new udn-web
+            sudo sed -i 's/127\.0\.0\.1:3000/127.0.0.1:3001/g' /etc/nginx/conf.d/https.conf || true
+            sudo nginx -t
+            sudo systemctl reload nginx
