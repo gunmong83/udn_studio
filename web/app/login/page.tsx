@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function LoginPage() {
-  const { data: session, status } = useSession();
+  const sessionState = useSession();
+  const session = sessionState?.data ?? null;
+  const status = sessionState?.status ?? "unauthenticated";
   const loading = status === "loading";
   const [agreed, setAgreed] = useState(false);
 
