@@ -133,7 +133,7 @@ export const products: Product[] = [
   },
   {
     slug: "neryge-to-slow",
-    title: "[ NeRyGe : To Slow ]",
+    title: "NeRyGe : To Slow",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/portfolio_2.jpg",
@@ -150,7 +150,7 @@ export const products: Product[] = [
   },
   {
     slug: "the-tov",
-    title: "[ the TOV ]",
+    title: "the TOV",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/portfolio_3.jpg",
@@ -163,7 +163,7 @@ export const products: Product[] = [
   },
   {
     slug: "louivis-bebe",
-    title: "[ Louivis BeBe ]",
+    title: "Louivis BeBe",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/portfolio_4.jpg",
@@ -173,7 +173,7 @@ export const products: Product[] = [
   },
   {
     slug: "flowing-lines-staying-moon",
-    title: "[ Flowing Lines, Staying Moon ]",
+    title: "Flowing Lines, Staying Moon",
     category: "Exhibition Poster",
     kind: "work",
     image: "/assets/portfolio_images/portfolio_5.jpg",
@@ -183,7 +183,7 @@ export const products: Product[] = [
   },
   {
     slug: "the-10th-yaho-festival",
-    title: "[ The 10th YAHO Festival ]",
+    title: "The 10th YAHO Festival",
     category: "Poster",
     kind: "work",
     image: "/assets/portfolio_images/portfolio_6.jpg",
@@ -193,7 +193,7 @@ export const products: Product[] = [
   },
   {
     slug: "menbal-kindergarten",
-    title: "[ Menbal Kindergarten ]",
+    title: "Menbal Kindergarten",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/portfolio_7.jpg",
@@ -281,7 +281,7 @@ export const products: Product[] = [
     // designer 감수 확정(mupfk5she6me·2026-10-01 — Poster·work·Book 미신설·연도별 분리
     // 적용·docs/designer/wave7-3-ig-review.md).
     slug: "dubgeuk-after-school-posters",
-    title: "[ 두근두근방과후 교육포스터 ]",
+    title: "두근두근방과후 교육포스터",
     category: "Poster",
     kind: "work",
     image: "/assets/portfolio_images/dubgeuk-after-school-posters/rep.jpg",
@@ -305,7 +305,7 @@ export const products: Product[] = [
     // Total Branding·work·Book 미신설·감수 사유 3[체계 보존·필터 카디널리티·세계관
     // 연속성]·docs/designer/wave7-3-ig-review.md §②).
     slug: "the-tov-books",
-    title: "[ studioUDN/theTOVbooks/놀라운 환대 ]",
+    title: "studioUDN/theTOVbooks/놀라운 환대",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/the-tov-books/rep.jpg",
@@ -320,7 +320,7 @@ export const products: Product[] = [
   },
   {
     slug: "rainbow-school-information-session",
-    title: "[ 초등무지개학교 입학설명회 ]",
+    title: "초등무지개학교 입학설명회",
     category: "Poster",
     kind: "work",
     image: "/assets/portfolio_images/rainbow-school/rep.jpg",
@@ -329,7 +329,7 @@ export const products: Product[] = [
   },
   {
     slug: "dugeumi-activity-checklist",
-    title: "[ 두근미 활동 체크리스트 ]",
+    title: "두근미 활동 체크리스트",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/dugeumi-checklist/rep.jpg",
@@ -338,7 +338,7 @@ export const products: Product[] = [
   },
   {
     slug: "studio-udn-director-card",
-    title: "[ studioUDN 디렉터 명함 ]",
+    title: "studioUDN 디렉터 명함",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/studio-udn-director-card/rep.jpg",
@@ -347,7 +347,7 @@ export const products: Product[] = [
   },
   {
     slug: "uyujeok-minhwa-bizcard-postcards",
-    title: "[ 유유자적민화 bizcard design·엽서 체험 및 채색 도안 작업 ]",
+    title: "유유자적민화 bizcard design·엽서 체험 및 채색 도안 작업",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/uyujeok-minhwa-bizcard-postcards/rep.jpg",
@@ -362,7 +362,7 @@ export const products: Product[] = [
   },
   {
     slug: "chusa-art-festival-goods",
-    title: "[ 추사아트페스티벌 체험용 부스 굿즈 디자인 ]",
+    title: "추사아트페스티벌 체험용 부스 굿즈 디자인",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/chusa-art-festival-goods/rep.jpg",
@@ -378,7 +378,7 @@ export const products: Product[] = [
   },
   {
     slug: "dohwaji-park-hee-jung-bizcard",
-    title: "[ 도화지 박희정 작가님 명함 ]",
+    title: "도화지 박희정 작가님 명함",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/dohwaji-park-hee-jung-bizcard/rep.jpg",
@@ -391,7 +391,7 @@ export const products: Product[] = [
   },
   {
     slug: "daedong-bookstore-event",
-    title: "[ 안양 대동문고 서점이벤트 ]",
+    title: "안양 대동문고 서점이벤트",
     category: "Poster",
     kind: "work",
     image: "/assets/portfolio_images/daedong-bookstore-event/rep.jpg",
@@ -405,7 +405,7 @@ export const products: Product[] = [
   },
   {
     slug: "itf-korea-france",
-    title: "[ 잇-프 itF 한국-프랑스를 잇다 ]",
+    title: "잇-프 itF 한국-프랑스를 잇다",
     category: "Exhibition Poster",
     kind: "work",
     image: "/assets/portfolio_images/itf-korea-france/rep.jpg",
@@ -422,7 +422,7 @@ export const products: Product[] = [
   },
   {
     slug: "udn-ci-businesscard",
-    title: "[ UDN studio CI businesscard design ]",
+    title: "UDN studio CI businesscard design",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/udn-ci-businesscard/rep.jpg",
