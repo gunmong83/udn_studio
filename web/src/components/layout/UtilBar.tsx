@@ -168,10 +168,10 @@ export default function UtilBar() {
               <Link
                 href="/login"
                 aria-label="계정"
-                className={`relative flex h-[30px] w-[30px] items-center justify-center rounded-full transition-colors ${session?.user ? "bg-text text-bg" : "text-text"}`}
+                className="relative flex h-[30px] w-[30px] items-center justify-center text-text"
               >
                 <IconUser />
-                {session?.user && <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#03c75a]" aria-label="로그인됨" />}
+                {session?.user && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-[#03c75a] shadow-[0_0_0_2px_rgba(3,199,90,0.12),0_0_7px_2px_rgba(3,199,90,0.55)]" aria-label="로그인됨" />}
               </Link>
               <Link
                 href="/wishlist"
