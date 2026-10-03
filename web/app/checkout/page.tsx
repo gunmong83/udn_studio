@@ -114,6 +114,25 @@ export default function CheckoutPage() {
     }
   };
 
+  const loadDefaultAddress = async () => {
+    try {
+      const response = await fetch("/api/profile");
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data?.profile?.defaultAddress) {
+        throw new Error("마이페이지에서 기본 배송지를 먼저 등록해주세요.");
+      }
+      const profile = data.profile;
+      setRecipientName(profile.defaultRecipientName ?? profile.name ?? "");
+      setPhone(profile.defaultPhone ?? profile.phone ?? "");
+      setZonecode(profile.defaultZonecode ?? "");
+      setAddress(profile.defaultAddress ?? "");
+      setAddressDetail(profile.defaultAddressDetail ?? "");
+      setErrorMessage("기본 배송지를 불러왔습니다.");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "기본 배송지를 불러오지 못했습니다.");
+    }
+  };
+
   if (status === "loading") {
     return (
       <div className="w-full px-3 pb-section pt-section text-center">
@@ -327,7 +346,12 @@ export default function CheckoutPage() {
         {/* 배송지 및 주문자 정보 입력 */}
         <form onSubmit={handlePayment} className="mt-6 space-y-6">
           <section className="space-y-4">
-            <h2 className="text-nav font-semibold text-text">배송 정보</h2>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-nav font-semibold text-text">배송 정보</h2>
+              <button type="button" onClick={() => void loadDefaultAddress()} className="border border-line px-3 py-1.5 text-util text-text transition-colors hover:bg-soft">
+                기본 배송지 불러오기
+              </button>
+            </div>
 
             <div>
               <label htmlFor="recipientName" className="block text-util font-medium text-text">

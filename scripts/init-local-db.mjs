@@ -14,6 +14,11 @@ CREATE TABLE IF NOT EXISTS User (
   emailVerified DATETIME,
   passwordHash TEXT,
   phone TEXT,
+  defaultRecipientName TEXT,
+  defaultPhone TEXT,
+  defaultZonecode TEXT,
+  defaultAddress TEXT,
+  defaultAddressDetail TEXT,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -56,6 +61,8 @@ CREATE TABLE IF NOT EXISTS "Order" (
   phone TEXT NOT NULL,
   address TEXT NOT NULL,
   addressDetail TEXT,
+  carrier TEXT,
+  trackingNumber TEXT,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (userId) REFERENCES User(id) ON DELETE SET NULL
@@ -70,5 +77,12 @@ CREATE TABLE IF NOT EXISTS OrderItem (
   FOREIGN KEY (orderId) REFERENCES "Order"(id) ON DELETE CASCADE
 );
 `);
+for (const column of ["defaultRecipientName", "defaultPhone", "defaultZonecode", "defaultAddress", "defaultAddressDetail"]) {
+  try {
+    db.exec(`ALTER TABLE User ADD COLUMN ${column} TEXT`);
+  } catch {
+    // Column already exists in a previously initialized local database.
+  }
+}
 db.close();
 console.log(`Local SQLite ready: ${dbPath}`);

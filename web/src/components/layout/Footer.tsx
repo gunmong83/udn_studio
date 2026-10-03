@@ -44,7 +44,6 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
   {
     title: "비지니스",
     links: [
-      { label: "B2B 제휴 문의", href: "mailto:studioudn@naver.com?subject=Studio%20UDN%20B2B%20제휴%20문의" },
       { label: "이메일: studioudn@naver.com", href: "mailto:studioudn@naver.com" },
     ],
   },
