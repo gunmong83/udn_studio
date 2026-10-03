@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  setLang,
-  useCart,
-  useLang,
-  useWishlist,
-  type Lang,
-} from "@/src/lib/store";
+import { useCart, useWishlist } from "@/src/lib/store";
 import { site } from "@/src/data/site";
 import MegaDrawer from "./MegaDrawer";
 import { useSession } from "next-auth/react";
@@ -50,14 +44,6 @@ const LABELS: Record<Lang, Record<LabelKey, string>> = {
   },
 };
 */
-
-const LANG_LABELS: Record<Lang, string> = {
-  ko: "한국어",
-  en: "English",
-  jp: "日本語",
-};
-
-const LANGS: Lang[] = ["ko", "en", "jp"];
 
 function Badge({ n }: { n: number }) {
   if (n <= 0) return null;
@@ -107,7 +93,6 @@ export default function UtilBar() {
   // signed out; the client hydrates with the real session afterward.
   const sessionState = useSession();
   const session = sessionState?.data ?? null;
-  const lang = useLang();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const cartItems = useCart();
   const wishlist = useWishlist();
@@ -139,27 +124,8 @@ export default function UtilBar() {
             </Link>
           </div>
 
-          {/* 우측: 언어 + 아이콘군 (파동4 §①-1 — 텍스트 링크 3건 제거·9항) */}
+          {/* 우측: 아이콘군 (검색 · 계정 · 위시리스트 · 장바구니) */}
           <div className="flex items-center gap-4">
-            {/* 언어 스위처 — mujagi #mj-lang-list 표기(한국어/English/日本語). 표기만 전환 */}
-            <div className="hidden items-center gap-2 md:flex">
-              {LANGS.map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLang(l)}
-                  aria-pressed={lang === l}
-                  className={
-                    lang === l
-                      ? "font-medium text-ink-strong"
-                      : "text-muted hover:text-ink-strong"
-                  }
-                >
-                  {LANG_LABELS[l]}
-                </button>
-              ))}
-            </div>
-
             {/* 아이콘군 30×30 ×4 — 검색 · 계정 · 위시리스트 · 장바구니 */}
             <div className="flex items-center gap-1">
               <Link
