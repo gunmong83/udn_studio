@@ -17,6 +17,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "@prisma/client": "^6.16.2"
+    ,"@auth/prisma-adapter": "^2.11.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
