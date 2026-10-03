@@ -9,6 +9,4 @@ mkdir -p /data
 
 cd /app
 npx prisma migrate deploy || npx prisma db push
-npm run start -- -H "$HOSTNAME" -p "$PORT" &
-
-nginx -g "daemon off;"
+exec npm run start -- -H "$HOSTNAME" -p "$PORT"

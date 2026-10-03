@@ -1,0 +1,18 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: udn-studio:latest
+    restart: unless-stopped
+    env_file:
+      - web/.env.production
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      DATABASE_URL: file:/data/udn.db
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - /data:/data

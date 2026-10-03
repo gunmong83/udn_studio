@@ -15,8 +15,6 @@ RUN npm run build
 FROM node:20-alpine AS runtime
 WORKDIR /app
 
-RUN apk add --no-cache nginx
-
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
@@ -28,10 +26,8 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=build /app/prisma ./prisma
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker/start.sh /start.sh
-
 RUN chmod +x /start.sh
 
-EXPOSE 80 443
+EXPOSE 3000
 CMD ["/start.sh"]
