@@ -333,7 +333,7 @@ export const products: Product[] = [
   },
   {
     slug: "uyujeok-minhwa-bizcard-postcards",
-    title: "유유자적민화 bizcard design·엽서 체험 및 채색 도안 작업",
+    title: "[ 유유자적민화 bizcard design·엽서 체험 및 채색 도안 작업 ]",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/uyujeok-minhwa-bizcard-postcards/rep.jpg",
@@ -348,7 +348,7 @@ export const products: Product[] = [
   },
   {
     slug: "chusa-art-festival-goods",
-    title: "추사아트페스티벌 체험용 부스 굿즈 디자인",
+    title: "[ 추사아트페스티벌 체험용 부스 굿즈 디자인 ]",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/chusa-art-festival-goods/rep.jpg",
@@ -364,7 +364,7 @@ export const products: Product[] = [
   },
   {
     slug: "dohwaji-park-hee-jung-bizcard",
-    title: "도화지 박희정 작가님 명함",
+    title: "[ 도화지 박희정 작가님 명함 ]",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/dohwaji-park-hee-jung-bizcard/rep.jpg",
@@ -377,7 +377,7 @@ export const products: Product[] = [
   },
   {
     slug: "daedong-bookstore-event",
-    title: "안양 대동문고 서점이벤트",
+    title: "[ 안양 대동문고 서점이벤트 ]",
     category: "Poster",
     kind: "work",
     image: "/assets/portfolio_images/daedong-bookstore-event/rep.jpg",
@@ -391,7 +391,7 @@ export const products: Product[] = [
   },
   {
     slug: "itf-korea-france",
-    title: "잇-프 itF 한국-프랑스를 잇다",
+    title: "[ 잇-프 itF 한국-프랑스를 잇다 ]",
     category: "Exhibition Poster",
     kind: "work",
     image: "/assets/portfolio_images/itf-korea-france/rep.jpg",
@@ -408,7 +408,7 @@ export const products: Product[] = [
   },
   {
     slug: "udn-ci-businesscard",
-    title: "UDN studio CI businesscard design",
+    title: "[ UDN studio CI businesscard design ]",
     category: "Total Branding",
     kind: "work",
     image: "/assets/portfolio_images/udn-ci-businesscard/rep.jpg",
