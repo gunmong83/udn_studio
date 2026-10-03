@@ -6,7 +6,7 @@ ARG APP_SUBDIR=web
 COPY ${APP_SUBDIR}/package.json ${APP_SUBDIR}/package-lock.json ./
 # The lockfile predates the Prisma/Auth adapter dependencies. Install from the
 # manifest so CI can build the image while the lockfile is regenerated locally.
-RUN npm install --omit=optional
+RUN npm install
 
 COPY ${APP_SUBDIR}/ ./
 
