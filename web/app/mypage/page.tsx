@@ -1,11 +1,53 @@
 "use client";
 
-import { Suspense, useEffect, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import type { OrderStatusType } from "@/src/components/orders/DeliveryTracker";
 import { useCart, useWishlist } from "@/src/lib/store";
+
+interface DaumPostcodeData {
+  address: string;
+  zonecode: string;
+  roadAddress: string;
+  jibunAddress: string;
+  buildingName: string;
+  bname: string;
+  apartment: string;
+}
+
+declare global {
+  interface Window {
+    daum?: {
+      Postcode: new (options: {
+        oncomplete: (data: DaumPostcodeData) => void;
+      }) => {
+        open: () => void;
+      };
+    };
+  }
+}
+
+function loadDaumPostcodeScript(): Promise<void> {
+  if (typeof window === "undefined") return Promise.reject();
+  if (window.daum?.Postcode) return Promise.resolve();
+
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[src*="postcode.v2.js"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () => reject(new Error("우편번호 스크립트 로드 실패")));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("다음 주소 검색 서비스를 불러오지 못했습니다."));
+    document.head.appendChild(script);
+  });
+}
 
 interface OrderItem {
   id: string;
@@ -69,6 +111,7 @@ function MyPageContent() {
   });
   const [profileMessage, setProfileMessage] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
+  const addressDetailInputRef = useRef<HTMLInputElement>(null);
 
   const cartItems = useCart();
   const wishlist = useWishlist();
@@ -156,6 +199,42 @@ function MyPageContent() {
       setProfileMessage(saveError instanceof Error ? saveError.message : "기본 배송지 저장에 실패했습니다.");
     } finally {
       setProfileSaving(false);
+    }
+  };
+
+  const handleSearchDefaultAddress = async () => {
+    setProfileMessage("");
+    try {
+      await loadDaumPostcodeScript();
+      if (!window.daum?.Postcode) {
+        throw new Error("다음 주소 검색 서비스를 실행할 수 없습니다.");
+      }
+
+      new window.daum.Postcode({
+        oncomplete: (data: DaumPostcodeData) => {
+          let fullAddress = data.roadAddress || data.jibunAddress || data.address;
+          let extraAddress = "";
+
+          if (data.bname && /[동|로|가]$/g.test(data.bname)) {
+            extraAddress += data.bname;
+          }
+          if (data.buildingName && data.apartment === "Y") {
+            extraAddress += extraAddress ? `, ${data.buildingName}` : data.buildingName;
+          }
+          if (extraAddress) {
+            fullAddress += ` (${extraAddress})`;
+          }
+
+          setDefaultAddress((value) => ({
+            ...value,
+            zonecode: data.zonecode,
+            address: fullAddress,
+          }));
+          window.setTimeout(() => addressDetailInputRef.current?.focus(), 100);
+        },
+      }).open();
+    } catch (searchError) {
+      setProfileMessage(searchError instanceof Error ? searchError.message : "주소 검색을 불러오지 못했습니다.");
     }
   };
 
@@ -332,9 +411,15 @@ function MyPageContent() {
         <form onSubmit={saveDefaultAddress} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
           <label className="text-util text-text">받는 분<input required value={defaultAddress.recipientName} onChange={(e) => setDefaultAddress((v) => ({ ...v, recipientName: e.target.value }))} className="mt-1 h-10 w-full border border-line px-3" /></label>
           <label className="text-util text-text">연락처<input required value={defaultAddress.phone} onChange={(e) => setDefaultAddress((v) => ({ ...v, phone: e.target.value }))} className="mt-1 h-10 w-full border border-line px-3" placeholder="010-1234-5678" /></label>
-          <label className="text-util text-text md:col-span-2">우편번호<input value={defaultAddress.zonecode} onChange={(e) => setDefaultAddress((v) => ({ ...v, zonecode: e.target.value }))} className="mt-1 h-10 w-full border border-line px-3" /></label>
-          <label className="text-util text-text md:col-span-2">주소<input required value={defaultAddress.address} onChange={(e) => setDefaultAddress((v) => ({ ...v, address: e.target.value }))} className="mt-1 h-10 w-full border border-line px-3" /></label>
-          <label className="text-util text-text md:col-span-2">상세 주소<input value={defaultAddress.addressDetail} onChange={(e) => setDefaultAddress((v) => ({ ...v, addressDetail: e.target.value }))} className="mt-1 h-10 w-full border border-line px-3" /></label>
+          <div className="text-util text-text md:col-span-2">
+            <span>우편번호</span>
+            <div className="mt-1 flex gap-2">
+              <input readOnly value={defaultAddress.zonecode} className="h-10 flex-1 border border-line bg-soft px-3" placeholder="주소 검색으로 입력" />
+              <button type="button" onClick={handleSearchDefaultAddress} className="h-10 shrink-0 border border-line px-4 text-util transition-colors hover:bg-soft hover:text-text">우편번호 검색</button>
+            </div>
+          </div>
+          <label className="text-util text-text md:col-span-2">주소<input required readOnly value={defaultAddress.address} className="mt-1 h-10 w-full border border-line bg-soft px-3" placeholder="우편번호 검색으로 입력" /></label>
+          <label className="text-util text-text md:col-span-2">상세 주소<input ref={addressDetailInputRef} value={defaultAddress.addressDetail} onChange={(e) => setDefaultAddress((v) => ({ ...v, addressDetail: e.target.value }))} className="mt-1 h-10 w-full border border-line px-3" placeholder="상세주소를 입력해 주세요" /></label>
           <div className="flex items-center justify-between gap-3 md:col-span-2">
             <p role="status" className="text-util text-muted">{profileMessage}</p>
             <button type="submit" disabled={profileSaving} className="h-10 bg-text px-5 text-nav font-medium text-bg transition-colors hover:bg-[#444] disabled:opacity-50">{profileSaving ? "저장 중…" : "기본 배송지 저장"}</button>
