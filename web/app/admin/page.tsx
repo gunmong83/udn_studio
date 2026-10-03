@@ -369,6 +369,19 @@ export default function AdminPage() {
         </div>
       </div>
 
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border border-amber-200 bg-amber-50 p-4">
+        <div>
+          <p className="text-util font-semibold text-amber-900">결제 테스트</p>
+          <p className="mt-1 text-util text-amber-800">관리자 전용 100원 테스트 상품으로 결제 흐름을 확인합니다.</p>
+        </div>
+        <Link
+          href="/products/test-payment-100"
+          className="inline-flex h-9 items-center justify-center bg-text px-3 text-util font-medium text-bg transition-colors hover:bg-[#444]"
+        >
+          테스트 상품 열기
+        </Link>
+      </div>
+
       {/* 메인 탭 */}
       <div className="mt-8 flex gap-2 border-b border-line">
         <button

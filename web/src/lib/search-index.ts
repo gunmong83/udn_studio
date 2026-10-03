@@ -13,7 +13,7 @@ export interface SearchDoc {
 }
 
 export const searchIndex: SearchDoc[] = [
-  ...products.map((p) => ({
+  ...products.filter((p) => !p.adminOnly).map((p) => ({
     type: "product" as const,
     slug: p.slug,
     title: p.title,

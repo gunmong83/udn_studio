@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getProduct, products } from "@/src/data/products";
 import ProductActions from "@/src/components/products/ProductActions";
+import { auth } from "@/src/auth";
 
 export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
+  return products.filter((p) => !p.adminOnly).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -40,6 +41,10 @@ export default async function ProductDetailPage({
   const { slug } = await params;
   const product = getProduct(slug);
   if (!product) notFound();
+  if (product.adminOnly) {
+    const session = await auth();
+    if (session?.user?.role !== "admin") notFound();
+  }
 
   return (
     <div className="w-full pb-section">

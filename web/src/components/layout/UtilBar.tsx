@@ -136,7 +136,7 @@ export default function UtilBar() {
                 <IconSearch />
               </Link>
               <Link
-                href="/login"
+                href="/mypage"
                 aria-label="계정"
                 className="relative flex h-[30px] w-[30px] items-center justify-center text-text"
               >

@@ -36,8 +36,8 @@ export default function ProductBrowser({
   const filters = kind === "work" ? WORK_CATEGORY_FILTERS : CATEGORY_FILTERS;
   const showTabs = kind !== "product";
   const pool = kind
-    ? products.filter((p) => p.kind === kind)
-    : products;
+    ? products.filter((p) => p.kind === kind && !p.adminOnly)
+    : products.filter((p) => !p.adminOnly);
   const [filter, setFilter] = useState<CategoryFilter>(
     normalizeCategory(initialCategory, filters),
   );

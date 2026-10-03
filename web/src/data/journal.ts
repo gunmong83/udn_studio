@@ -49,7 +49,7 @@ function fromProduct(p: Product): JournalEntry {
 // date 필드는 전 항목 미설정(날짜 지어내지 않음 — 상단 주석 승계)이라 '최신' 판정은
 // 명시적 배치로만 표현. 가역: 이 블록을 products.map 그대로로 되돌리면 파동5 상태 복원.
 export const journalEntries: JournalEntry[] = (() => {
-  const entries = products.map(fromProduct);
+  const entries = products.filter((p) => !p.adminOnly).map(fromProduct);
   const latestIdx = entries.findIndex((e) => e.slug === "ryeong-2027");
   return latestIdx > 0
     ? [entries[latestIdx], ...entries.toSpliced(latestIdx, 1)]
