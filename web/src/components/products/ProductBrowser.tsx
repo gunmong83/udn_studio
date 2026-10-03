@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import {
   CATEGORY_FILTERS,
   WORK_CATEGORY_FILTERS,
@@ -33,11 +34,13 @@ export default function ProductBrowser({
   initialCategory?: string;
   kind?: "product" | "work";
 }) {
+  const sessionState = useSession();
+  const isAdmin = sessionState.data?.user?.role === "admin";
   const filters = kind === "work" ? WORK_CATEGORY_FILTERS : CATEGORY_FILTERS;
   const showTabs = kind !== "product";
   const pool = kind
-    ? products.filter((p) => p.kind === kind && !p.adminOnly)
-    : products.filter((p) => !p.adminOnly);
+    ? products.filter((p) => p.kind === kind && (!p.adminOnly || isAdmin))
+    : products.filter((p) => !p.adminOnly || isAdmin);
   const [filter, setFilter] = useState<CategoryFilter>(
     normalizeCategory(initialCategory, filters),
   );
