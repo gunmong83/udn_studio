@@ -42,6 +42,13 @@ export default function SignupPage() {
       <h1 className="text-label font-bold text-text">회원가입</h1>
       <div className="mx-auto mt-8 max-w-[420px] space-y-4">
         <p className="text-body text-muted">계정을 만들면 주문·배송 정보를 안전하게 관리할 수 있습니다.</p>
+        <div className="border border-line bg-soft/30 p-4">
+          <p className="text-util font-medium text-text">회원가입을 위해 아래 약관에 동의해주세요.</p>
+          <div className="mt-3 space-y-3">
+            <label className="flex gap-2 text-util"><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> <span><Link href="/terms" className="underline transition-colors hover:text-text">이용약관</Link> 동의 (필수)</span></label>
+            <label className="flex gap-2 text-util"><input type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} /> <span><Link href="/privacy" className="underline transition-colors hover:text-text">개인정보 수집·이용</Link> 동의 (필수)</span></label>
+          </div>
+        </div>
         <div className="flex gap-3">
           <button type="button" aria-label="Google로 가입" disabled={loading !== null} className="flex h-12 flex-1 items-center justify-center gap-2 border border-line text-nav transition-colors transition-transform hover:bg-soft active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50" onClick={() => void oauth("google")}>{loading === "google" ? "…" : <GoogleMark className="h-5 w-5" />} Google</button>
           <button type="button" aria-label="Naver로 가입" disabled={loading !== null} className="flex h-12 flex-1 items-center justify-center gap-2 bg-[#03c75a] text-nav font-semibold text-white transition-colors transition-transform hover:bg-[#02b653] active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03c75a] disabled:opacity-50" onClick={() => void oauth("naver")}><span>{loading === "naver" ? "…" : "N"}</span> Naver</button>
@@ -51,8 +58,6 @@ export default function SignupPage() {
         <label className="block text-util text-text">이메일 (아이디)<input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-2 h-11 w-full border border-line px-3" placeholder="name@example.com" autoComplete="email" /></label>
         <label className="block text-util text-text">비밀번호<input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="mt-2 h-11 w-full border border-line px-3" placeholder="8자 이상" autoComplete="new-password" /></label>
         <label className="block text-util text-text">비밀번호 확인<input value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} type="password" className="mt-2 h-11 w-full border border-line px-3" autoComplete="new-password" /></label>
-        <label className="flex gap-2 text-util"><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> <span><Link href="/terms" className="underline transition-colors hover:text-text">이용약관</Link> 동의 (필수)</span></label>
-        <label className="flex gap-2 text-util"><input type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} /> <span><Link href="/privacy" className="underline transition-colors hover:text-text">개인정보 수집·이용</Link> 동의 (필수)</span></label>
         {message && <p role="alert" className="text-util text-red-600">{message}</p>}
         <button type="button" disabled={loading !== null} aria-busy={loading === "form"} onClick={() => void register()} className="h-11 w-full bg-text text-nav font-medium text-bg transition-colors transition-transform hover:bg-[#444] active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-40">{loading === "form" ? "가입 처리 중…" : "가입하기"}</button>
       </div>
