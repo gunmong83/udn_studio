@@ -58,6 +58,7 @@ function MyPageContent() {
   const [adminCarrier, setAdminCarrier] = useState("");
   const [adminTrackingNumber, setAdminTrackingNumber] = useState("");
   const [adminSaving, setAdminSaving] = useState(false);
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [defaultAddress, setDefaultAddress] = useState({
     recipientName: "",
@@ -203,13 +204,21 @@ function MyPageContent() {
   };
 
   const handleDeleteOrder = async (orderId: string) => {
-    if (!window.confirm("미결제 주문 건을 삭제하시겠습니까?")) return;
+    if (!window.confirm("이 주문을 취소하시겠습니까? 결제 완료 주문은 토스 환불이 함께 처리됩니다.")) return;
+    setCancellingOrderId(orderId);
     try {
-      const res = await fetch(`/api/orders?id=${orderId}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("삭제 실패");
-      setOrders((prev) => prev.filter((o) => o.id !== orderId));
-    } catch {
-      alert("주문 삭제 중 오류가 발생했습니다.");
+      const res = await fetch("/api/orders/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || "주문 취소에 실패했습니다.");
+      setOrders((prev) => prev.map((o) => (o.id === orderId ? data.order : o)));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "주문 취소 중 오류가 발생했습니다.");
+    } finally {
+      setCancellingOrderId(null);
     }
   };
 
@@ -410,18 +419,25 @@ function MyPageContent() {
                         className={`rounded-xs border px-2 py-0.5 text-util font-semibold ${
                           order.paymentStatus === "PAID"
                             ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                            : "border-neutral-300 bg-neutral-100 text-neutral-600"
+                            : order.paymentStatus === "REFUNDED"
+                              ? "border-purple-300 bg-purple-50 text-purple-700"
+                              : "border-neutral-300 bg-neutral-100 text-neutral-600"
                         }`}
                       >
-                        {order.paymentStatus === "PAID" ? "결제 완료" : "결제 미완료"}
+                        {order.paymentStatus === "PAID"
+                          ? "결제 완료"
+                          : order.paymentStatus === "REFUNDED"
+                            ? "환불 완료"
+                            : "결제 미완료"}
                       </span>
-                      {order.paymentStatus !== "PAID" && (
+                      {(order.status === "PENDING" || order.status === "PAID") && (
                         <button
                           type="button"
                           onClick={() => handleDeleteOrder(order.id)}
+                          disabled={cancellingOrderId === order.id}
                           className="rounded-xs border border-line bg-bg px-2 py-0.5 text-[11px] text-muted transition-colors hover:border-red-400 hover:text-red-600"
                         >
-                          주문 취소/삭제
+                          {cancellingOrderId === order.id ? "취소 중..." : "주문 취소"}
                         </button>
                       )}
                       {isAdmin && (
