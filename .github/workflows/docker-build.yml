@@ -46,6 +46,9 @@ jobs:
             sudo mkdir -p /opt/udn_studio /data
             test -f /opt/udn_studio/.env.production
             sudo docker rm -f udn-web-new >/dev/null 2>&1 || true
+            # Port 3001 is the stable local Nginx upstream. Stop the previous
+            # container before binding it so repeated deployments are safe.
+            sudo docker rm -f udn-web >/dev/null 2>&1 || true
             sudo docker run -d --name udn-web-new --restart unless-stopped \
               --env-file /opt/udn_studio/.env.production \
               -e NODE_ENV=production -e HOSTNAME=0.0.0.0 -e PORT=3000 \
