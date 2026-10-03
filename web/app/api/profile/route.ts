@@ -1,19 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/src/auth";
 import { prisma } from "@/src/lib/prisma";
-
-async function getUserId() {
-  const session = await auth();
-  if (session?.user?.id) return session.user.id;
-  if (session?.user?.email) {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email }, select: { id: true } });
-    return user?.id ?? null;
-  }
-  return null;
-}
+import { getAuthenticatedUserId } from "@/src/lib/session-user";
 
 export async function GET() {
-  const userId = await getUserId();
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -24,7 +14,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const userId = await getUserId();
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
   const body = await request.json().catch(() => null);
   const recipientName = String(body?.recipientName ?? "").trim();
@@ -33,16 +23,21 @@ export async function PATCH(request: Request) {
   if (!recipientName || !phone || !address) {
     return NextResponse.json({ error: "받는 분, 연락처, 주소를 입력해주세요." }, { status: 400 });
   }
-  const user = await prisma.user.update({
-    where: { id: userId },
-    data: {
-      defaultRecipientName: recipientName.slice(0, 80),
-      defaultPhone: phone.slice(0, 30),
-      defaultZonecode: String(body?.zonecode ?? "").trim().slice(0, 20) || null,
-      defaultAddress: address.slice(0, 200),
-      defaultAddressDetail: String(body?.addressDetail ?? "").trim().slice(0, 200) || null,
-    },
-    select: { name: true, phone: true, defaultRecipientName: true, defaultPhone: true, defaultZonecode: true, defaultAddress: true, defaultAddressDetail: true },
-  });
-  return NextResponse.json({ profile: user });
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        defaultRecipientName: recipientName.slice(0, 80),
+        defaultPhone: phone.slice(0, 30),
+        defaultZonecode: String(body?.zonecode ?? "").trim().slice(0, 20) || null,
+        defaultAddress: address.slice(0, 200),
+        defaultAddressDetail: String(body?.addressDetail ?? "").trim().slice(0, 200) || null,
+      },
+      select: { name: true, phone: true, defaultRecipientName: true, defaultPhone: true, defaultZonecode: true, defaultAddress: true, defaultAddressDetail: true },
+    });
+    return NextResponse.json({ profile: user });
+  } catch (error) {
+    console.error("[profile] default address update failed", { userId, errorCode: error instanceof Error ? error.name : "unknown" });
+    return NextResponse.json({ error: "기본 배송지를 저장하지 못했습니다. 잠시 후 다시 시도해주세요." }, { status: 500 });
+  }
 }

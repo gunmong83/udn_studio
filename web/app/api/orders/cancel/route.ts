@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/src/auth";
 import { prisma } from "@/src/lib/prisma";
+import { getAuthenticatedUserId } from "@/src/lib/session-user";
 
 /** 고객 주문 취소: 배송 준비 전까지만 허용합니다. */
 export async function POST(request: Request) {
-  const session = await auth();
-  let userId = session?.user?.id;
-  if (!userId && session?.user?.email) {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-    if (user) userId = user.id;
-  }
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
 
   const body = await request.json().catch(() => null);

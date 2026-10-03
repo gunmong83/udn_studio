@@ -40,11 +40,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user?.id) {
         token.id = user.id;
       }
+      // PrismaAdapter의 내부 User.id를 JWT에 유지합니다. 이메일은 연락처일 뿐
+      // 계정 식별자로 사용하지 않습니다.
+      if (!token.id && token.sub) {
+        token.id = token.sub;
+      }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = (token?.id as string) || (token?.sub as string) || "";
+        session.user.id = typeof token.id === "string" ? token.id : typeof token.sub === "string" ? token.sub : "";
         if (session.user.email) {
           session.user.role = isAdminEmail(session.user.email) ? "admin" : "customer";
         }

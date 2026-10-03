@@ -118,10 +118,14 @@ export default function CheckoutPage() {
     try {
       const response = await fetch("/api/profile");
       const data = await response.json().catch(() => null);
-      if (!response.ok || !data?.profile?.defaultAddress) {
-        throw new Error("마이페이지에서 기본 배송지를 먼저 등록해주세요.");
+      if (!response.ok) {
+        throw new Error(data?.error ?? "기본 배송지를 불러오지 못했습니다.");
       }
       const profile = data.profile;
+      if (!profile?.defaultAddress) {
+        setErrorMessage("저장된 기본 배송지가 없습니다. 아래 배송지 입력란에 직접 입력해주세요.");
+        return;
+      }
       setRecipientName(profile.defaultRecipientName ?? profile.name ?? "");
       setPhone(profile.defaultPhone ?? profile.phone ?? "");
       setZonecode(profile.defaultZonecode ?? "");

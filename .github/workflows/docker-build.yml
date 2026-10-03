@@ -11,6 +11,11 @@ on:
         description: "Short description of this release batch"
         required: true
         type: string
+      purge_member_data:
+        description: "Type PURGE to back up and remove all production member/order data"
+        required: false
+        default: "NO"
+        type: string
 
 concurrency:
   group: production-release
@@ -79,6 +84,24 @@ jobs:
               curl -fsS http://127.0.0.1:3001/ >/dev/null && break || sleep 2
             done
             curl -fsS http://127.0.0.1:3001/ >/dev/null
+            if [ "${{ inputs.purge_member_data }}" = "PURGE" ]; then
+              test -f /data/udn.db
+              BACKUP="/data/udn.db.before-member-purge-${{ github.run_id }}"
+              sudo cp -p /data/udn.db "$BACKUP"
+              sudo docker exec udn-web-new node --input-type=module -e '
+                import { PrismaClient } from "@prisma/client";
+                const prisma = new PrismaClient();
+                await prisma.$transaction([
+                  prisma.orderItem.deleteMany({}),
+                  prisma.order.deleteMany({}),
+                  prisma.cartItem.deleteMany({}),
+                  prisma.account.deleteMany({}),
+                  prisma.user.deleteMany({})
+                ]);
+                await prisma.$disconnect();
+              '
+              echo "Production member/order data removed; backup saved at $BACKUP"
+            fi
             sudo systemctl stop udn-next || true
             sudo docker rm -f udn-web >/dev/null 2>&1 || true
             sudo docker rename udn-web-new udn-web

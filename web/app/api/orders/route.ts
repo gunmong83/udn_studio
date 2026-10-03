@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/src/auth";
 import { prisma } from "@/src/lib/prisma";
 import { products } from "@/src/data/products";
 import { getShippingFee } from "@/src/lib/shipping";
+import { getAuthenticatedUserId } from "@/src/lib/session-user";
 
 export async function POST(request: Request) {
-  const session = await auth();
-  let userId = session?.user?.id;
-  if (!userId && session?.user?.email) {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-    if (user) userId = user.id;
-  }
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
 
   const body = await request.json().catch(() => null);
@@ -46,12 +41,7 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  const session = await auth();
-  let userId = session?.user?.id;
-  if (!userId && session?.user?.email) {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-    if (user) userId = user.id;
-  }
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
   const orders = await prisma.order.findMany({
     where: { userId },
@@ -62,12 +52,7 @@ export async function GET() {
 }
 
 export async function DELETE(request: Request) {
-  const session = await auth();
-  let userId = session?.user?.id;
-  if (!userId && session?.user?.email) {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-    if (user) userId = user.id;
-  }
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
 
   const url = new URL(request.url);
