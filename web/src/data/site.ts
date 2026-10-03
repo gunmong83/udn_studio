@@ -19,7 +19,7 @@ export const site = {
     heading: "Studio Undesignated의 철학 (Our Philosophy)",
     paragraphs: [
       "Studio Undesignated(스튜디오 UDN)는 정해지지 않은 가능성을 디자인하는 토탈 브랜딩 스튜디오입니다.",
-      "현대적 감각과 고유한 지역적 특색을 결합하여 로고 디자인부터 전시 포스터, 패키지까지 브랜드가 전달하고자 하는 본질적인 메시지를 시각화합니다.",
+      "로고 디자인부터 전시 포스터, 패키지까지 브랜드가 전달하고자 하는 본질적인 메시지를 시각화합니다.",
     ],
   },
   // 원본 schema.org ProfessionalService 지역 표기
