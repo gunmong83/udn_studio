@@ -11,6 +11,10 @@ RUN npm install --omit=optional
 COPY ${APP_SUBDIR}/ ./
 
 ENV NEXT_TELEMETRY_DISABLED=1
+# Build-time placeholders only. Production values are supplied at runtime.
+ENV DATABASE_URL=file:/tmp/udn-build.db
+ENV AUTH_SECRET=build-only-placeholder
+ENV AUTH_URL=http://localhost:3000
 RUN npm run db:generate
 RUN npm run build
 
