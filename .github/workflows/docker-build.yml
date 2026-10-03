@@ -1,12 +1,24 @@
-name: Build Docker image
+name: Production release
 
 on:
-  push:
-    branches: [main, codex/nextjs-backend]
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type DEPLOY after local staging has passed"
+        required: true
+        type: string
+      release_note:
+        description: "Short description of this release batch"
+        required: true
+        type: string
+
+concurrency:
+  group: production-release
+  cancel-in-progress: false
 
 jobs:
   build:
+    if: ${{ inputs.confirm == 'DEPLOY' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -24,7 +36,6 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -41,7 +52,7 @@ jobs:
           script_stop: true
           script: |
             set -eu
-            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:latest"
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:${{ github.sha }}"
             sudo docker pull "$IMAGE"
             sudo mkdir -p /opt/udn_studio /data
             test -f /opt/udn_studio/.env.production

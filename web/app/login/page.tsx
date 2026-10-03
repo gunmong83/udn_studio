@@ -2,9 +2,11 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
+  const router = useRouter();
   const sessionState = useSession();
   const session = sessionState?.data ?? null;
   const status = sessionState?.status ?? "unauthenticated";
@@ -21,7 +23,8 @@ export default function LoginPage() {
     setLoadingProvider("credentials");
     const result = await signIn("credentials", { email, password, redirect: false });
     if (result?.error) { setMessage("이메일 또는 비밀번호를 확인해주세요."); setLoadingProvider(null); return; }
-    window.location.href = "/";
+    router.push("/");
+    router.refresh();
   };
 
   const loginWithOAuth = async (provider: "google" | "naver") => {
