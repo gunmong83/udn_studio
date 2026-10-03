@@ -157,9 +157,7 @@ export default function Footer() {
 
       {/* 사업자 정보 라인 — 원본에 없는 수치(사업자번호·전화 등)는 기재하지 않음 */}
       <div className="mt-10">
-        <p className="text-util leading-[23px] text-muted">
-          © {site.name} · {site.locations.join(" / ")}
-        </p>
+        <p className="text-util leading-[23px] text-muted">© {site.name}</p>
       </div>
     </footer>
   );

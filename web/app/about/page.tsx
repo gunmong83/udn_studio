@@ -45,8 +45,7 @@ export default function AboutPage() {
           원본 page.tsx·wave8 이력·recolored-v2/ 자산 전량 보존). */}
 
       <p className="px-3 pt-section text-util text-muted">
-        {site.name} · {site.locations.join(" / ")} ·{" "}
-        {site.services.join(" · ")}
+        {site.name} · {site.services.join(" · ")}
       </p>
     </div>
   );

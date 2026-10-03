@@ -8,7 +8,7 @@ export const site = {
   title: "Studio Undesignated | 스튜디오 UDN | 토탈 브랜딩 디자인 스튜디오",
   // 원본 meta description 그대로
   description:
-    "Studio Undesignated (스튜디오 UDN) - 서울, 나주, 과천 기반의 토탈 브랜딩 디자인 스튜디오. 로고 디자인, 브랜드 아이덴티티 전문.",
+    "Studio Undesignated (스튜디오 UDN) - 정해지지 않은 가능성을 디자인하는 토탈 브랜딩 디자인 스튜디오. 로고 디자인, 브랜드 아이덴티티 전문.",
   // 원본 meta keywords 그대로
   keywords:
     "스튜디오 udn,studio udn,studioudn,studioundesignated,스튜디오 유디엔,Studio Undesignated,브랜딩,로고 디자인,브랜드 아이덴티티",
@@ -19,11 +19,11 @@ export const site = {
     heading: "Studio Undesignated의 철학 (Our Philosophy)",
     paragraphs: [
       "Studio Undesignated(스튜디오 UDN)는 정해지지 않은 가능성을 디자인하는 토탈 브랜딩 스튜디오입니다.",
-      "서울의 현대적 감각과 나주, 과천의 지역적 특색을 결합하여 로고 디자인부터 전시 포스터, 패키지까지 브랜드가 전달하고자 하는 본질적인 메시지를 시각화합니다.",
+      "현대적 감각과 고유한 지역적 특색을 결합하여 로고 디자인부터 전시 포스터, 패키지까지 브랜드가 전달하고자 하는 본질적인 메시지를 시각화합니다.",
     ],
   },
   // 원본 schema.org ProfessionalService 지역 표기
-  locations: ["Seoul", "Naju", "Gwaheon"],
+  locations: [],
   // 원본에서 실측된 유일 외부 링크(schema.org sameAs)
   links: {
     smartstore: "https://smartstore.naver.com/studioudn",
