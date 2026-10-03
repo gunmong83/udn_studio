@@ -12,7 +12,11 @@ mkdir -p "$RELEASE"
 tar -xzf /tmp/udn_next_deploy.tgz -C "$RELEASE"
 cd "$RELEASE/app"
 
-printf 'NEXT_PUBLIC_SITE_URL=%s\n' "$SITE_URL_VALUE" > .env.production
+if [ -f /tmp/udn.env.production ]; then
+  cp /tmp/udn.env.production .env.production
+else
+  printf 'NEXT_PUBLIC_SITE_URL=%s\n' "$SITE_URL_VALUE" > .env.production
+fi
 
 ln -sfn "$RELEASE" "$APP_ROOT/current"
 

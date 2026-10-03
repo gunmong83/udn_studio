@@ -5,8 +5,8 @@ import Naver from "next-auth/providers/naver";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/src/lib/prisma";
 import { verifyPassword } from "@/src/lib/password";
+import { isAdminEmail } from "@/src/lib/admin";
 
-const adminEmail = "gunmong83@gmail.com";
 const providers = [
   process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET
     ? Google({ clientId: process.env.AUTH_GOOGLE_ID, clientSecret: process.env.AUTH_GOOGLE_SECRET })
@@ -36,10 +36,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   trustHost: true,
   callbacks: {
-    async session({ session, user }) {
-      if (session.user && user?.id) session.user.id = user.id;
-      if (session.user?.email) {
-        session.user.role = session.user.email.toLowerCase() === adminEmail ? "admin" : "customer";
+    async jwt({ token, user }) {
+      if (user?.id) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = (token?.id as string) || (token?.sub as string) || "";
+        if (session.user.email) {
+          session.user.role = isAdminEmail(session.user.email) ? "admin" : "customer";
+        }
       }
       return session;
     },

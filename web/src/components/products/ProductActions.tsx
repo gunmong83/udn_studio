@@ -1,19 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { Product } from "@/src/data/products";
 import { addToCart, toggleWishlist, useWishlist } from "@/src/lib/store";
 
-// 상세 액션 — mujagi 상세 버튼 셋 실측 (가이드 §5-3):
-// - Add to bag(장바구니 담기): 337×40, 배경 #333, 텍스트 #fff, 13px/500, 1px #333, radius 0
-// - Buy now(스마트스토어 구매): 337×40, 배경 #fff, 텍스트 #111, 1px #333, radius 0
-// - 관심상품(위시): 40×40, transparent, 1px #333, 아이콘
-// accent=true(GIFTING 페이지): Buy now를 #c0392b 배경으로 — 사이트 유일 브랜드 컬러는
-// GIFTING 전용이며 mujagi mj-red 버튼에 대응(§3). 결제·인증 없음: localStorage mock.
+const NAVER_ICON_PATH =
+  "M16.273 12.845 7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727v12.845Z";
 
 export default function ProductActions({
   product,
-  accent = false,
 }: {
   product: Product;
   accent?: boolean;
@@ -21,64 +17,141 @@ export default function ProductActions({
   const wishlist = useWishlist();
   const wished = wishlist.includes(product.slug);
   const [added, setAdded] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+    const shareData = {
+      title: product.title,
+      text: `${product.title} - Studio Undesignated`,
+      url: shareUrl,
+    };
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch {
+        // 취소하거나 에러 발생 시 클립보드 복사로 대체
+      }
+    }
+
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // 복사 실패 시 fallback
+      }
+    }
+  };
 
   return (
     <div className="mt-6">
-      {(product.price != null || product.link) && (
+      {/* 1. 주요 구매 액션 버튼 (장바구니 담기 & 바로 결제하기) */}
+      {product.price != null && (
         <div className="flex flex-wrap gap-3">
-          {product.price != null && (
-            <button
-              type="button"
-              onClick={() => {
-                addToCart(product.slug);
-                setAdded(true);
-                window.setTimeout(() => setAdded(false), 1200);
-              }}
-              className="h-10 w-[337px] max-w-full border border-line-strong bg-text text-nav font-medium text-bg"
-            >
-              {added ? "장바구니에 담았습니다" : "장바구니 담기"}
-            </button>
-          )}
-          {product.link && (
-            <a
-              href={product.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={
-                accent
-                  ? "flex h-10 w-[337px] max-w-full items-center justify-center border border-accent bg-accent text-nav font-medium text-bg"
-                  : "flex h-10 w-[337px] max-w-full items-center justify-center border border-line-strong bg-bg text-nav font-medium text-ink-strong hover:bg-soft"
-              }
-            >
-              네이버 스마트스토어 구매
-            </a>
-          )}
+          <button
+            type="button"
+            onClick={() => {
+              addToCart(product.slug);
+              setAdded(true);
+              window.setTimeout(() => setAdded(false), 1200);
+            }}
+            className="h-10 w-[337px] max-w-full border border-line-strong bg-text text-nav font-medium text-bg transition-colors hover:bg-[#444]"
+          >
+            {added ? "장바구니에 담았습니다 ✓" : "장바구니 담기"}
+          </button>
+          <Link
+            href="/checkout"
+            onClick={() => addToCart(product.slug)}
+            className="flex h-10 w-[337px] max-w-full items-center justify-center border border-line-strong bg-bg text-nav font-medium text-ink-strong transition-colors hover:bg-soft"
+          >
+            바로 결제하기
+          </Link>
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => toggleWishlist(product.slug)}
-        aria-label={wished ? "위시리스트에서 제거" : "위시리스트에 추가"}
-        aria-pressed={wished}
-        className="mt-3 flex h-10 w-10 items-center justify-center border border-line-strong bg-bg text-text"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill={wished ? "currentColor" : "none"}
-          stroke="currentColor"
-          strokeWidth="1.5"
-          aria-hidden="true"
+      {/* 2. 유틸 아이콘 버튼 행 (위시리스트 + 공유 + 네이버 스마트스토어) */}
+      <div className="mt-3 flex items-center gap-2">
+        {/* 관심상품(위시리스트) */}
+        <button
+          type="button"
+          onClick={() => toggleWishlist(product.slug)}
+          aria-label={wished ? "위시리스트에서 제거" : "위시리스트에 추가"}
+          aria-pressed={wished}
+          title={wished ? "위시리스트에서 제거" : "위시리스트에 추가"}
+          className="flex h-10 w-10 items-center justify-center border border-line-strong bg-bg text-text transition-colors hover:bg-soft"
         >
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      </button>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill={wished ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth="1.5"
+            aria-hidden="true"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </button>
 
-      <p className="mt-3 text-util text-muted">
-        장바구니·위시리스트는 목업입니다(로컬 검수용 — 실제 결제 없음).
-      </p>
+        {/* SNS / 링크 공유 */}
+        <button
+          type="button"
+          onClick={handleShare}
+          aria-label="공유하기 또는 링크 복사"
+          title="공유하기 또는 링크 복사"
+          className="flex h-10 w-10 items-center justify-center border border-line-strong bg-bg text-text transition-colors hover:bg-soft"
+        >
+          <svg
+            width="19"
+            height="19"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+            <polyline points="16 6 12 2 8 6" />
+            <line x1="12" y1="2" x2="12" y2="15" />
+          </svg>
+        </button>
+
+        {/* 네이버 스마트스토어 바로가기 */}
+        {product.link && (
+          <a
+            href={product.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="네이버 스마트스토어로 이동"
+            title="네이버 스마트스토어로 이동"
+            className="flex h-10 w-10 items-center justify-center border border-line-strong bg-bg text-text transition-colors hover:bg-soft"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d={NAVER_ICON_PATH} />
+            </svg>
+          </a>
+        )}
+
+        {/* 링크 복사 안내 토스트 */}
+        {copied && (
+          <span className="ml-1 text-util font-medium text-emerald-600 transition-opacity">
+            링크가 복사되었습니다! ✓
+          </span>
+        )}
+      </div>
     </div>
   );
 }
