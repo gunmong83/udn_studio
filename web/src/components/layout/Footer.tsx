@@ -36,7 +36,12 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
   {
     title: "고객지원",
     links: [
-      { label: "실시간 문의", href: "mailto:studioudn@naver.com?subject=Studio%20UDN%20문의" },
+      {
+        label: "실시간 문의",
+        href: "https://talk.naver.com/WJJOCY8",
+        external: true,
+        icon: "naver",
+      },
       { label: "공지사항", href: "/notice" },
       { label: "FAQ", href: "/faq" },
     ],
