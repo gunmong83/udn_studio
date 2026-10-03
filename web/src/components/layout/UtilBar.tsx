@@ -102,7 +102,11 @@ function IconBag() {
 }
 
 export default function UtilBar() {
-  const { data: session } = useSession();
+  // SessionProvider is unavailable during some static prerender passes
+  // (notably not-found and generated product pages). Treat that pass as
+  // signed out; the client hydrates with the real session afterward.
+  const sessionState = useSession();
+  const session = sessionState?.data ?? null;
   const lang = useLang();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const cartItems = useCart();
