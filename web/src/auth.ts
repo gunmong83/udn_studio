@@ -2,7 +2,9 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import Naver from "next-auth/providers/naver";
+import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/src/lib/prisma";
+import { verifyPassword } from "@/src/lib/password";
 
 const adminEmail = "gunmong83@gmail.com";
 const providers = [
@@ -12,11 +14,26 @@ const providers = [
   process.env.AUTH_NAVER_ID && process.env.AUTH_NAVER_SECRET
     ? Naver({ clientId: process.env.AUTH_NAVER_ID, clientSecret: process.env.AUTH_NAVER_SECRET })
     : null,
+  Credentials({
+    credentials: {
+      email: { label: "이메일", type: "email" },
+      password: { label: "비밀번호", type: "password" },
+    },
+    async authorize(credentials) {
+      const email = String(credentials?.email ?? "").trim().toLowerCase();
+      const password = String(credentials?.password ?? "");
+      if (!email || !password) return null;
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user?.passwordHash || !(await verifyPassword(password, user.passwordHash))) return null;
+      return { id: user.id, email: user.email, name: user.name, image: user.image };
+    },
+  }),
 ].filter((provider): provider is NonNullable<typeof provider> => provider !== null);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers,
+  session: { strategy: "jwt" },
   trustHost: true,
   callbacks: {
     async session({ session, user }) {

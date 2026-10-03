@@ -10,6 +10,25 @@ export default function LoginPage() {
   const status = sessionState?.status ?? "unauthenticated";
   const loading = status === "loading";
   const [agreed, setAgreed] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+
+  const loginWithPassword = async () => {
+    setMessage("");
+    if (!email || !password) return setMessage("이메일과 비밀번호를 입력해주세요.");
+    setLoadingProvider("credentials");
+    const result = await signIn("credentials", { email, password, redirect: false });
+    if (result?.error) { setMessage("이메일 또는 비밀번호를 확인해주세요."); setLoadingProvider(null); return; }
+    window.location.href = "/";
+  };
+
+  const loginWithOAuth = async (provider: "google" | "naver") => {
+    if (!agreed) return setMessage("로그인 전 이용약관과 개인정보처리방침에 동의해주세요.");
+    setLoadingProvider(provider);
+    await signIn(provider, { callbackUrl: "/" });
+  };
 
   return (
     <div className="w-full px-3 pb-section pt-section">
@@ -24,13 +43,14 @@ export default function LoginPage() {
           </>
         ) : (
           <>
-            <label className="block text-util text-text">아이디<input className="mt-2 h-11 w-full border border-line px-3" placeholder="아이디를 입력해주세요" autoComplete="username" /></label>
-            <label className="block text-util text-text">비밀번호<input type="password" className="mt-2 h-11 w-full border border-line px-3" placeholder="비밀번호를 입력해주세요" autoComplete="current-password" /></label>
-            <button type="button" className="h-11 w-full bg-text text-nav font-medium text-bg">로그인</button>
-            <Link href="/signup" className="block h-11 w-full border border-line text-center leading-[44px] text-nav text-text">회원가입</Link>
+            <label className="block text-util text-text">이메일<input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-2 h-11 w-full border border-line px-3" placeholder="이메일을 입력해주세요" autoComplete="email" /></label>
+            <label className="block text-util text-text">비밀번호<input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="mt-2 h-11 w-full border border-line px-3" placeholder="비밀번호를 입력해주세요" autoComplete="current-password" /></label>
+            {message && <p role="alert" className="text-util text-red-600">{message}</p>}
+            <button type="button" aria-busy={loadingProvider === "credentials"} disabled={loadingProvider !== null} onClick={() => void loginWithPassword()} className="h-11 w-full bg-text text-nav font-medium text-bg transition-transform active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50">{loadingProvider === "credentials" ? "확인 중…" : "로그인"}</button>
+            <Link href="/signup" className="block h-11 w-full border border-line text-center leading-[44px] text-nav text-text transition-transform active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text">회원가입</Link>
             <div className="flex items-center justify-center gap-3 pt-2">
-              <button type="button" aria-label="Google로 로그인" onClick={() => signIn("google", { callbackUrl: "/" })} className="flex h-12 w-12 items-center justify-center rounded-full border border-line text-lg font-semibold">G</button>
-              <button type="button" aria-label="Naver로 로그인" onClick={() => signIn("naver", { callbackUrl: "/" })} className="flex h-12 w-12 items-center justify-center rounded-full bg-[#03c75a] text-lg font-bold text-white">N</button>
+              <button type="button" aria-label="Google로 로그인" disabled={loadingProvider !== null} onClick={() => void loginWithOAuth("google")} className="flex h-12 w-12 items-center justify-center rounded-full border border-line text-lg font-semibold transition-transform active:scale-[.92] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50">{loadingProvider === "google" ? "…" : "G"}</button>
+              <button type="button" aria-label="Naver로 로그인" disabled={loadingProvider !== null} onClick={() => void loginWithOAuth("naver")} className="flex h-12 w-12 items-center justify-center rounded-full bg-[#03c75a] text-lg font-bold text-white transition-transform active:scale-[.92] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03c75a] disabled:opacity-50">{loadingProvider === "naver" ? "…" : "N"}</button>
             </div>
             <label className="flex items-start gap-2 pt-2 text-util text-muted"><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5" />로그인 및 회원가입 시 <Link href="/terms" className="underline">이용약관</Link>과 <Link href="/privacy" className="underline">개인정보처리방침</Link>에 동의합니다.</label>
           </>
