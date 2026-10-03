@@ -4,12 +4,12 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import GoogleMark from "@/src/components/auth/GoogleMark";
 
 export default function LoginPage() {
   const router = useRouter();
   const sessionState = useSession();
   const session = sessionState?.data ?? null;
-  const [agreed, setAgreed] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
@@ -26,7 +26,6 @@ export default function LoginPage() {
   };
 
   const loginWithOAuth = async (provider: "google" | "naver") => {
-    if (!agreed) return setMessage("로그인 전 이용약관과 개인정보처리방침에 동의해주세요.");
     setLoadingProvider(provider);
     await signIn(provider, { callbackUrl: "/" });
   };
@@ -50,10 +49,9 @@ export default function LoginPage() {
             <button type="button" aria-busy={loadingProvider === "credentials"} disabled={loadingProvider !== null} onClick={() => void loginWithPassword()} className="h-11 w-full bg-text text-nav font-medium text-bg transition-colors transition-transform hover:bg-[#444] active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50">{loadingProvider === "credentials" ? "확인 중…" : "로그인"}</button>
             <Link href="/signup" className="block h-11 w-full border border-line text-center leading-[44px] text-nav text-text transition-colors transition-transform hover:bg-soft active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text">회원가입</Link>
             <div className="flex items-center justify-center gap-3 pt-2">
-              <button type="button" aria-label="Google로 로그인" disabled={loadingProvider !== null} onClick={() => void loginWithOAuth("google")} className="flex h-12 w-12 items-center justify-center rounded-full border border-line text-lg font-semibold transition-colors transition-transform hover:bg-soft active:scale-[.92] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50">{loadingProvider === "google" ? "…" : "G"}</button>
+              <button type="button" aria-label="Google로 로그인" disabled={loadingProvider !== null} onClick={() => void loginWithOAuth("google")} className="flex h-12 w-12 items-center justify-center rounded-full border border-line transition-colors transition-transform hover:bg-soft active:scale-[.92] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50">{loadingProvider === "google" ? "…" : <GoogleMark className="h-5 w-5" />}</button>
               <button type="button" aria-label="Naver로 로그인" disabled={loadingProvider !== null} onClick={() => void loginWithOAuth("naver")} className="flex h-12 w-12 items-center justify-center rounded-full bg-[#03c75a] text-lg font-bold text-white transition-colors transition-transform hover:bg-[#02b653] active:scale-[.92] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03c75a] disabled:opacity-50">{loadingProvider === "naver" ? "…" : "N"}</button>
             </div>
-            <label className="flex items-start gap-2 pt-2 text-util text-muted"><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5" />로그인 및 회원가입 시 <Link href="/terms" className="underline transition-colors hover:text-text">이용약관</Link>과 <Link href="/privacy" className="underline transition-colors hover:text-text">개인정보처리방침</Link>에 동의합니다.</label>
           </>
         )}
       </div>

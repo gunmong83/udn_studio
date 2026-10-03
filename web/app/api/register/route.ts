@@ -16,7 +16,8 @@ export async function POST(request: Request) {
     if (exists) return NextResponse.json({ error: "이미 가입된 이메일입니다." }, { status: 409 });
     const user = await prisma.user.create({ data: { email, name, passwordHash: await hashPassword(password) } });
     return NextResponse.json({ ok: true, userId: user.id }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("Registration failed", error);
     return NextResponse.json({ error: "가입 처리 중 오류가 발생했습니다." }, { status: 500 });
   }
 }

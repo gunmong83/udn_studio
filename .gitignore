@@ -2,3 +2,4 @@ lightsail_deploy_key.pem
 .local-stage.pid
 .local-stage.log
 .local-stage-error.log
+.local-stage-data/

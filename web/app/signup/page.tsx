@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import GoogleMark from "@/src/components/auth/GoogleMark";
 
 export default function SignupPage() {
   const [terms, setTerms] = useState(false);
@@ -42,7 +43,7 @@ export default function SignupPage() {
       <div className="mx-auto mt-8 max-w-[420px] space-y-4">
         <p className="text-body text-muted">계정을 만들면 주문·배송 정보를 안전하게 관리할 수 있습니다.</p>
         <div className="flex gap-3">
-          <button type="button" aria-label="Google로 가입" disabled={loading !== null} className="flex h-12 flex-1 items-center justify-center gap-2 border border-line text-nav transition-colors transition-transform hover:bg-soft active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50" onClick={() => void oauth("google")}><span className="font-semibold">{loading === "google" ? "…" : "G"}</span> Google</button>
+          <button type="button" aria-label="Google로 가입" disabled={loading !== null} className="flex h-12 flex-1 items-center justify-center gap-2 border border-line text-nav transition-colors transition-transform hover:bg-soft active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50" onClick={() => void oauth("google")}>{loading === "google" ? "…" : <GoogleMark className="h-5 w-5" />} Google</button>
           <button type="button" aria-label="Naver로 가입" disabled={loading !== null} className="flex h-12 flex-1 items-center justify-center gap-2 bg-[#03c75a] text-nav font-semibold text-white transition-colors transition-transform hover:bg-[#02b653] active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03c75a] disabled:opacity-50" onClick={() => void oauth("naver")}><span>{loading === "naver" ? "…" : "N"}</span> Naver</button>
         </div>
         <div className="border-t border-line pt-4" />
