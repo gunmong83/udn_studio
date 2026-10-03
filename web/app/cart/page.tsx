@@ -101,18 +101,10 @@ export default function CartPage() {
               <span className="font-bold">{total.toLocaleString("ko-KR")} KRW</span>
             </p>
           </div>
-          <button
-            type="button"
-            disabled
-            className="mt-6 h-10 w-full border border-line text-nav text-muted"
-          >
+          <Link href="/checkout" className="mt-6 block h-10 w-full bg-text text-center leading-10 text-nav text-bg">
             결제하기
-          </button>
-          {/* 실제 결제 연동 없음 — 목업 */}
-          <p className="mt-3 text-center text-util text-muted">
-            결제 기능은 목업입니다 — 가격은 UDN Calendar 2026 원본 실측값만
-            반영.
-          </p>
+          </Link>
+          <p className="mt-3 text-center text-util text-muted">결제 단계에서 배송 정보와 토스 결제를 진행합니다.</p>
         </>
       )}
     </div>
