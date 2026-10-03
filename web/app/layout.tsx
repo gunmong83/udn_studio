@@ -4,6 +4,7 @@ import { site } from "@/src/data/site";
 import UtilBar from "@/src/components/layout/UtilBar";
 import Header from "@/src/components/layout/Header";
 import Footer from "@/src/components/layout/Footer";
+import AuthSessionProvider from "@/src/components/auth/AuthSessionProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://studioundesignated.com"),
@@ -68,12 +69,14 @@ export default function RootLayout({
               },
           })}
         </script>
-        <div id="wrap" className="mx-auto w-full max-w-canvas">
-          <UtilBar />
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </div>
+        <AuthSessionProvider>
+          <div id="wrap" className="mx-auto w-full max-w-canvas">
+            <UtilBar />
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </div>
+        </AuthSessionProvider>
       </body>
     </html>
   );

@@ -10,26 +10,20 @@ $pidFile = Join-Path $repoRoot ".local-stage.pid"
 $logFile = Join-Path $repoRoot ".local-stage.log"
 $errorLogFile = Join-Path $repoRoot ".local-stage-error.log"
 
-function Resolve-PnpmCommand {
-  if (Get-Command pnpm -ErrorAction SilentlyContinue) { return "pnpm" }
-  if (Get-Command corepack -ErrorAction SilentlyContinue) { return "corepack" }
-  throw "pnpm 또는 corepack이 필요합니다. Node.js를 설치한 뒤 다시 실행하세요."
-}
-
 & (Join-Path $PSScriptRoot "stop-local-stage.ps1")
 
 if (-not $SkipBuild) {
   & (Join-Path $PSScriptRoot "test-local.ps1") -SkipInstall
 }
 
-$pnpmCommand = Resolve-PnpmCommand
-$arguments = if ($pnpmCommand -eq "corepack") {
-  @("pnpm", "exec", "next", "start", "-H", "127.0.0.1", "-p", "$Port")
-} else {
-  @("exec", "next", "start", "-H", "127.0.0.1", "-p", "$Port")
+$nodeCommand = (Get-Command node -ErrorAction Stop).Source
+$nextCli = Join-Path $webRoot "node_modules\next\dist\bin\next"
+if (-not (Test-Path -LiteralPath $nextCli)) {
+  throw "Next.js 실행 파일이 없습니다. 먼저 .\scripts\test-local.ps1을 실행하세요."
 }
+$arguments = @($nextCli, "start", "-H", "127.0.0.1", "-p", "$Port")
 
-$process = Start-Process -FilePath $pnpmCommand -ArgumentList $arguments -WorkingDirectory $webRoot -RedirectStandardOutput $logFile -RedirectStandardError $errorLogFile -PassThru
+$process = Start-Process -FilePath $nodeCommand -ArgumentList $arguments -WorkingDirectory $webRoot -RedirectStandardOutput $logFile -RedirectStandardError $errorLogFile -PassThru
 Set-Content -LiteralPath $pidFile -Value $process.Id
 
 $baseUrl = "http://127.0.0.1:$Port"

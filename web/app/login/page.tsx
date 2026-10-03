@@ -9,8 +9,6 @@ export default function LoginPage() {
   const router = useRouter();
   const sessionState = useSession();
   const session = sessionState?.data ?? null;
-  const status = sessionState?.status ?? "unauthenticated";
-  const loading = status === "loading";
   const [agreed, setAgreed] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +35,7 @@ export default function LoginPage() {
     <div className="w-full px-3 pb-section pt-section">
       <h1 className="text-label font-bold text-text">LOGIN</h1>
       <div className="mx-auto mt-8 max-w-[420px] space-y-4">
-        {loading ? <p className="text-body text-muted">로그인 상태를 확인하고 있습니다.</p> : session?.user ? (
+        {session?.user ? (
           <>
             <p className="text-body text-muted">로그인되어 있습니다.</p>
             <p className="text-body font-semibold text-text">{session.user.name ?? "회원"} · {session.user.email}</p>
