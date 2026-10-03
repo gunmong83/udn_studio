@@ -11,6 +11,7 @@ import {
 } from "@/src/lib/store";
 import { site } from "@/src/data/site";
 import MegaDrawer from "./MegaDrawer";
+import { useSession } from "next-auth/react";
 
 // 유틸바 — mujagi #top_line 실측 (가이드 §4-3).
 // 높이 52px · 배경 #f9f9f9 · 스크롤 시 유일하게 sticky(fixed 전환)되는 바.
@@ -101,6 +102,7 @@ function IconBag() {
 }
 
 export default function UtilBar() {
+  const { data: session } = useSession();
   const lang = useLang();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const cartItems = useCart();
@@ -166,9 +168,10 @@ export default function UtilBar() {
               <Link
                 href="/login"
                 aria-label="계정"
-                className="relative flex h-[30px] w-[30px] items-center justify-center"
+                className={`relative flex h-[30px] w-[30px] items-center justify-center rounded-full transition-colors ${session?.user ? "bg-text text-bg" : "text-text"}`}
               >
                 <IconUser />
+                {session?.user && <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#03c75a]" aria-label="로그인됨" />}
               </Link>
               <Link
                 href="/wishlist"

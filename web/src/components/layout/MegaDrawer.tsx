@@ -29,7 +29,7 @@ export default function MegaDrawer({
     <aside
       id="aside"
       aria-label="전체 메뉴"
-      className="fixed left-[max(0px,calc(50%_-_400px))] top-0 z-[10502] h-[600px] w-[391px] overflow-y-auto bg-bg"
+      className="fixed left-[max(0px,calc(50%_-_400px))] top-[52px] z-[10502] h-[calc(100dvh-52px)] w-[391px] max-w-[calc(100vw-16px)] overflow-y-auto bg-bg shadow-lg"
     >
       {/* 1차 — 스튜디오 UDN (아코디언, 클릭 전개) · 서브 = PORTFOLIO 카테고리 */}
       <button
