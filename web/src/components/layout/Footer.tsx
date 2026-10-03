@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { site } from "@/src/data/site";
 
 // 푸터 — mujagi 푸터 실측 (가이드 §5-5):
@@ -33,25 +36,24 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
   {
     title: "고객지원",
     links: [
-      { label: "실시간 문의", href: "#" }, // mock
-      { label: "공지사항", href: "#" }, // mock
-      { label: "FAQ", href: "#" }, // mock
-      { label: "배송 & 교환", href: "#" }, // mock
+      { label: "실시간 문의", href: "mailto:gunmong83@gmail.com?subject=Studio%20UDN%20문의" },
+      { label: "공지사항", href: "/notice" },
+      { label: "FAQ", href: "/faq" },
     ],
   },
   {
     title: "비지니스",
     links: [
-      { label: "B2B 제휴 문의", href: "#" }, // mock
-      { label: "스튜디오 안내", href: "/about" },
+      { label: "B2B 제휴 문의", href: "mailto:gunmong83@gmail.com?subject=Studio%20UDN%20B2B%20제휴%20문의" },
+      { label: "이메일: gunmong83@gmail.com", href: "mailto:gunmong83@gmail.com" },
     ],
   },
   {
     title: "회원",
     links: [
-      { label: "마이페이지", href: "#" }, // mock
-      { label: "회원혜택", href: "#" }, // mock
-      { label: "프로모션", href: "#" }, // mock
+      { label: "마이페이지", href: "/mypage" },
+      { label: "주문 & 배송조회", href: "/orders" },
+      { label: "관리자 센터", href: "/admin" },
     ],
   },
   {
@@ -84,6 +86,9 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
 ];
 
 export default function Footer() {
+  const sessionState = useSession();
+  const isAdmin = sessionState?.data?.user?.role === "admin";
+
   return (
   <footer className="px-3 pb-20 pt-[30px]">
       {/* 4콘텐츠 블록 2×2 (블록 폭 343px 수준·gap 64px — 파동4 §⑤-3) */}
@@ -94,7 +99,7 @@ export default function Footer() {
               {block.title}
             </h3>
             <ul>
-              {block.links.map((link) => (
+              {block.links.filter((link) => link.label !== "관리자 센터" || isAdmin).map((link) => (
                 <li key={link.label}>
                   {link.external ? (
                     link.icon ? (
