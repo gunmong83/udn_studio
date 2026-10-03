@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 
 // 메가 드로어 — mujagi #aside 실측 재현 (스타일 가이드 §4-4).
 // ☰ 클릭으로만 열림(호버 아님·실측 확인). dim 없음. fixed 391px·h600·z 10502.
@@ -13,7 +12,6 @@ import { useState } from "react";
 // 캘린더 2종은 PRODUCTS 소속 → WORK_CATEGORY_FILTERS·링크 /portfolio?category=) +
 // 1차 PRODUCTS/PORTFOLIO/JOURNAL/ABOUT(서브 없음). GIFTING 블록 제거 —
 // accent #c0392b는 구매 CTA(§3)로 이동(D-3 갱신 — 구매 CTA 1곳만).
-import { WORK_CATEGORY_FILTERS } from "@/src/data/products";
 
 export default function MegaDrawer({
   open,
@@ -22,7 +20,6 @@ export default function MegaDrawer({
   open: boolean;
   onClose: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
   if (!open) return null;
 
   return (
@@ -31,31 +28,6 @@ export default function MegaDrawer({
       aria-label="전체 메뉴"
       className="fixed left-[max(0px,calc(50%_-_400px))] top-[52px] z-[10502] h-[calc(100dvh-52px)] w-[391px] max-w-[calc(100vw-16px)] overflow-y-auto bg-bg shadow-lg"
     >
-      {/* 1차 — 스튜디오 UDN (아코디언, 클릭 전개) · 서브 = PORTFOLIO 카테고리 */}
-      <button
-        type="button"
-        aria-expanded={expanded}
-        onClick={() => setExpanded((v) => !v)}
-        className="block w-full px-6 py-5 text-left text-drawer font-normal text-ink-strong hover:font-medium"
-      >
-        스튜디오 UDN
-      </button>
-      {expanded &&
-        WORK_CATEGORY_FILTERS.map((c) => (
-          <Link
-            key={c}
-            href={
-              c === "All"
-                ? "/portfolio"
-                : `/portfolio?category=${encodeURIComponent(c)}`
-            }
-            onClick={onClose}
-            className="block py-[13px] pl-9 pr-6 text-drawer-sub text-sub hover:text-text"
-          >
-            {c}
-          </Link>
-        ))}
-
       {/* 1차 — PRODUCTS · PORTFOLIO · JOURNAL · ABOUT (서브 없음) */}
       <Link
         href="/products"
