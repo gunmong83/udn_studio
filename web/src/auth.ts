@@ -19,7 +19,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
   trustHost: true,
   callbacks: {
-    async session({ session }) {
+    async session({ session, user }) {
+      if (session.user && user?.id) session.user.id = user.id;
       if (session.user?.email) {
         session.user.role = session.user.email.toLowerCase() === adminEmail ? "admin" : "customer";
       }
