@@ -57,7 +57,6 @@ export default function RootLayout({
               alternateName: site.nameKo,
               url: "https://studioundesignated.com",
               description: site.description,
-              areaServed: site.locations,
               sameAs: [site.links.smartstore],
               hasOfferCatalog: {
                 "@type": "OfferCatalog",
