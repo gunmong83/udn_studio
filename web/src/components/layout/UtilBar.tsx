@@ -62,7 +62,15 @@ function IconSearch() {
     </svg>
   );
 }
-function IconUser() {
+function IconUser({ filled }: { filled?: boolean }) {
+  if (filled) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" aria-hidden="true">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6Z" />
+      </svg>
+    );
+  }
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
       <circle cx="12" cy="8" r="4" />
@@ -169,11 +177,10 @@ export default function UtilBar() {
               </Link>
               <Link
                 href="/mypage"
-                aria-label="계정"
-                className="relative flex h-[30px] w-[30px] items-center justify-center text-text"
+                aria-label={session?.user ? "마이페이지 (로그인됨)" : "계정"}
+                className="relative flex h-[30px] w-[30px] items-center justify-center text-text transition-opacity hover:opacity-70"
               >
-                <IconUser />
-                {session?.user && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-[#03c75a] shadow-[0_0_0_2px_rgba(3,199,90,0.12),0_0_7px_2px_rgba(3,199,90,0.55)]" aria-label="로그인됨" />}
+                <IconUser filled={Boolean(session?.user)} />
               </Link>
               <Link
                 href="/wishlist"
