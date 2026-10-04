@@ -150,3 +150,37 @@ enum UserRole {
   CUSTOMER
   ADMIN
 }
+
+model AnalyticsSession {
+  id             String              @id @default(cuid())
+  visitorId      String
+  referrer       String?
+  referrerDomain String?
+  entryPath      String
+  device         String?             // mobile, desktop, tablet
+  browser        String?             // Chrome, Safari, Whale, etc.
+  os             String?             // iOS, Android, Windows, Mac, etc.
+  duration       Int                 @default(0) // total dwell time in seconds
+  pageCount      Int                 @default(1)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  pageviews      AnalyticsPageView[]
+
+  @@index([createdAt])
+  @@index([visitorId])
+  @@index([referrerDomain])
+}
+
+model AnalyticsPageView {
+  id        String           @id @default(cuid())
+  sessionId String
+  path      String
+  title     String?
+  duration  Int              @default(0) // dwell time on this page in seconds
+  createdAt DateTime         @default(now())
+  session   AnalyticsSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([path])
+  @@index([createdAt])
+  @@index([sessionId])
+}

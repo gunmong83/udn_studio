@@ -5,6 +5,7 @@ import UtilBar from "@/src/components/layout/UtilBar";
 import Header from "@/src/components/layout/Header";
 import Footer from "@/src/components/layout/Footer";
 import AuthSessionProvider from "@/src/components/auth/AuthSessionProvider";
+import AnalyticsTracker from "@/src/components/analytics/AnalyticsTracker";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://studioundesignated.com"),
@@ -80,6 +81,7 @@ export default function RootLayout({
           })}
         </script>
         <AuthSessionProvider>
+          <AnalyticsTracker />
           <div id="wrap" className="mx-auto w-full max-w-canvas">
             <UtilBar />
             <Header />

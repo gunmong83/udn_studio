@@ -7,6 +7,7 @@ import DeliveryTracker, {
   type OrderStatusType,
   getTrackingUrl,
 } from "@/src/components/orders/DeliveryTracker";
+import TrafficAnalyticsTab from "@/src/components/admin/TrafficAnalyticsTab";
 
 interface OrderItem {
   id: string;
@@ -74,7 +75,7 @@ export default function AdminPage() {
   const { data: session, status: authStatus } = useSession();
   const isAdmin = session?.user?.role === "admin";
 
-  const [activeTab, setActiveTab] = useState<"orders" | "members">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "members" | "analytics">("orders");
   const [orders, setOrders] = useState<Order[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -339,49 +340,6 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* KPI 통계 요약 카드 */}
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <div className="rounded-sm border border-line bg-soft p-4">
-          <p className="text-util text-muted">전체 주문</p>
-          <p className="mt-1 text-heading font-bold text-text">{totalCount}건</p>
-        </div>
-        <div className="rounded-sm border border-emerald-200 bg-emerald-50/50 p-4">
-          <p className="text-util text-emerald-800">결제 완료</p>
-          <p className="mt-1 text-heading font-bold text-emerald-700">{paidCount}건</p>
-        </div>
-        <div className="rounded-sm border border-amber-200 bg-amber-50/50 p-4">
-          <p className="text-util text-amber-800">상품 준비중</p>
-          <p className="mt-1 text-heading font-bold text-amber-700">{prepCount}건</p>
-        </div>
-        <div className="rounded-sm border border-blue-200 bg-blue-50/50 p-4">
-          <p className="text-util text-blue-800">배송중</p>
-          <p className="mt-1 text-heading font-bold text-blue-700">{shippedCount}건</p>
-        </div>
-        <div className="rounded-sm border border-neutral-200 bg-neutral-100 p-4">
-          <p className="text-util text-neutral-700">배송 완료</p>
-          <p className="mt-1 text-heading font-bold text-neutral-800">{deliveredCount}건</p>
-        </div>
-        <div className="rounded-sm border border-line bg-soft p-4">
-          <p className="text-util text-muted">총 결제 매출</p>
-          <p className="mt-1 text-util font-bold text-text">
-            {totalRevenue.toLocaleString("ko-KR")} 원
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border border-amber-200 bg-amber-50 p-4">
-        <div>
-          <p className="text-util font-semibold text-amber-900">결제 테스트</p>
-          <p className="mt-1 text-util text-amber-800">관리자 전용 100원 테스트 상품으로 결제 흐름을 확인합니다.</p>
-        </div>
-        <Link
-          href="/products/test-payment-100"
-          className="inline-flex h-9 items-center justify-center bg-text px-3 text-util font-medium text-bg transition-colors hover:bg-[#444]"
-        >
-          테스트 상품 열기
-        </Link>
-      </div>
-
       {/* 메인 탭 */}
       <div className="mt-8 flex gap-2 border-b border-line">
         <button
@@ -406,7 +364,65 @@ export default function AdminPage() {
         >
           👥 회원 목록 ({members.length})
         </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("analytics")}
+          className={`border-b-2 px-5 py-3 text-nav font-medium transition-colors ${
+            activeTab === "analytics"
+              ? "border-text font-bold text-text"
+              : "border-transparent text-muted hover:text-text"
+          }`}
+        >
+          📊 트래픽 분석
+        </button>
       </div>
+
+      {/* KPI 통계 요약 카드 (주문 탭 전용) */}
+      {activeTab === "orders" && (
+        <>
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="rounded-sm border border-line bg-soft p-4">
+              <p className="text-util text-muted">전체 주문</p>
+              <p className="mt-1 text-heading font-bold text-text">{totalCount}건</p>
+            </div>
+            <div className="rounded-sm border border-emerald-200 bg-emerald-50/50 p-4">
+              <p className="text-util text-emerald-800">결제 완료</p>
+              <p className="mt-1 text-heading font-bold text-emerald-700">{paidCount}건</p>
+            </div>
+            <div className="rounded-sm border border-amber-200 bg-amber-50/50 p-4">
+              <p className="text-util text-amber-800">상품 준비중</p>
+              <p className="mt-1 text-heading font-bold text-amber-700">{prepCount}건</p>
+            </div>
+            <div className="rounded-sm border border-blue-200 bg-blue-50/50 p-4">
+              <p className="text-util text-blue-800">배송중</p>
+              <p className="mt-1 text-heading font-bold text-blue-700">{shippedCount}건</p>
+            </div>
+            <div className="rounded-sm border border-neutral-200 bg-neutral-100 p-4">
+              <p className="text-util text-neutral-700">배송 완료</p>
+              <p className="mt-1 text-heading font-bold text-neutral-800">{deliveredCount}건</p>
+            </div>
+            <div className="rounded-sm border border-line bg-soft p-4">
+              <p className="text-util text-muted">총 결제 매출</p>
+              <p className="mt-1 text-util font-bold text-text">
+                {totalRevenue.toLocaleString("ko-KR")} 원
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border border-amber-200 bg-amber-50 p-4">
+            <div>
+              <p className="text-util font-semibold text-amber-900">결제 테스트</p>
+              <p className="mt-1 text-util text-amber-800">관리자 전용 100원 테스트 상품으로 결제 흐름을 확인합니다.</p>
+            </div>
+            <Link
+              href="/products/test-payment-100"
+              className="inline-flex h-9 items-center justify-center bg-text px-3 text-util font-medium text-bg transition-colors hover:bg-[#444]"
+            >
+              테스트 상품 열기
+            </Link>
+          </div>
+        </>
+      )}
 
       {error && (
         <div className="mt-4 rounded-sm border border-red-300 bg-red-50 p-4 text-util text-red-700">
@@ -721,6 +737,13 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* 탭 3: 트래픽 분석 */}
+      {activeTab === "analytics" && (
+        <div className="mt-6">
+          <TrafficAnalyticsTab />
         </div>
       )}
     </div>
