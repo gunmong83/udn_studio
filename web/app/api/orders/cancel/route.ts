@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { getAuthenticatedUserId } from "@/src/lib/session-user";
 import { cancelNicePayment } from "@/src/lib/nicepay-server";
+import { sendOrderCancelledAdminEmail } from "@/src/lib/mailer";
 
 /** 고객 주문 취소: 배송 준비 전까지만 허용합니다. */
 export async function POST(request: Request) {
@@ -31,7 +32,11 @@ export async function POST(request: Request) {
     if (changed.count !== 1) {
       return NextResponse.json({ error: "주문 상태가 변경되어 취소할 수 없습니다." }, { status: 409 });
     }
-    const cancelled = await prisma.order.findUnique({ where: { id: order.id }, include: { items: true } });
+    const cancelled = await prisma.order.findUnique({
+      where: { id: order.id },
+      include: { items: true, user: { select: { email: true, name: true } } },
+    });
+    if (cancelled) void sendOrderCancelledAdminEmail({ ...cancelled, cancelReason });
     return NextResponse.json({ order: cancelled });
   }
 
@@ -53,6 +58,10 @@ export async function POST(request: Request) {
   if (changed.count !== 1) {
     return NextResponse.json({ error: "결제 취소는 완료되었지만 주문 상태 동기화가 필요합니다." }, { status: 409 });
   }
-  const cancelled = await prisma.order.findUnique({ where: { id: order.id }, include: { items: true } });
+  const cancelled = await prisma.order.findUnique({
+    where: { id: order.id },
+    include: { items: true, user: { select: { email: true, name: true } } },
+  });
+  if (cancelled) void sendOrderCancelledAdminEmail({ ...cancelled, cancelReason });
   return NextResponse.json({ order: cancelled, payment: paymentResult });
 }

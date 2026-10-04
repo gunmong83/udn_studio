@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { requireAdmin } from "@/src/lib/admin";
 import { cancelNicePayment } from "@/src/lib/nicepay-server";
+import { sendOrderCancelledAdminEmail } from "@/src/lib/mailer";
 
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   PENDING: ["CANCELLED"],
@@ -52,7 +53,12 @@ export async function PATCH(request: Request) {
       } catch (error) {
         return NextResponse.json({ error: error instanceof Error ? error.message : "환불에 실패했습니다." }, { status: 400 });
       }
-      const refunded = await prisma.order.update({ where: { id: order.id }, data: { status: "REFUNDED", paymentStatus: "REFUNDED" }, include: { items: true } });
+      const refunded = await prisma.order.update({
+        where: { id: order.id },
+        data: { status: "REFUNDED", paymentStatus: "REFUNDED" },
+        include: { items: true, user: { select: { email: true, name: true } } },
+      });
+      void sendOrderCancelledAdminEmail({ ...refunded, cancelReason: "관리자 환불 처리" });
       return NextResponse.json({ order: refunded, payment: paymentResult });
     }
 
@@ -69,8 +75,11 @@ export async function PATCH(request: Request) {
     const updated = await prisma.order.update({
       where: { id: orderId },
       data,
-      include: { items: true },
+      include: { items: true, user: { select: { email: true, name: true } } },
     });
+    if (status === "CANCELLED") {
+      void sendOrderCancelledAdminEmail({ ...updated, cancelReason: "관리자 주문 취소" });
+    }
 
     return NextResponse.json({ order: updated });
   } catch (error) {
