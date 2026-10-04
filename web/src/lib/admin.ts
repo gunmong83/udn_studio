@@ -1,4 +1,4 @@
-import { auth } from "@/src/auth";
+import { prisma } from "@/src/lib/prisma";
 
 export const ADMIN_EMAIL = "studioudn@naver.com";
 export const ADMIN_EMAILS = [ADMIN_EMAIL];
@@ -9,13 +9,11 @@ export function isAdminEmail(email?: string | null): boolean {
 }
 
 export async function requireAdmin() {
+  const { auth } = await import("@/src/auth");
   const session = await auth();
-  const email = session?.user?.email?.toLowerCase();
-  if (!session || !email || !isAdminEmail(email)) {
-    throw new Error("ADMIN_AUTH_REQUIRED");
-  }
-  const { prisma } = await import("@/src/lib/prisma");
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
-  if (!user || session.user?.id !== user.id) throw new Error("ADMIN_AUTH_REQUIRED");
+  const userId = session?.user?.id?.trim();
+  if (!session || !userId) throw new Error("ADMIN_AUTH_REQUIRED");
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+  if (user?.role !== "ADMIN") throw new Error("ADMIN_AUTH_REQUIRED");
   return session;
 }

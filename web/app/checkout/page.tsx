@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { removeFromCart, setCartQty, useCart } from "@/src/lib/store";
 import { getProduct } from "@/src/data/products";
-import { requestTossPayment } from "@/src/lib/toss";
+import { openNicePayment, type NicePaymentFields } from "@/src/lib/nicepay";
 import { FREE_SHIPPING_THRESHOLD, getShippingFee } from "@/src/lib/shipping";
 
 interface DaumPostcodeData {
@@ -74,7 +74,9 @@ export default function CheckoutPage() {
     );
 
   const total = items.reduce((sum, x) => sum + (x.product.price ?? 0) * x.item.qty, 0);
-  const shippingFee = getShippingFee(total);
+  const shippingFee = items.every(({ product }) => product.freeShipping)
+    ? 0
+    : getShippingFee(total);
   const finalTotal = total + shippingFee;
 
   const handleSearchAddress = async () => {
@@ -245,22 +247,25 @@ export default function CheckoutPage() {
 
       const createdOrder = data.order;
       createdOrderId = createdOrder.id;
-      const orderTitle =
-        items.length === 1
-          ? items[0].product.title
-          : `${items[0].product.title} 외 ${items.length - 1}건`;
-
-      // 2. 토스페이먼츠 결제창 호출
-      await requestTossPayment({
-        method: paymentMethod,
-        amount: createdOrder.totalAmount,
-        orderId: createdOrder.id,
-        orderName: orderTitle,
-        customerName: trimmedName,
-        customerEmail: session.user?.email ?? undefined,
-        successUrl: `${window.location.origin}/checkout/success`,
-        failUrl: `${window.location.origin}/checkout/fail`,
+      // 2. 서버에서 서명한 나이스페이 결제창 필드를 받아 결제창으로 제출합니다.
+      const paymentRes = await fetch("/api/payments/nicepay/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: createdOrder.id, method: paymentMethod }),
       });
+      const paymentData = await paymentRes.json().catch(() => null);
+      if (!paymentRes.ok || !paymentData?.fields) {
+        throw new Error(paymentData?.error || "결제창을 준비하지 못했습니다.");
+      }
+      await openNicePayment(paymentData.fields as NicePaymentFields);
+      // 결제창이 닫히거나 브라우저가 콜백을 차단한 경우에도 버튼이 영구히 잠기지 않게 합니다.
+      window.setTimeout(() => {
+        setLoading((current) => {
+          if (!current) return current;
+          setErrorMessage("결제창 응답이 없습니다. 결제창을 닫고 다시 시도해주세요.");
+          return false;
+        });
+      }, 30000);
     } catch (err: unknown) {
       if (createdOrderId) {
         fetch(`/api/orders?id=${createdOrderId}`, { method: "DELETE" }).catch(() => {});
@@ -459,7 +464,7 @@ export default function CheckoutPage() {
               ))}
             </div>
             <p className="mt-2 text-util text-muted">
-              * 토스페이, 카카오페이, 네이버페이, 삼성페이 등 간편결제는 [신용 / 체크카드] 선택 후 결제창에서 이용 가능합니다.
+              * 카카오페이, 네이버페이, 삼성페이 등 간편결제는 [신용 / 체크카드] 선택 후 결제창에서 이용 가능합니다.
             </p>
           </section>
 
@@ -494,12 +499,8 @@ export default function CheckoutPage() {
               disabled={loading}
               className="mt-6 flex h-12 w-full items-center justify-center bg-text text-nav font-medium text-bg transition-colors transition-transform hover:bg-[#444] active:scale-[.99] disabled:opacity-50"
             >
-              {loading ? "결제창을 여는 중…" : `${finalTotal.toLocaleString("ko-KR")} KRW 토스 결제하기`}
+              {loading ? "결제창을 여는 중…" : `${finalTotal.toLocaleString("ko-KR")} KRW 결제하기`}
             </button>
-
-            <p className="mt-3 text-center text-util text-muted">
-              토스페이먼츠 보안 결제창을 통해 안전하게 암호화되어 결제됩니다.
-            </p>
           </section>
         </form>
       </div>

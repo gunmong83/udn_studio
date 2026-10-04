@@ -32,6 +32,7 @@ function SuccessContent() {
   const paymentKey = searchParams.get("paymentKey");
   const orderId = searchParams.get("orderId");
   const amount = searchParams.get("amount");
+  const provider = searchParams.get("provider") ?? "nicepay";
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,47 +52,30 @@ function SuccessContent() {
     }
     isConfirmingRef.current = true;
 
-    const safeKey = paymentKey;
     const safeOrderId = orderId;
     let isMounted = true;
 
-    async function confirmPayment() {
+    async function loadOrder() {
       try {
-        const res = await fetch("/api/payments/confirm", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentKey: safeKey, orderId: safeOrderId }),
-        });
+        const res = await fetch(`/api/orders?id=${encodeURIComponent(safeOrderId)}`);
 
         const data = await res.json().catch(() => null);
 
         if (!isMounted) return;
 
         if (!res.ok) {
-          throw new Error(data?.error || "결제 승인 처리 중 오류가 발생했습니다.");
+          throw new Error(data?.error || "주문 정보를 불러오지 못했습니다.");
         }
 
         // 결제 승인 완료 -> 장바구니 비우기 및 주문 정보 반영
         clearCart();
-        setOrder(
-          data.order || {
-            id: safeOrderId,
-            totalAmount: Number(amount) || 0,
-            recipientName: "",
-            phone: "",
-            address: "",
-            status: "PAID",
-            paymentStatus: "PAID",
-            paymentKey: safeKey,
-            createdAt: new Date().toISOString(),
-          }
-        );
+        setOrder(data.order || null);
       } catch (err: unknown) {
         if (isMounted) {
           const msg =
             err instanceof Error
               ? err.message
-              : "결제 승인 중 예기치 않은 오류가 발생했습니다.";
+              : "주문 정보를 불러오는 중 오류가 발생했습니다.";
           setError(msg);
         }
       } finally {
@@ -99,12 +83,12 @@ function SuccessContent() {
       }
     }
 
-    confirmPayment();
+    loadOrder();
 
     return () => {
       isMounted = false;
     };
-  }, [missingParams, paymentKey, orderId, amount]);
+  }, [missingParams, paymentKey, orderId, amount, provider]);
 
   if (missingParams) {
     return (
@@ -138,7 +122,7 @@ function SuccessContent() {
     return (
       <div className="py-24 text-center">
         <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-text border-t-transparent" />
-        <p className="mt-4 text-body font-medium text-text">토스 결제 승인을 확인하고 있습니다...</p>
+        <p className="mt-4 text-body font-medium text-text">결제 처리를 확인하고 있습니다...</p>
         <p className="mt-1 text-util text-muted">잠시만 기다려주세요.</p>
       </div>
     );

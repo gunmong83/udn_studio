@@ -73,6 +73,8 @@ export interface Product {
   link?: string;
   /** 공개 상품 목록에서 숨기고 관리자 테스트 화면에서만 사용하는 상품 */
   adminOnly?: boolean;
+  /** 관리자 결제 연동 확인용 상품은 배송 대상이 아니므로 배송비를 부과하지 않는다. */
+  freeShipping?: boolean;
 }
 
 export const CATEGORY_FILTERS = [
@@ -94,6 +96,20 @@ export const WORK_CATEGORY_FILTERS = [
 export type CategoryFilter = (typeof CATEGORY_FILTERS)[number];
 
 export const products: Product[] = [
+  {
+    slug: "test-payment-100",
+    title: "관리자 전용 결제 테스트",
+    category: "Calendar",
+    kind: "product",
+    // 별도 공개 자산을 만들지 않고 기존 스튜디오 상품 이미지를 테스트 화면의 표지로 사용한다.
+    image: "/assets/portfolio_images/portfolio_1.jpg",
+    aspect: "3012/4799",
+    price: 100,
+    priceLabel: "100 KRW",
+    description: "관리자만 NICEPAY 결제·취소 흐름을 점검하기 위한 비판매 테스트 상품입니다.",
+    adminOnly: true,
+    freeShipping: true,
+  },
   {
     slug: "udn-calendar-2026",
     title: "UDN Calendar 2026 제철달력 령令",

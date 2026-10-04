@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import type { Product } from "@/src/data/products";
-import { addToCart, toggleWishlist, useWishlist } from "@/src/lib/store";
+import { toggleWishlist, useWishlist } from "@/src/lib/store";
 
 const NAVER_ICON_PATH =
   "M16.273 12.845 7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727v12.845Z";
@@ -16,7 +15,6 @@ export default function ProductActions({
 }) {
   const wishlist = useWishlist();
   const wished = wishlist.includes(product.slug);
-  const [added, setAdded] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
@@ -49,31 +47,7 @@ export default function ProductActions({
 
   return (
     <div className="mt-6">
-      {/* 1. 주요 구매 액션 버튼 (장바구니 담기 & 바로 결제하기) */}
-      {product.price != null && (
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => {
-              addToCart(product.slug);
-              setAdded(true);
-              window.setTimeout(() => setAdded(false), 1200);
-            }}
-            className="h-10 w-[337px] max-w-full border border-line-strong bg-text text-nav font-medium text-bg transition-colors hover:bg-[#444]"
-          >
-            {added ? "장바구니에 담았습니다 ✓" : "장바구니 담기"}
-          </button>
-          <Link
-            href="/checkout"
-            onClick={() => addToCart(product.slug)}
-            className="flex h-10 w-[337px] max-w-full items-center justify-center border border-line-strong bg-bg text-nav font-medium text-ink-strong transition-colors hover:bg-soft"
-          >
-            바로 결제하기
-          </Link>
-        </div>
-      )}
-
-      {/* 2. 유틸 아이콘 버튼 행 (위시리스트 + 공유 + 네이버 스마트스토어) */}
+      {/* 유틸 아이콘 버튼 행 (위시리스트 + 공유 + 네이버 스마트스토어) */}
       <div className="mt-3 flex items-center gap-2">
         {/* 관심상품(위시리스트) */}
         <button

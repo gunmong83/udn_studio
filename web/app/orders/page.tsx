@@ -172,7 +172,9 @@ function OrdersContent() {
   };
 
   const handleDeleteOrder = async (orderId: string) => {
-    if (!window.confirm("이 주문을 취소하시겠습니까? 결제 완료 주문은 토스 환불이 함께 처리됩니다.")) return;
+    const targetOrder = orders.find((order) => order.id === orderId);
+    // 미결제 주문은 금전 거래가 없으므로 브라우저 확인창 없이 바로 취소합니다.
+    if (targetOrder?.paymentStatus === "PAID" && !window.confirm("이 주문을 취소하시겠습니까? 결제 취소가 함께 처리됩니다.")) return;
     setCancellingOrderId(orderId);
     try {
       const res = await fetch("/api/orders/cancel", {
@@ -182,7 +184,8 @@ function OrdersContent() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data?.error || "주문 취소에 실패했습니다.");
-      setOrders((prev) => prev.map((o) => (o.id === orderId ? data.order : o)));
+      // 고객 화면에서는 취소된 주문을 즉시 목록에서 숨깁니다.
+      setOrders((prev) => prev.filter((o) => o.id !== orderId));
     } catch (err) {
       alert(err instanceof Error ? err.message : "주문 취소 중 오류가 발생했습니다.");
     } finally {

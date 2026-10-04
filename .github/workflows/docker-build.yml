@@ -34,14 +34,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Validate live Toss client key
-        env:
-          TOSS_CLIENT_KEY: ${{ secrets.NEXT_PUBLIC_TOSS_CLIENT_KEY }}
-        run: |
-          if [ -z "$TOSS_CLIENT_KEY" ] || [[ "$TOSS_CLIENT_KEY" != live_ck_* ]]; then
-            echo "NEXT_PUBLIC_TOSS_CLIENT_KEY must be configured as a live_ck_... repository secret before production release."
-            exit 1
-          fi
       - uses: docker/build-push-action@v6
         with:
           context: .
@@ -49,8 +41,6 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:${{ github.sha }}
-          build-args: |
-            NEXT_PUBLIC_TOSS_CLIENT_KEY=${{ secrets.NEXT_PUBLIC_TOSS_CLIENT_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -69,8 +59,19 @@ jobs:
             set -eu
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:${{ github.sha }}"
             sudo docker pull "$IMAGE"
+            # The hardened Nginx virtual-host is versioned with the image so
+            # app and origin-protection changes are released together.
+            sudo docker rm -f udn-nginx-config >/dev/null 2>&1 || true
+            sudo docker create --name udn-nginx-config "$IMAGE" >/dev/null
+            sudo docker cp udn-nginx-config:/nginx_https_next.conf /tmp/udn-https.conf
+            sudo docker rm udn-nginx-config >/dev/null
             sudo mkdir -p /opt/udn_studio /data
             test -f /opt/udn_studio/.env.production
+            # 운영 릴리스에 샌드박스 키가 섞이면 실제 결제를 받을 수 없다.
+            # 값은 출력하지 않고 접두사와 존재 여부만 확인한다.
+            sudo grep -q '^NICEPAY_CLIENT_ID=R2_' /opt/udn_studio/.env.production
+            sudo grep -q '^NICEPAY_SECRET_KEY=.' /opt/udn_studio/.env.production
+            sudo grep -q '^AUTH_URL=https://studioundesignated.com' /opt/udn_studio/.env.production
             sudo docker rm -f udn-web-new >/dev/null 2>&1 || true
             # Port 3001 is the stable local Nginx upstream. Stop the previous
             # container before binding it so repeated deployments are safe.
@@ -105,6 +106,11 @@ jobs:
             sudo systemctl stop udn-next || true
             sudo docker rm -f udn-web >/dev/null 2>&1 || true
             sudo docker rename udn-web-new udn-web
-            sudo sed -i 's/127\.0\.0\.1:3000/127.0.0.1:3001/g' /etc/nginx/conf.d/https.conf || true
-            sudo nginx -t
+            NGINX_BACKUP="/etc/nginx/conf.d/https.conf.bak.${{ github.run_id }}"
+            sudo cp /etc/nginx/conf.d/https.conf "$NGINX_BACKUP"
+            sudo cp /tmp/udn-https.conf /etc/nginx/conf.d/https.conf
+            if ! sudo nginx -t; then
+              sudo cp "$NGINX_BACKUP" /etc/nginx/conf.d/https.conf
+              exit 1
+            fi
             sudo systemctl reload nginx

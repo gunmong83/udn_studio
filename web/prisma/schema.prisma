@@ -9,11 +9,14 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
+  role          UserRole  @default(CUSTOMER)
   email         String?   @unique
   name          String?
   image         String?
   emailVerified DateTime?
   passwordHash  String?
+  termsAgreedAt DateTime?
+  privacyAgreedAt DateTime?
   phone         String?
   defaultRecipientName String?
   defaultPhone  String?
@@ -25,6 +28,44 @@ model User {
   accounts      Account[]
   cartItems     CartItem[]
   orders        Order[]
+}
+
+// OAuth has authenticated the provider identity, but the member has not yet
+// accepted Studio UDN's required terms. This is short-lived and deleted as
+// soon as signup completes or expires.
+model PendingOAuthSignup {
+  id                String   @id @default(cuid())
+  token             String   @unique
+  provider          String
+  providerAccountId String
+  type              String
+  email             String?
+  name              String?
+  image             String?
+  refreshToken      String?
+  accessToken       String?
+  expiresAtProvider Int?
+  tokenType         String?
+  scope             String?
+  idToken           String?
+  sessionState      String?
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+
+  @@unique([provider, providerAccountId])
+  @@index([expiresAt])
+}
+
+// Only HMAC-derived keys are stored. No raw email address or IP address is
+// retained for request throttling.
+model RequestRateLimit {
+  key             String   @id
+  count           Int      @default(0)
+  windowStartedAt DateTime
+  blockedUntil    DateTime?
+  updatedAt       DateTime @updatedAt
+
+  @@index([blockedUntil])
 }
 
 model Account {
@@ -103,4 +144,9 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
 }

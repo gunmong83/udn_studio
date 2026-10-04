@@ -1,7 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   async headers() {
+    const contentSecurityPolicy = [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "frame-ancestors 'none'",
+      "form-action 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr",
+      "script-src 'self' 'unsafe-inline' https://pay.nicepay.co.kr https://t1.daumcdn.net",
+      "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+      "font-src 'self' data: https://cdn.jsdelivr.net",
+      "img-src 'self' data: blob: https:",
+      "connect-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr",
+      "frame-src https://pay.nicepay.co.kr https://*.nicepay.co.kr https://postcode.map.daum.net",
+      "upgrade-insecure-requests",
+    ].join("; ");
     return [{
       source: "/(.*)",
       headers: [
@@ -10,6 +25,9 @@ const nextConfig: NextConfig = {
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+        { key: "Content-Security-Policy", value: contentSecurityPolicy },
+        { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
+        { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
       ],
     }];
   },

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import type { OrderStatusType } from "@/src/components/orders/DeliveryTracker";
-import { useCart, useWishlist } from "@/src/lib/store";
+import { clearCart, setCartOwner, useCart, useWishlist } from "@/src/lib/store";
 
 interface DaumPostcodeData {
   address: string;
@@ -111,6 +111,11 @@ function MyPageContent() {
   });
   const [profileMessage, setProfileMessage] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
+  const [showAccountDeletion, setShowAccountDeletion] = useState(false);
+  const [accountDeletionAcknowledged, setAccountDeletionAcknowledged] = useState(false);
+  const [accountDeletionConfirmation, setAccountDeletionConfirmation] = useState("");
+  const [accountDeletionMessage, setAccountDeletionMessage] = useState("");
+  const [accountDeletionLoading, setAccountDeletionLoading] = useState(false);
   const addressDetailInputRef = useRef<HTMLInputElement>(null);
 
   const cartItems = useCart();
@@ -283,7 +288,9 @@ function MyPageContent() {
   };
 
   const handleDeleteOrder = async (orderId: string) => {
-    if (!window.confirm("이 주문을 취소하시겠습니까? 결제 완료 주문은 토스 환불이 함께 처리됩니다.")) return;
+    const targetOrder = orders.find((order) => order.id === orderId);
+    // 미결제 주문은 금전 거래가 없으므로 브라우저 확인창 없이 바로 취소합니다.
+    if (targetOrder?.paymentStatus === "PAID" && !window.confirm("이 주문을 취소하시겠습니까? 결제 취소가 함께 처리됩니다.")) return;
     setCancellingOrderId(orderId);
     try {
       const res = await fetch("/api/orders/cancel", {
@@ -293,11 +300,35 @@ function MyPageContent() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data?.error || "주문 취소에 실패했습니다.");
-      setOrders((prev) => prev.map((o) => (o.id === orderId ? data.order : o)));
+      // 고객 화면에서는 취소된 주문을 즉시 목록에서 숨깁니다.
+      setOrders((prev) => prev.filter((o) => o.id !== orderId));
     } catch (err) {
       alert(err instanceof Error ? err.message : "주문 취소 중 오류가 발생했습니다.");
     } finally {
       setCancellingOrderId(null);
+    }
+  };
+
+  const handleAccountDeletion = async () => {
+    if (!accountDeletionAcknowledged || accountDeletionConfirmation !== "탈퇴") return;
+    setAccountDeletionLoading(true);
+    setAccountDeletionMessage("");
+    try {
+      const response = await fetch("/api/account", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmation: accountDeletionConfirmation, acknowledged: accountDeletionAcknowledged }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error ?? "계정 탈퇴 처리에 실패했습니다.");
+      clearCart();
+      setCartOwner(null);
+      if (typeof window !== "undefined") window.localStorage.removeItem("udn-wishlist");
+      await signOut({ callbackUrl: "/" });
+    } catch (deletionError) {
+      setAccountDeletionMessage(deletionError instanceof Error ? deletionError.message : "계정 탈퇴 처리에 실패했습니다.");
+    } finally {
+      setAccountDeletionLoading(false);
     }
   };
 
@@ -377,7 +408,7 @@ function MyPageContent() {
             )}
             <button
               type="button"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => { clearCart(); setCartOwner(null); void signOut({ callbackUrl: "/" }); }}
               className="rounded-xs border border-line px-3 py-1.5 text-util text-muted transition-colors hover:border-text hover:text-text"
             >
               로그아웃
@@ -678,6 +709,58 @@ function MyPageContent() {
                 </div>
               );
             })}
+          </div>
+        )}
+      </section>
+
+      {/* 계정 탈퇴 */}
+      <section className="border-t border-line pt-8" aria-labelledby="account-deletion-heading">
+        <button
+          type="button"
+          onClick={() => {
+            setShowAccountDeletion((value) => !value);
+            setAccountDeletionMessage("");
+          }}
+          className="text-util text-muted underline decoration-line underline-offset-4 transition-colors hover:text-text"
+        >
+          계정 탈퇴
+        </button>
+        {showAccountDeletion && (
+          <div className="mt-4 rounded-sm border border-line bg-soft p-5">
+            <h2 id="account-deletion-heading" className="text-body font-bold text-text">계정 탈퇴 안내</h2>
+            <div className="mt-3 space-y-2 text-util leading-relaxed text-muted">
+              <p>탈퇴하면 로그인 정보, OAuth 연결 정보, 기본 배송지, 장바구니와 위시리스트가 즉시 삭제됩니다.</p>
+              <p>주문·결제 기록은 전자상거래 관련 법령과 정산·분쟁 처리 의무에 따라 최대 5년간 보관될 수 있습니다. 주문 기록의 회원 연결과 배송 개인정보는 탈퇴 즉시 삭제·익명화되며, 관리자에게는 정산에 필요한 익명 주문 원장만 남습니다.</p>
+              <p>소비자 불만·분쟁 처리 기록은 최대 3년간 보관될 수 있습니다. 처리 중인 결제 또는 배송 주문이 있으면 탈퇴가 완료되지 않습니다.</p>
+            </div>
+            <label className="mt-4 flex items-start gap-2 text-util text-text">
+              <input
+                type="checkbox"
+                checked={accountDeletionAcknowledged}
+                onChange={(event) => setAccountDeletionAcknowledged(event.target.checked)}
+                className="mt-0.5"
+              />
+              <span>위 내용을 확인했고, 계정 탈퇴에 동의합니다.</span>
+            </label>
+            <label className="mt-3 block text-util text-text">
+              확인을 위해 <span className="font-semibold">탈퇴</span>를 입력해 주세요.
+              <input
+                value={accountDeletionConfirmation}
+                onChange={(event) => setAccountDeletionConfirmation(event.target.value)}
+                className="mt-1 h-10 w-full border border-line bg-bg px-3"
+                placeholder="탈퇴"
+                autoComplete="off"
+              />
+            </label>
+            {accountDeletionMessage && <p role="alert" className="mt-3 text-util text-red-600">{accountDeletionMessage}</p>}
+            <button
+              type="button"
+              onClick={handleAccountDeletion}
+              disabled={!accountDeletionAcknowledged || accountDeletionConfirmation !== "탈퇴" || accountDeletionLoading}
+              className="mt-4 h-10 border border-red-300 px-4 text-util text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {accountDeletionLoading ? "탈퇴 처리 중…" : "계정 탈퇴하기"}
+            </button>
           </div>
         )}
       </section>

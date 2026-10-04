@@ -22,8 +22,20 @@ export async function POST(request: Request) {
   });
   if (orderItems.some((item: { productId: string; title: string; unitPrice: number; quantity: number } | null) => !item)) return NextResponse.json({ error: "Invalid product or quantity" }, { status: 400 });
   const validItems = orderItems as { productId: string; title: string; unitPrice: number; quantity: number }[];
+  const includesAdminOnlyProduct = validItems.some((item) =>
+    products.find((product) => product.slug === item.productId)?.adminOnly,
+  );
+  if (includesAdminOnlyProduct) {
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    if (user?.role !== "ADMIN") {
+      return NextResponse.json({ error: "관리자 전용 테스트 상품입니다." }, { status: 403 });
+    }
+  }
   const subtotal = validItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-  const totalAmount = subtotal + getShippingFee(subtotal);
+  const isNonDeliveryTestOrder = validItems.every((item) =>
+    products.find((product) => product.slug === item.productId)?.freeShipping,
+  );
+  const totalAmount = subtotal + (isNonDeliveryTestOrder ? 0 : getShippingFee(subtotal));
 
   const order = await prisma.order.create({
     data: {
@@ -40,11 +52,18 @@ export async function POST(request: Request) {
   return NextResponse.json({ order }, { status: 201 });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+  const id = new URL(request.url).searchParams.get("id");
+  if (id) {
+    const order = await prisma.order.findFirst({ where: { id, userId }, include: { items: true } });
+    if (!order) return NextResponse.json({ error: "주문을 찾을 수 없습니다." }, { status: 404 });
+    return NextResponse.json({ order });
+  }
   const orders = await prisma.order.findMany({
-    where: { userId },
+    // 고객 주문목록에서는 취소된 주문을 숨기고, 관리자 화면에서만 이력을 확인합니다.
+    where: { userId, status: { not: "CANCELLED" } },
     include: { items: true },
     orderBy: { createdAt: "desc" },
   });

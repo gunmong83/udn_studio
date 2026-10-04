@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { requireAdmin } from "@/src/lib/admin";
+import { cancelNicePayment } from "@/src/lib/nicepay-server";
 
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   PENDING: ["CANCELLED"],
@@ -45,21 +46,14 @@ export async function PATCH(request: Request) {
       if (order.paymentStatus !== "PAID" || !order.paymentKey || order.status !== "PAID") {
         return NextResponse.json({ error: "결제 완료 상태의 주문만 환불할 수 있습니다." }, { status: 409 });
       }
-      const secretKey = process.env.TOSS_SECRET_KEY;
-      if (!secretKey) return NextResponse.json({ error: "결제 서버 설정이 완료되지 않았습니다." }, { status: 503 });
-      const tossResponse = await fetch("https://api.tosspayments.com/v1/payments/" + encodeURIComponent(order.paymentKey) + "/cancel", {
-        method: "POST",
-        headers: {
-          Authorization: "Basic " + Buffer.from(secretKey + ":").toString("base64"),
-          "Content-Type": "application/json",
-          "Idempotency-Key": "admin-refund-" + order.id,
-        },
-        body: JSON.stringify({ cancelReason: "관리자 환불" }),
-      });
-      const tossResult = await tossResponse.json().catch(() => null);
-      if (!tossResponse.ok) return NextResponse.json({ error: tossResult?.message ?? "환불에 실패했습니다." }, { status: 400 });
+      let paymentResult: unknown;
+      try {
+        paymentResult = await cancelNicePayment({ tid: order.paymentKey, orderId: order.id, reason: "관리자 환불" });
+      } catch (error) {
+        return NextResponse.json({ error: error instanceof Error ? error.message : "환불에 실패했습니다." }, { status: 400 });
+      }
       const refunded = await prisma.order.update({ where: { id: order.id }, data: { status: "REFUNDED", paymentStatus: "REFUNDED" }, include: { items: true } });
-      return NextResponse.json({ order: refunded, payment: tossResult });
+      return NextResponse.json({ order: refunded, payment: paymentResult });
     }
 
     if (status === "CANCELLED" && order.paymentStatus !== "UNPAID") {

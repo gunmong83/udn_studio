@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { clearCart, removeFromCart, setCartQty, useCart } from "@/src/lib/store";
 import { getProduct } from "@/src/data/products";
+import { useSession } from "next-auth/react";
 
 // 장바구니 — localStorage mock(추가·삭제·합계). mujagi 문법:
 // 라벨 14px/700 · 링크 밑줄 없음·색 hover(§5-4) · 합계 금액 12px/700(§2-2) ·
@@ -12,6 +13,15 @@ import { getProduct } from "@/src/data/products";
 
 export default function CartPage() {
   const cart = useCart();
+  const { data: session } = useSession();
+  const syncCart = (method: "PATCH" | "DELETE", body: Record<string, unknown>) => {
+    if (!session?.user?.id) return;
+    void fetch("/api/cart", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }).catch((error) => console.error("[cart-sync] 장바구니 변경 저장 실패", error));
+  };
   const lines = cart
     .map((item) => ({ item, product: getProduct(item.slug) }))
     .filter((l) => l.product);
@@ -62,7 +72,11 @@ export default function CartPage() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setCartQty(item.slug, item.qty - 1)}
+                    onClick={() => {
+                      const quantity = item.qty - 1;
+                      setCartQty(item.slug, quantity);
+                      syncCart("PATCH", { productId: item.slug, quantity });
+                    }}
                     aria-label="수량 감소"
                     className="flex h-7 w-7 items-center justify-center border border-line text-body hover:bg-soft"
                   >
@@ -71,7 +85,11 @@ export default function CartPage() {
                   <span className="w-6 text-center text-body">{item.qty}</span>
                   <button
                     type="button"
-                    onClick={() => setCartQty(item.slug, item.qty + 1)}
+                    onClick={() => {
+                      const quantity = item.qty + 1;
+                      setCartQty(item.slug, quantity);
+                      syncCart("PATCH", { productId: item.slug, quantity });
+                    }}
                     aria-label="수량 증가"
                     className="flex h-7 w-7 items-center justify-center border border-line text-body hover:bg-soft"
                   >
@@ -80,7 +98,10 @@ export default function CartPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => removeFromCart(item.slug)}
+                  onClick={() => {
+                    removeFromCart(item.slug);
+                    syncCart("DELETE", { productId: item.slug });
+                  }}
                   className="ml-2 text-util text-muted hover:text-text"
                 >
                   삭제
@@ -91,7 +112,10 @@ export default function CartPage() {
           <div className="mt-8 flex items-center justify-between">
             <button
               type="button"
-              onClick={() => clearCart()}
+              onClick={() => {
+                clearCart();
+                syncCart("DELETE", {});
+              }}
               className="text-nav text-muted hover:text-text"
             >
               전체 비우기
@@ -104,7 +128,7 @@ export default function CartPage() {
           <Link href="/checkout" className="mt-6 block h-10 w-full bg-text text-center leading-10 text-nav text-bg">
             결제하기
           </Link>
-          <p className="mt-3 text-center text-util text-muted">결제 단계에서 배송 정보와 토스 결제를 진행합니다.</p>
+          <p className="mt-3 text-center text-util text-muted">결제 단계에서 배송 정보를 입력하고 결제를 진행합니다.</p>
         </>
       )}
     </div>

@@ -54,8 +54,8 @@ GitHub Actions의 **Production release** 워크플로에서 **Run workflow**를 
 - **주요 설정**:
   - `AUTH_URL`: `http://localhost:3100`
   - `DATABASE_URL`: `file:C:/Users/gunmong/source/udn_studio/.local-stage-data/udn.db` (로컬 SQLite)
-  - `TOSS_SECRET_KEY`: `test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R` (토스 공식 테스트 시크릿 키)
-  - `NEXT_PUBLIC_TOSS_CLIENT_KEY`: `test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq` (토스 공식 테스트 클라이언트 키)
+  - `NICEPAY_CLIENT_ID`: 나이스페이 테스트 상점의 Server 승인 클라이언트 키(`S2_...`)
+  - `NICEPAY_SECRET_KEY`: 같은 테스트 상점의 Basic 인증 시크릿 키
 - **용도**: 로컬에서 `pnpm dev -p 3100` 또는 `scripts/start-local-stage.ps1` 실행 시 자동 로드되어 샌드박스 결제 및 테스트 로그인을 안전하게 검증합니다.
 
 ### 2. 프로덕션 환경 (`/opt/udn_studio/.env.production`)
@@ -63,11 +63,10 @@ GitHub Actions의 **Production release** 워크플로에서 **Run workflow**를 
 - **주요 설정**:
   - `AUTH_URL`: `https://studioundesignated.com`
   - `DATABASE_URL`: `file:/data/udn.db` (서버 Docker 볼륨 마운트)
-  - `TOSS_SECRET_KEY`: `live_sk_...` (토스페이먼츠 상점 계약 후 발급받은 실결제 시크릿 키)
-  - `NEXT_PUBLIC_TOSS_CLIENT_KEY`: `live_ck_...` (토스페이먼츠 실결제 클라이언트 키)
+  - `NICEPAY_CLIENT_ID`: 나이스페이 운영 상점의 Server 승인 클라이언트 키(`R2_...`)
+  - `NICEPAY_SECRET_KEY`: 같은 운영 상점의 Basic 인증 시크릿 키
 - **서버 적용 방법**:
   - Lightsail 서버 접속 후 `/opt/udn_studio/.env.production` 파일 생성 또는 수정
   - GitHub Actions의 Docker 배포 시 `--env-file /opt/udn_studio/.env.production` 옵션으로 컨테이너에 주입됩니다.
 
 > **보안 주의사항**: `.env.local` 및 `.env.production`은 `.gitignore`에 등록되어 Git 저장소에 커밋되지 않으므로 키 노출 위험이 없습니다.
-

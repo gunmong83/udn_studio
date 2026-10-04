@@ -4,7 +4,12 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getProduct, products } from "@/src/data/products";
 import ProductActions from "@/src/components/products/ProductActions";
+import ProductPurchaseBar from "@/src/components/products/ProductPurchaseBar";
 import { auth } from "@/src/auth";
+
+// 관리자 전용 테스트 상품은 요청별 세션 권한으로만 렌더한다.
+// 정적 생성 중에는 세션이 없어 404가 캐시될 수 있으므로 이 상세 경로는 동적으로 처리한다.
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return products.filter((p) => !p.adminOnly).map((p) => ({ slug: p.slug }));
@@ -47,7 +52,7 @@ export default async function ProductDetailPage({
   }
 
   return (
-    <div className="w-full pb-section">
+    <div className="w-full pb-[88px]">
       <nav className="px-3 pt-section text-body leading-[30px] text-muted">
         <Link href="/products" className="hover:text-text">
           PRODUCTS
@@ -83,6 +88,13 @@ export default async function ProductDetailPage({
             {product.description}
           </p>
         )}
+      </div>
+
+      <div className="mt-6">
+        <ProductPurchaseBar product={product} />
+      </div>
+
+      <div className="px-3">
         <ProductActions product={product} accent />
       </div>
 

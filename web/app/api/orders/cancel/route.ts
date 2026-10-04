@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { getAuthenticatedUserId } from "@/src/lib/session-user";
+import { cancelNicePayment } from "@/src/lib/nicepay-server";
 
 /** 고객 주문 취소: 배송 준비 전까지만 허용합니다. */
 export async function POST(request: Request) {
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "배송 준비가 시작된 주문은 온라인에서 취소할 수 없습니다." }, { status: 409 });
   }
 
-  // 결제 전 주문은 토스 호출 없이 취소 상태만 기록합니다.
+  // 결제 전 주문은 PG 호출 없이 취소 상태만 기록합니다.
   if (order.paymentStatus !== "PAID") {
     const changed = await prisma.order.updateMany({
       where: { id: order.id, userId, paymentStatus: "UNPAID", status: "PENDING" },
@@ -38,29 +39,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "결제 승인 정보가 없어 취소할 수 없습니다." }, { status: 409 });
   }
 
-  const secretKey = process.env.TOSS_SECRET_KEY;
-  if (!secretKey) {
-    return NextResponse.json({ error: "결제 서버 설정이 완료되지 않았습니다." }, { status: 503 });
-  }
-  const authHeader = `Basic ${Buffer.from(`${secretKey}:`).toString("base64")}`;
-  const tossResponse = await fetch(
-    `https://api.tosspayments.com/v1/payments/${encodeURIComponent(order.paymentKey)}/cancel`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: authHeader,
-        "Content-Type": "application/json",
-        "Idempotency-Key": `order-cancel-${order.id}`,
-      },
-      body: JSON.stringify({ cancelReason }),
-    },
-  );
-  const tossResult = await tossResponse.json().catch(() => null);
-  if (!tossResponse.ok) {
-    return NextResponse.json(
-      { error: tossResult?.message ?? "결제 취소에 실패했습니다.", code: tossResult?.code },
-      { status: 400 },
-    );
+  let paymentResult: unknown;
+  try {
+    paymentResult = await cancelNicePayment({ tid: order.paymentKey, orderId: order.id, reason: cancelReason });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "결제 취소에 실패했습니다." }, { status: 400 });
   }
 
   const changed = await prisma.order.updateMany({
@@ -71,5 +54,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "결제 취소는 완료되었지만 주문 상태 동기화가 필요합니다." }, { status: 409 });
   }
   const cancelled = await prisma.order.findUnique({ where: { id: order.id }, include: { items: true } });
-  return NextResponse.json({ order: cancelled, payment: tossResult });
+  return NextResponse.json({ order: cancelled, payment: paymentResult });
 }

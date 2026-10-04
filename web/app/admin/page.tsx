@@ -676,7 +676,7 @@ export default function AdminPage() {
                         </p>
                         {order.paymentKey && (
                           <p className="text-[11px] text-muted">
-                            토스 승인번호: <span className="font-mono text-text">{order.paymentKey}</span>
+                            나이스페이 거래번호: <span className="font-mono text-text">{order.paymentKey}</span>
                           </p>
                         )}
                         <p className="text-[11px] text-emerald-700">

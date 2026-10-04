@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useCart, useWishlist } from "@/src/lib/store";
+import { useEffect, useRef, useState } from "react";
+import { clearCart, getCart, getCartOwner, replaceCart, setCartOwner, useCart, useWishlist } from "@/src/lib/store";
 import { site } from "@/src/data/site";
 import MegaDrawer from "./MegaDrawer";
 import { useSession } from "next-auth/react";
@@ -93,11 +93,43 @@ export default function UtilBar() {
   // signed out; the client hydrates with the real session afterward.
   const sessionState = useSession();
   const session = sessionState?.data ?? null;
+  const previousUserId = useRef<string | null | undefined>(undefined);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const cartItems = useCart();
   const wishlist = useWishlist();
   const cart = cartItems.reduce((n, i) => n + i.qty, 0);
   const wish = wishlist.length;
+
+  useEffect(() => {
+    if (sessionState.status === "loading") return;
+    const userId = session?.user?.id ?? null;
+    const previous = previousUserId.current;
+    previousUserId.current = userId;
+
+    if (userId && previous !== userId) {
+      const cartOwner = getCartOwner();
+      // 같은 회원으로 새로고침한 경우에는 이미 DB 장바구니를 반영한 상태이므로
+      // 현재 장바구니를 다시 merge하면 수량이 매번 누적됩니다.
+      const guestCart = cartOwner === userId ? [] : getCart();
+      if (cartOwner && cartOwner !== userId) clearCart();
+      void fetch("/api/cart/merge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: guestCart }),
+      })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (Array.isArray(data?.items)) {
+            replaceCart(data.items.map((item: { productId: string; quantity: number }) => ({ slug: item.productId, qty: item.quantity })));
+            setCartOwner(userId);
+          }
+        })
+        .catch((error) => console.error("[cart-sync] 로그인 장바구니 동기화 실패", error));
+    } else if (!userId && previous) {
+      clearCart();
+      setCartOwner(null);
+    }
+  }, [session?.user?.id, sessionState.status]);
 
   return (
     <>

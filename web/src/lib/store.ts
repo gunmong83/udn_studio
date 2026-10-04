@@ -21,6 +21,7 @@ export interface Session {
 export type Lang = "ko" | "en" | "jp";
 
 const CART_KEY = "udn-cart";
+const CART_OWNER_KEY = "udn-cart-owner";
 const WISH_KEY = "udn-wishlist";
 const SESSION_KEY = "udn-session";
 const LANG_KEY = "udn-lang";
@@ -54,6 +55,16 @@ function read<T>(key: string, fallback: T): T {
 
 export function getCart(): CartItem[] {
   return read<CartItem[]>(CART_KEY, []);
+}
+
+export function getCartOwner(): string | null {
+  return typeof window === "undefined" ? null : window.localStorage.getItem(CART_OWNER_KEY);
+}
+
+export function setCartOwner(userId: string | null): void {
+  if (typeof window === "undefined") return;
+  if (userId) window.localStorage.setItem(CART_OWNER_KEY, userId);
+  else window.localStorage.removeItem(CART_OWNER_KEY);
 }
 
 export function getWishlist(): string[] {
@@ -99,6 +110,13 @@ export function removeFromCart(slug: string): void {
 
 export function clearCart(): void {
   write(CART_KEY, [], CART_EVENT);
+}
+
+export function replaceCart(items: CartItem[]): void {
+  const normalized = items
+    .filter((item) => item && typeof item.slug === "string" && Number.isInteger(item.qty) && item.qty > 0)
+    .map((item) => ({ slug: item.slug, qty: Math.min(99, item.qty) }));
+  write(CART_KEY, normalized, CART_EVENT);
 }
 
 /** 토글 후 위시 상태를 반환 */

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import GoogleMark from "@/src/components/auth/GoogleMark";
+import { clearCart, setCartOwner } from "@/src/lib/store";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function LoginPage() {
             <p className="text-body text-muted">로그인되어 있습니다.</p>
             <p className="text-body font-semibold text-text">{session.user.name ?? "회원"} · {session.user.email}</p>
             {session.user.role === "admin" && <p className="text-util text-muted">관리자 계정</p>}
-            <button type="button" onClick={() => signOut({ callbackUrl: "/" })} className="h-10 w-full border border-line text-nav text-text transition-colors hover:bg-soft">로그아웃</button>
+            <button type="button" onClick={() => { clearCart(); setCartOwner(null); void signOut({ callbackUrl: "/" }); }} className="h-10 w-full border border-line text-nav text-text transition-colors hover:bg-soft">로그아웃</button>
           </>
         ) : (
           <>
@@ -52,6 +53,7 @@ export default function LoginPage() {
               <button type="button" aria-label="Google로 로그인" disabled={loadingProvider !== null} onClick={() => void loginWithOAuth("google")} className="flex h-12 w-12 items-center justify-center rounded-full border border-line transition-colors transition-transform hover:bg-soft active:scale-[.92] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:opacity-50">{loadingProvider === "google" ? "…" : <GoogleMark className="h-5 w-5" />}</button>
               <button type="button" aria-label="Naver로 로그인" disabled={loadingProvider !== null} onClick={() => void loginWithOAuth("naver")} className="flex h-12 w-12 items-center justify-center rounded-full bg-[#03c75a] text-lg font-bold text-white transition-colors transition-transform hover:bg-[#02b653] active:scale-[.92] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03c75a] disabled:opacity-50">{loadingProvider === "naver" ? "…" : "N"}</button>
             </div>
+            <p className="text-center text-util text-muted">처음 이용하는 네이버·Google 계정은 회원가입과 필수 약관 동의 후 이용할 수 있습니다.</p>
           </>
         )}
       </div>
