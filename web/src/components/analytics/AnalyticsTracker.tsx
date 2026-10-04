@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 function getOrCreateVisitorId(): string {
   if (typeof window === "undefined") return "";
@@ -31,6 +32,17 @@ function getOrCreateSessionId(): string {
   }
 }
 
+function getNetworkInfo() {
+  if (typeof window === "undefined") return { networkType: undefined, rtt: undefined };
+  // Network Information API (Chrome, Edge, Samsung Internet, Android)
+  const nav = navigator as unknown as { connection?: { effectiveType?: string; rtt?: number } };
+  const conn = nav.connection;
+  return {
+    networkType: conn?.effectiveType,
+    rtt: typeof conn?.rtt === "number" ? conn.rtt : undefined,
+  };
+}
+
 function sendBeaconEvent(payload: Record<string, unknown>) {
   if (typeof window === "undefined") return;
   const json = JSON.stringify(payload);
@@ -50,9 +62,10 @@ function sendBeaconEvent(payload: Record<string, unknown>) {
 
 export default function AnalyticsTracker() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const currentPvIdRef = useRef<string | null>(null);
   const lastHeartbeatTimeRef = useRef<number>(Date.now());
-  const currentPathRef = useRef<string>(pathname);
+  const maxScrollRef = useRef<number>(0);
 
   useEffect(() => {
     // 관리자 페이지 및 내부 리소스 제외
@@ -62,8 +75,13 @@ export default function AnalyticsTracker() {
 
     const vid = getOrCreateVisitorId();
     const sid = getOrCreateSessionId();
-    currentPathRef.current = pathname;
     lastHeartbeatTimeRef.current = Date.now();
+    maxScrollRef.current = 0;
+
+    const net = getNetworkInfo();
+    const screenWidth = typeof window !== "undefined" ? window.screen?.width : undefined;
+    const screenHeight = typeof window !== "undefined" ? window.screen?.height : undefined;
+    const language = typeof navigator !== "undefined" ? navigator.language : undefined;
 
     // 1. 새 페이지뷰 전송
     fetch("/api/analytics/collect", {
@@ -73,9 +91,15 @@ export default function AnalyticsTracker() {
         type: "pageview",
         sessionId: sid,
         visitorId: vid,
+        userId: session?.user?.id || undefined,
         path: pathname,
         title: document.title,
         referrer: document.referrer,
+        networkType: net.networkType,
+        rtt: net.rtt,
+        screenWidth,
+        screenHeight,
+        language,
       }),
     })
       .then((res) => res.json())
@@ -86,32 +110,46 @@ export default function AnalyticsTracker() {
       })
       .catch(() => {});
 
-    // 2. 주기적 Heartbeat (15초마다)
+    // 2. 스크롤 깊이 추적 (passive listener, 서버 요청 0)
+    const handleScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollHeight > 0) {
+        const depth = Math.min(100, Math.round((window.scrollY / scrollHeight) * 100));
+        if (depth > maxScrollRef.current) {
+          maxScrollRef.current = depth;
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // 3. 주기적 Heartbeat (서버 부하 방지를 위해 30초 주기)
     const interval = setInterval(() => {
       const now = Date.now();
       const deltaSec = Math.round((now - lastHeartbeatTimeRef.current) / 1000);
-      if (deltaSec >= 10) {
+      if (deltaSec >= 15) {
         lastHeartbeatTimeRef.current = now;
         sendBeaconEvent({
           type: "heartbeat",
           sessionId: sid,
           pageViewId: currentPvIdRef.current || undefined,
           delta: deltaSec,
+          scrollDepth: maxScrollRef.current,
         });
       }
-    }, 15000);
+    }, 30000);
 
-    // 3. 페이지 이탈/숨김 감지 핸들러
+    // 4. 페이지 이탈/숨김 감지 핸들러
     const handleLeave = () => {
       const now = Date.now();
       const deltaSec = Math.round((now - lastHeartbeatTimeRef.current) / 1000);
-      if (deltaSec >= 2) {
+      if (deltaSec >= 1) {
         lastHeartbeatTimeRef.current = now;
         sendBeaconEvent({
           type: "leave",
           sessionId: sid,
           pageViewId: currentPvIdRef.current || undefined,
           delta: deltaSec,
+          scrollDepth: maxScrollRef.current,
         });
       }
     };
@@ -131,11 +169,12 @@ export default function AnalyticsTracker() {
     return () => {
       clearInterval(interval);
       handleLeave();
+      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("pagehide", handleLeave);
       window.removeEventListener("beforeunload", handleLeave);
     };
-  }, [pathname]);
+  }, [pathname, session?.user?.id]);
 
   return null;
 }

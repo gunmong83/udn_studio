@@ -28,6 +28,8 @@ model User {
   accounts      Account[]
   cartItems     CartItem[]
   orders        Order[]
+  analyticsSessions AnalyticsSession[]
+  loginAuditLogs    LoginAuditLog[]
 }
 
 // OAuth has authenticated the provider identity, but the member has not yet
@@ -154,33 +156,69 @@ enum UserRole {
 model AnalyticsSession {
   id             String              @id @default(cuid())
   visitorId      String
+  userId         String?
+  ip             String?
+  country        String?             // Cloudflare CF-IPCountry: KR, US, etc.
+  networkType    String?             // 4g, 3g, wifi, etc.
+  rtt            Int?                // Round-trip time (ms)
+  screenWidth    Int?
+  screenHeight   Int?
+  language       String?             // ko-KR, en-US, etc.
   referrer       String?
   referrerDomain String?
   entryPath      String
-  device         String?             // mobile, desktop, tablet
+  device         String?             // Mobile, Desktop, Tablet
   browser        String?             // Chrome, Safari, Whale, etc.
   os             String?             // iOS, Android, Windows, Mac, etc.
   duration       Int                 @default(0) // total dwell time in seconds
   pageCount      Int                 @default(1)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
+  user           User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   pageviews      AnalyticsPageView[]
 
   @@index([createdAt])
   @@index([visitorId])
+  @@index([userId])
   @@index([referrerDomain])
+  @@index([ip])
 }
 
 model AnalyticsPageView {
-  id        String           @id @default(cuid())
-  sessionId String
-  path      String
-  title     String?
-  duration  Int              @default(0) // dwell time on this page in seconds
-  createdAt DateTime         @default(now())
-  session   AnalyticsSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  id          String           @id @default(cuid())
+  sessionId   String
+  path        String
+  title       String?
+  duration    Int              @default(0) // dwell time on this page in seconds
+  scrollDepth Int?             // max scroll depth % (0~100)
+  createdAt   DateTime         @default(now())
+  session     AnalyticsSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([path])
   @@index([createdAt])
   @@index([sessionId])
 }
+
+model LoginAuditLog {
+  id          String   @id @default(cuid())
+  email       String
+  userId      String?
+  provider    String   // credentials, google, naver
+  status      String   // SUCCESS, FAILED, BLOCKED
+  failReason  String?  // INVALID_PASSWORD, USER_NOT_FOUND, RATE_LIMITED, etc.
+  ip          String?
+  country     String?
+  userAgent   String?
+  device      String?
+  browser     String?
+  os          String?
+  createdAt   DateTime @default(now())
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([email])
+  @@index([status])
+  @@index([ip])
+  @@index([userId])
+}
+

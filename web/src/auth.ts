@@ -10,6 +10,43 @@ import { randomBytes } from "node:crypto";
 import { AUTH_SESSION_COOKIE, authSessionCookieOptions } from "@/src/lib/auth-session";
 import { allowLoginAttempt, clearLoginFailures, clientIp, recordFailedLogin } from "@/src/lib/request-rate-limit";
 
+import { parseUserAgent } from "@/src/lib/user-agent";
+
+async function recordLoginAudit(params: {
+  email: string;
+  userId?: string | null;
+  provider: string;
+  status: "SUCCESS" | "FAILED" | "BLOCKED";
+  failReason?: string | null;
+  headers?: Headers | null;
+}) {
+  try {
+    const rawHeaders = params.headers;
+    const ip = rawHeaders ? clientIp(rawHeaders) : undefined;
+    const country = rawHeaders?.get("cf-ipcountry") || undefined;
+    const userAgent = rawHeaders?.get("user-agent") || undefined;
+    const { device, browser, os } = parseUserAgent(userAgent || "");
+
+    await prisma.loginAuditLog.create({
+      data: {
+        email: params.email.toLowerCase().trim(),
+        userId: params.userId,
+        provider: params.provider,
+        status: params.status,
+        failReason: params.failReason,
+        ip,
+        country,
+        userAgent: userAgent ? userAgent.slice(0, 500) : undefined,
+        device,
+        browser,
+        os,
+      },
+    });
+  } catch (err) {
+    console.error("[login-audit] record failed", { errorCode: err instanceof Error ? err.name : "unknown" });
+  }
+}
+
 const providers = [
   process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET
     ? Google({ clientId: process.env.AUTH_GOOGLE_ID, clientSecret: process.env.AUTH_GOOGLE_SECRET })
@@ -37,7 +74,10 @@ const providers = [
       if (!email || !password) return null;
       const ip = clientIp(request.headers);
       try {
-        if (!(await allowLoginAttempt(email, ip))) return null;
+        if (!(await allowLoginAttempt(email, ip))) {
+          recordLoginAudit({ email, provider: "credentials", status: "BLOCKED", failReason: "RATE_LIMITED", headers: request.headers });
+          return null;
+        }
       } catch (error) {
         console.error("[auth] login rate-limit lookup failed", { errorCode: error instanceof Error ? error.name : "unknown" });
         return null;
@@ -45,9 +85,23 @@ const providers = [
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user?.passwordHash || !(await verifyPassword(password, user.passwordHash))) {
         await recordFailedLogin(email, ip).catch((error) => console.error("[auth] login failure recording failed", { errorCode: error instanceof Error ? error.name : "unknown" }));
+        recordLoginAudit({
+          email,
+          provider: "credentials",
+          status: "FAILED",
+          failReason: !user ? "USER_NOT_FOUND" : "INVALID_PASSWORD",
+          headers: request.headers,
+        });
         return null;
       }
       await clearLoginFailures(email, ip).catch((error) => console.error("[auth] login failure clearing failed", { errorCode: error instanceof Error ? error.name : "unknown" }));
+      recordLoginAudit({
+        email,
+        userId: user.id,
+        provider: "credentials",
+        status: "SUCCESS",
+        headers: request.headers,
+      });
       return { id: user.id, email: user.email, name: user.name, image: user.image };
     },
   }),
@@ -89,9 +143,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // provider round trip.
       const existingAccount = await prisma.account.findFirst({
         where: { provider, providerAccountId: account.providerAccountId },
-        select: { id: true },
+        select: { id: true, userId: true },
       });
-      if (existingAccount) return true;
+      if (existingAccount) {
+        recordLoginAudit({
+          email: user.email || "",
+          userId: existingAccount.userId,
+          provider,
+          status: "SUCCESS",
+        });
+        return true;
+      }
+
+      recordLoginAudit({
+        email: user.email || "",
+        provider,
+        status: "SUCCESS",
+        failReason: "NEW_OAUTH_SIGNUP_PENDING",
+      });
 
       const token = randomBytes(32).toString("base64url");
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000);

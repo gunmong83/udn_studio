@@ -1,44 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
-
-function parseUserAgent(ua: string) {
-  let device = "Desktop";
-  if (/tablet|ipad/i.test(ua)) {
-    device = "Tablet";
-  } else if (/mobile|iphone|ipod|android/i.test(ua)) {
-    device = "Mobile";
-  }
-
-  let browser = "Other";
-  if (/whale/i.test(ua)) {
-    browser = "Whale";
-  } else if (/edg/i.test(ua)) {
-    browser = "Edge";
-  } else if (/samsungbrowser/i.test(ua)) {
-    browser = "Samsung Internet";
-  } else if (/chrome|crios/i.test(ua)) {
-    browser = "Chrome";
-  } else if (/safari/i.test(ua) && !/chrome|crios/i.test(ua)) {
-    browser = "Safari";
-  } else if (/firefox|fxios/i.test(ua)) {
-    browser = "Firefox";
-  }
-
-  let os = "Other";
-  if (/iphone|ipad|ipod/i.test(ua)) {
-    os = "iOS";
-  } else if (/android/i.test(ua)) {
-    os = "Android";
-  } else if (/windows/i.test(ua)) {
-    os = "Windows";
-  } else if (/macintosh|mac os x/i.test(ua)) {
-    os = "macOS";
-  } else if (/linux/i.test(ua)) {
-    os = "Linux";
-  }
-
-  return { device, browser, os };
-}
+import { parseUserAgent } from "@/src/lib/user-agent";
+import { clientIp } from "@/src/lib/request-rate-limit";
 
 function parseReferrer(rawReferrer?: string | null, host?: string | null) {
   if (!rawReferrer) return { referrer: null, referrerDomain: "Direct" };
@@ -64,26 +27,52 @@ function parseReferrer(rawReferrer?: string | null, host?: string | null) {
 export async function POST(request: Request) {
   try {
     const ua = request.headers.get("user-agent") || "";
-    // 봇 및 크롤러 감지 시 수집 무시
+    // 봇 및 크롤러 감지 시 가볍게 200 반환 후 무시
     if (/bot|googlebot|bingbot|yandex|baiduspider|petalbot|crawler|spider|robot|crawling|lighthouse|headless/i.test(ua)) {
       return NextResponse.json({ ok: true, ignored: "bot" });
     }
 
     const host = request.headers.get("host") || "";
+    const ip = clientIp(request.headers);
+    const country = request.headers.get("cf-ipcountry") || undefined;
+
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    const { type, sessionId, visitorId, path, title, referrer, pageViewId, delta } = body as {
+    const {
+      type,
+      sessionId,
+      visitorId,
+      userId,
+      path,
+      title,
+      referrer,
+      pageViewId,
+      delta,
+      networkType,
+      rtt,
+      screenWidth,
+      screenHeight,
+      language,
+      scrollDepth,
+    } = body as {
       type?: string;
       sessionId?: string;
       visitorId?: string;
+      userId?: string;
       path?: string;
       title?: string;
       referrer?: string;
       pageViewId?: string;
       delta?: number;
+      networkType?: string;
+      rtt?: number;
+      screenWidth?: number;
+      screenHeight?: number;
+      language?: string;
+      scrollDepth?: number;
     };
 
     if (!sessionId) {
@@ -102,7 +91,7 @@ export async function POST(request: Request) {
 
       const existingSession = await prisma.analyticsSession.findUnique({
         where: { id: sessionId },
-        select: { id: true },
+        select: { id: true, userId: true },
       });
 
       if (!existingSession) {
@@ -113,6 +102,14 @@ export async function POST(request: Request) {
           data: {
             id: sessionId,
             visitorId: visitorId || sessionId,
+            userId: userId || undefined,
+            ip,
+            country,
+            networkType,
+            rtt: typeof rtt === "number" ? Math.round(rtt) : undefined,
+            screenWidth: typeof screenWidth === "number" ? Math.round(screenWidth) : undefined,
+            screenHeight: typeof screenHeight === "number" ? Math.round(screenHeight) : undefined,
+            language: language?.slice(0, 32),
             referrer: refInfo.referrer,
             referrerDomain: refInfo.referrerDomain,
             entryPath: path,
@@ -128,6 +125,9 @@ export async function POST(request: Request) {
           where: { id: sessionId },
           data: {
             pageCount: { increment: 1 },
+            ...(userId && !existingSession.userId ? { userId } : {}),
+            ...(networkType ? { networkType } : {}),
+            ...(typeof rtt === "number" ? { rtt: Math.round(rtt) } : {}),
           },
         });
       }
@@ -147,6 +147,7 @@ export async function POST(request: Request) {
     if (type === "heartbeat" || type === "leave") {
       const parsedDelta = Math.min(Math.max(Math.round(Number(delta) || 0), 1), 120);
 
+      // 세션 체류 시간 갱신
       try {
         await prisma.analyticsSession.update({
           where: { id: sessionId },
@@ -155,19 +156,22 @@ export async function POST(request: Request) {
           },
         });
       } catch {
-        // 세션이 삭제되었거나 존재하지 않는 경우 무시
+        // 세션 없을 시 무시
       }
 
+      // 페이지뷰 체류 시간 및 스크롤 깊이 갱신
       if (pageViewId) {
         try {
+          const parsedScroll = typeof scrollDepth === "number" ? Math.min(Math.max(Math.round(scrollDepth), 0), 100) : undefined;
           await prisma.analyticsPageView.update({
             where: { id: pageViewId },
             data: {
               duration: { increment: parsedDelta },
+              ...(parsedScroll !== undefined ? { scrollDepth: parsedScroll } : {}),
             },
           });
         } catch {
-          // 페이지뷰가 없는 경우 무시
+          // 페이지뷰 없을 시 무시
         }
       }
 
