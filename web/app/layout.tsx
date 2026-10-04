@@ -31,6 +31,17 @@ export const metadata: Metadata = {
     description: site.description,
     images: ["/assets/main_background.png"],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 // mujagi 구조(가이드 §1): 유틸바 52px(sticky) → 메뉴바 51px(스크롤아웃) → 콘텐츠 → 푸터.

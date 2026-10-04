@@ -12,10 +12,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .map((product) => `/portfolio/${product.slug}`);
   const journalPages = journalEntries.map((entry) => `/journal/${entry.slug}`);
 
+  const now = new Date();
+
   return [...new Set([...staticPages, ...productPages, ...portfolioPages, ...journalPages])].map(
     (path) => ({
       url: `${baseUrl}${path}`,
-      changeFrequency: "weekly",
+      lastModified: now,
+      changeFrequency: path === "" ? ("daily" as const) : ("weekly" as const),
       priority: path === "" ? 1 : 0.7,
     }),
   );
