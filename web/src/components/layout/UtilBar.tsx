@@ -48,7 +48,7 @@ const LABELS: Record<Lang, Record<LabelKey, string>> = {
 function Badge({ n }: { n: number }) {
   if (n <= 0) return null;
   return (
-    <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center bg-ink-strong px-1 text-[10px] leading-none text-bg">
+    <span className="absolute -right-0.5 -top-0.5 flex h-[13px] min-w-[13px] items-center justify-center rounded-full bg-ink-strong px-0.5 text-[8.5px] font-medium leading-none text-bg ring-1 ring-soft">
       {n}
     </span>
   );
