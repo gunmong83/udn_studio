@@ -150,7 +150,7 @@ export const products: Product[] = [
       { src: "/assets/portfolio_images/portfolio_2/4.jpeg", aspect: "750/938" },
     ],
     description:
-      "A boutique cake brand conveying the meaning of speed in right time, NeRyGe, on its logo with its cakebox and businesscard.",
+      "the cake house in Naju, Jeonam, Korea convey the meaning of speed in right time, NeRyGe, on its logo with its cakebox and businesscard ",
   },
   {
     slug: "the-tov",
@@ -163,7 +163,7 @@ export const products: Product[] = [
     // 좌측 한글 라벨 말단 2차 손실 감수(워드마크 > 라벨)
     objectPosition: "100% 50%",
     description:
-      "A publishing company Hangul logo design inspired by Korean Palgwe (the Eight Trigrams) representing book and barcode as well as the Korean word TOV.",
+      "publishing company in Gwaheon, Kyunggido, Korea A Hangul logo design inspired by Korean Palgwe (which can be seen on South Korean  lag, the Eight Trigrams) representing book and barcode as well as the Korean word TOV",
   },
   {
     slug: "louivis-bebe",
@@ -193,7 +193,7 @@ export const products: Product[] = [
     image: "/assets/portfolio_images/portfolio_6.jpg",
     aspect: "1181/1670",
     description:
-      "A poster commissioned by the Youth Center. The typography was designed to suit Deoksugung Stone Wall Road, a historically significant site in Korea, and Korean traditional mother-of-pearl (najeon) material was incorporated.",
+      "A poster commissioned by the Jung-gu Youth Center in Seoul. The typography was designed to suit Deoksugung Stone Wall Road, a historically significant site in Korea, and Korean traditional mother-of-pearl (najeon) material was incorporated.",
   },
   {
     slug: "menbal-kindergarten",
