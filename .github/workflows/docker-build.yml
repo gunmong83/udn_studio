@@ -67,11 +67,28 @@ jobs:
             sudo docker rm udn-nginx-config >/dev/null
             sudo mkdir -p /opt/udn_studio /data
             test -f /opt/udn_studio/.env.production
-            # 운영 릴리스에 샌드박스 키가 섞이면 실제 결제를 받을 수 없다.
-            # 값은 출력하지 않고 접두사와 존재 여부만 확인한다.
-            sudo grep -q '^NICEPAY_CLIENT_ID=R2_' /opt/udn_studio/.env.production
-            sudo grep -q '^NICEPAY_SECRET_KEY=.' /opt/udn_studio/.env.production
-            sudo grep -q '^AUTH_URL=https://studioundesignated.com' /opt/udn_studio/.env.production
+            # 운영 릴리스에 테스트 MID가 섞이면 실제 결제를 받을 수 없다.
+            # NICEPAY v1은 MID / MerchantKey / SecretKey를 사용한다. 값은 출력하지 않는다.
+            if ! sudo grep -q '^NICEPAY_MID=.' /opt/udn_studio/.env.production; then
+              echo 'NICEPAY_MID is missing from the production environment.' >&2
+              exit 1
+            fi
+            if sudo grep -q '^NICEPAY_MID=nictest' /opt/udn_studio/.env.production; then
+              echo 'A NICEPAY test MID is configured. Set the live NICEPAY MID before deploying.' >&2
+              exit 1
+            fi
+            if ! sudo grep -q '^NICEPAY_MERCHANT_KEY=.' /opt/udn_studio/.env.production; then
+              echo 'NICEPAY_MERCHANT_KEY is missing from the production environment.' >&2
+              exit 1
+            fi
+            if ! sudo grep -q '^NICEPAY_SECRET_KEY=.' /opt/udn_studio/.env.production; then
+              echo 'NICEPAY_SECRET_KEY is missing from the production environment.' >&2
+              exit 1
+            fi
+            if ! sudo grep -q '^AUTH_URL=https://studioundesignated.com' /opt/udn_studio/.env.production; then
+              echo 'AUTH_URL must be https://studioundesignated.com in production.' >&2
+              exit 1
+            fi
             sudo docker rm -f udn-web-new >/dev/null 2>&1 || true
             # Port 3001 is the stable local Nginx upstream. Stop the previous
             # container before binding it so repeated deployments are safe.
