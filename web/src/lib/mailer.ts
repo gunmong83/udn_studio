@@ -1,5 +1,6 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import { ADMIN_EMAIL } from "@/src/lib/admin";
 
 type PaidOrder = {
   id: string;
@@ -26,8 +27,8 @@ function createTransporter() {
 }
 
 export async function sendPaymentAdminEmail(order: PaidOrder): Promise<void> {
-  const to = process.env.ADMIN_EMAIL ?? process.env.SMTP_USER;
-  const from = process.env.MAIL_FROM ?? process.env.SMTP_USER;
+  const to = process.env.ADMIN_EMAIL ?? ADMIN_EMAIL ?? "studioudn@naver.com";
+  const from = process.env.MAIL_FROM ?? process.env.SMTP_USER ?? "studioudn@naver.com";
   const transporter = createTransporter();
   if (!transporter || !to || !from) return;
 
