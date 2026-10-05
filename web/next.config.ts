@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
       "connect-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://*.daumcdn.net https://postcode.map.daum.net",
       "frame-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://postcode.map.daum.net https://*.daumcdn.net https://*.daum.net https://*.kakao.com",
       "child-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://postcode.map.daum.net https://*.daumcdn.net",
-      "upgrade-insecure-requests",
     ].join("; ");
 
     return [{
