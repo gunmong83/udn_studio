@@ -48,6 +48,9 @@ $process = Start-Process -FilePath $nodeCommand -ArgumentList $arguments -Workin
 Set-Content -LiteralPath $pidFile -Value $process.Id
 
 $baseUrl = "http://127.0.0.1:$Port"
+$lanAddress = Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+  Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' -and $_.PrefixOrigin -ne 'WellKnown' } |
+  Select-Object -First 1 -ExpandProperty IPAddress
 $paths = @("/", "/login", "/signup", "/terms", "/privacy", "/portfolio", "/checkout", "/checkout/success", "/checkout/fail", "/orders", "/mypage", "/api/auth/providers")
 $ready = $false
 for ($attempt = 0; $attempt -lt 30; $attempt++) {
@@ -71,5 +74,8 @@ foreach ($path in $paths) {
 }
 
 Write-Host "로컬 가배포 실행 중: $baseUrl" -ForegroundColor Cyan
+if ($lanAddress) {
+  Write-Host "다른 기기 접속 주소: http://$lanAddress`:$Port" -ForegroundColor Cyan
+}
 Write-Host "로컬 SQLite: $localDb" -ForegroundColor DarkCyan
 Write-Host "종료: .\scripts\stop-local-stage.ps1"
