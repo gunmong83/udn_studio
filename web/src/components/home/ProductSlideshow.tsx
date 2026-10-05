@@ -56,7 +56,7 @@ export default function ProductSlideshow() {
       </div>
       <Link href={`/products/${active.slug}`} className="block" aria-label={`${active.title} 상세 보기`}>
         <div
-          className="relative aspect-[2/3] w-full touch-pan-y overflow-hidden"
+          className="relative aspect-square w-full touch-pan-y overflow-hidden bg-soft"
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
           onPointerCancel={() => (startX.current = null)}
@@ -69,7 +69,7 @@ export default function ProductSlideshow() {
               fill
               sizes="726px"
               style={{ transitionDuration: `${FADE_MS}ms`, objectPosition: slide.objectPosition }}
-              className={`pointer-events-none object-cover transition-opacity ${slideIndex === index ? "opacity-100" : "opacity-0"}`}
+              className={`pointer-events-none object-contain transition-opacity ${slideIndex === index ? "opacity-100" : "opacity-0"}`}
             />
           ))}
           <div className="absolute bottom-2 left-2 right-2 h-0.5 bg-[rgba(255,255,255,0.3)]">
