@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import { products } from "@/src/data/products";
 
 // 랜딩에서는 판매 상품만 순환한다. 옵션 상품은 대표 옵션 한 장으로 묶어
@@ -29,13 +29,9 @@ const slides = [
 const AUTO_INTERVAL_MS = 5000;
 const FADE_MS = 600;
 const SWIPE_THRESHOLD_PX = 40;
-const emptySubscribe = () => () => {};
-const useIsHydrated = () => useSyncExternalStore(emptySubscribe, () => true, () => false);
-
 export default function ProductSlideshow() {
   const [index, setIndex] = useState(0);
   const startX = useRef<number | null>(null);
-  const mounted = useIsHydrated();
 
   useEffect(() => {
     if (slides.length < 2) return;
@@ -88,11 +84,6 @@ export default function ProductSlideshow() {
               className={`pointer-events-none object-cover transition-opacity ${slideIndex === index ? "opacity-100" : "opacity-0"}`}
             />
           ))}
-          <div className="absolute bottom-2 left-2 right-2 h-0.5 bg-[rgba(255,255,255,0.3)]">
-            {mounted && (
-              <div key={index} className="h-full w-full origin-left bg-white" style={{ animation: `product-progress ${AUTO_INTERVAL_MS}ms linear forwards` }} />
-            )}
-          </div>
         </div>
         <div className="pt-3">
         <p className="text-nav font-medium text-ink-strong">{active.category}</p>
@@ -100,7 +91,6 @@ export default function ProductSlideshow() {
           <p className="mt-2 text-nav text-ink-strong">Read More →</p>
         </div>
       </Link>
-      <style>{`@keyframes product-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }`}</style>
     </section>
   );
 }
