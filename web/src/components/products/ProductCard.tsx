@@ -27,7 +27,7 @@ export default function ProductCard({ product }: { product: Product }) {
     <Link href={href} className="block">
       <div
         className={`relative w-full overflow-hidden ${
-          product.kind === "product" ? "aspect-square bg-soft" : "aspect-card"
+          product.kind === "product" ? "aspect-[3959/2922] bg-soft" : "aspect-card"
         }`}
       >
         <Image
@@ -35,7 +35,7 @@ export default function ProductCard({ product }: { product: Product }) {
           alt={title}
           fill
           sizes="238px"
-          className={product.kind === "product" ? "object-contain" : "object-cover"}
+          className="object-cover"
           style={
             product.objectPosition
               ? { objectPosition: product.objectPosition }
