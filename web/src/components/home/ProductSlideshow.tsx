@@ -7,9 +7,25 @@ import { products } from "@/src/data/products";
 
 // 랜딩에서는 판매 상품만 순환한다. 옵션 상품은 대표 옵션 한 장으로 묶어
 // 같은 상품이 반복 노출되지 않도록 한다.
-const slides = ["ryeong-2027", "udn-calendar-2026", "rok-masking-tape-green"]
+const productSlides = ["ryeong-2027", "udn-calendar-2026", "rok-masking-tape-green"]
   .map((slug) => products.find((item) => item.slug === slug))
   .filter((item): item is (typeof products)[number] => Boolean(item));
+const slides = [
+  ...productSlides.map((item) => ({
+    image: item.listingImage ?? item.image,
+    alt: item.title,
+    href: `/products/${item.slug}`,
+    title: item.listingTitle ?? item.title,
+    category: item.category,
+  })),
+  {
+    image: "/assets/landing/udn-calendar-2026-back.jpg",
+    alt: "2026년 달력 상세 이미지",
+    href: "/products/udn-calendar-2026",
+    title: "UDN Calendar 2026 제철달력 령令",
+    category: "Calendar",
+  },
+];
 const AUTO_INTERVAL_MS = 5000;
 const FADE_MS = 600;
 const SWIPE_THRESHOLD_PX = 40;
@@ -54,7 +70,7 @@ export default function ProductSlideshow() {
         <h2 id="products-heading" className="text-label font-bold text-text">PRODUCTS</h2>
         <Link href="/products" className="text-cta text-muted hover:text-text">모두 보기 →</Link>
       </div>
-      <Link href={`/products/${active.slug}`} className="block" aria-label={`${active.title} 상세 보기`}>
+      <Link href={active.href} className="block" aria-label={`${active.title} 상세 보기`}>
         <div
           className="relative aspect-[3959/2922] w-full touch-pan-y overflow-hidden bg-soft"
           onPointerDown={onPointerDown}
@@ -63,12 +79,12 @@ export default function ProductSlideshow() {
         >
           {slides.map((slide, slideIndex) => (
             <Image
-              key={slide.slug}
-              src={slide.listingImage ?? slide.image}
-              alt={slide.title}
+              key={slide.image}
+              src={slide.image}
+              alt={slide.alt}
               fill
               sizes="726px"
-              style={{ transitionDuration: `${FADE_MS}ms`, objectPosition: slide.objectPosition }}
+              style={{ transitionDuration: `${FADE_MS}ms` }}
               className={`pointer-events-none object-cover transition-opacity ${slideIndex === index ? "opacity-100" : "opacity-0"}`}
             />
           ))}
@@ -79,8 +95,8 @@ export default function ProductSlideshow() {
           </div>
         </div>
         <div className="pt-3">
-          <p className="text-nav font-medium text-ink-strong">{active.category}</p>
-          <h3 className="text-heading font-medium text-ink-strong">{active.listingTitle ?? active.title}</h3>
+        <p className="text-nav font-medium text-ink-strong">{active.category}</p>
+          <h3 className="text-heading font-medium text-ink-strong">{active.title}</h3>
           <p className="mt-2 text-nav text-ink-strong">Read More →</p>
         </div>
       </Link>

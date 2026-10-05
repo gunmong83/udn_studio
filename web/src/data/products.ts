@@ -129,8 +129,8 @@ export const products: Product[] = [
     // 파동4(대표 피드백 3번): 스마트스토어 대표 자체 스토어 원본 상품 이미지로 교체
     // (2026-09-30, https://smartstore.naver.com/studioudn/products/12907475385 대표 이미지
     //  3012×4799 JPEG — 기존 258×454 PNG는 750px 표시에 2.9배 업스케일로 흐릿했음)
-    image: "/assets/portfolio_images/portfolio_1.jpg",
-    aspect: "3012/4799",
+    image: "/assets/portfolio_images/udn-calendar-2026/main.png",
+    aspect: "3959/2922",
     // 파동5 B2: 스토어 상세 원본 4종(3012×4799·파동4 수집 d1~4 — md5 대조 반입)
     detailImages: [
       { src: "/assets/portfolio_images/udn-calendar-2026/detail_1.jpg", aspect: "3012/4799" },
