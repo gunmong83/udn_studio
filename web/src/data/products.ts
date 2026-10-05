@@ -126,7 +126,7 @@ export const products: Product[] = [
   },
   {
     slug: "udn-calendar-2026",
-    title: "UDN Calendar 2026 제철달력 령令",
+    title: "UDN Calendar 2026 Food in Season [令 Ryung]",
     category: "Calendar",
     kind: "product",
     // 파동4(대표 피드백 3번): 스마트스토어 대표 자체 스토어 원본 상품 이미지로 교체
@@ -151,8 +151,8 @@ export const products: Product[] = [
   },
   {
     slug: "rok-masking-tape-green",
-    title: "록 Rok 제철음식 마스킹 테이프, (15mm/20mm x 7m), 4종",
-    listingTitle: "록 Rok 제철음식 마스킹 테이프",
+    title: "UDN Masking Tape Food in Season [錄 Rok]",
+    listingTitle: "UDN Masking Tape Food in Season [錄 Rok]",
     category: "Goods",
     kind: "product",
     image: "/assets/products/rok-masking-tape/green.png",
@@ -176,8 +176,8 @@ export const products: Product[] = [
   },
   {
     slug: "rok-masking-tape-peach",
-    title: "록 Rok 제철음식 마스킹 테이프, (15mm/20mm x 7m), 4종",
-    listingTitle: "록 Rok 제철음식 마스킹 테이프",
+    title: "UDN Masking Tape Food in Season [錄 Rok]",
+    listingTitle: "UDN Masking Tape Food in Season [錄 Rok]",
     category: "Goods",
     kind: "product",
     image: "/assets/products/rok-masking-tape/peach.png",
@@ -194,8 +194,8 @@ export const products: Product[] = [
   },
   {
     slug: "rok-masking-tape-nordic-blue",
-    title: "록 Rok 제철음식 마스킹 테이프, (15mm/20mm x 7m), 4종",
-    listingTitle: "록 Rok 제철음식 마스킹 테이프",
+    title: "UDN Masking Tape Food in Season [錄 Rok]",
+    listingTitle: "UDN Masking Tape Food in Season [錄 Rok]",
     category: "Goods",
     kind: "product",
     image: "/assets/products/rok-masking-tape/blue.png",
@@ -212,8 +212,8 @@ export const products: Product[] = [
   },
   {
     slug: "rok-masking-tape-purple",
-    title: "록 Rok 제철음식 마스킹 테이프, (15mm/20mm x 7m), 4종",
-    listingTitle: "록 Rok 제철음식 마스킹 테이프",
+    title: "UDN Masking Tape Food in Season [錄 Rok]",
+    listingTitle: "UDN Masking Tape Food in Season [錄 Rok]",
     category: "Goods",
     kind: "product",
     image: "/assets/products/rok-masking-tape/purple.png",
@@ -315,7 +315,7 @@ export const products: Product[] = [
     // 가격 25000→20000. 구 8종(20260919 세트)은 _v1_20260919/ 보존(삭제 금지 준수).
     slug: "ryeong-2027",
     // 스마트스토어 상품명 원문 그대로(원장 §1·2026-10-01 관측)
-    title: "2027 달력 UDN 제철 캘린더 령令",
+    title: "UDN Calendar 2027 Food in Season [令 Ryung]",
     category: "Calendar",
     kind: "product",
     // 대표 이미지는 운영에서 전달받은 최신 촬영 이미지로 교체했으며,
