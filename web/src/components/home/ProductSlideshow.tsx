@@ -87,7 +87,9 @@ export default function ProductSlideshow() {
         </div>
         <div className="pt-3">
         <p className="text-nav font-medium text-ink-strong">{active.category}</p>
-          <h3 className="text-heading font-medium text-ink-strong">{active.title}</h3>
+          <h3 className="overflow-hidden text-ellipsis whitespace-nowrap text-nav font-medium leading-5 text-ink-strong sm:text-heading">
+            {active.title}
+          </h3>
           <p className="mt-2 text-nav text-ink-strong">Read More →</p>
         </div>
       </Link>
