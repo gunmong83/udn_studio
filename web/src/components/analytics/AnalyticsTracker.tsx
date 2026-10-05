@@ -64,7 +64,7 @@ export default function AnalyticsTracker() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const currentPvIdRef = useRef<string | null>(null);
-  const lastHeartbeatTimeRef = useRef<number>(Date.now());
+  const lastHeartbeatTimeRef = useRef<number>(0);
   const maxScrollRef = useRef<number>(0);
 
   useEffect(() => {

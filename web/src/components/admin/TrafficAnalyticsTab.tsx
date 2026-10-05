@@ -137,6 +137,8 @@ export default function TrafficAnalyticsTab() {
   }, []);
 
   useEffect(() => {
+    // Analytics data is an external resource; the fetch callback owns state updates.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAnalytics(range);
   }, [range, fetchAnalytics]);
 

@@ -1,20 +1,28 @@
 "use client";
 
 import Image, { type ImageProps } from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 /**
  * Request a tiny, low-quality Next image first, then fetch the full image.
  * This keeps image-heavy pages visually responsive without changing layout.
  */
 export default function ProgressiveImage({ className, src, sizes, onLoad, ...props }: ImageProps) {
+  return (
+    <ProgressiveImageLayer
+      key={typeof src === "string" ? src : String(src)}
+      className={className}
+      src={src}
+      sizes={sizes}
+      onLoad={onLoad}
+      {...props}
+    />
+  );
+}
+
+function ProgressiveImageLayer({ className, src, sizes, onLoad, ...props }: ImageProps) {
   const [previewLoaded, setPreviewLoaded] = useState(false);
   const [fullLoaded, setFullLoaded] = useState(false);
-
-  useEffect(() => {
-    setPreviewLoaded(false);
-    setFullLoaded(false);
-  }, [src]);
 
   const previewClassName = [
     className,
@@ -34,6 +42,7 @@ export default function ProgressiveImage({ className, src, sizes, onLoad, ...pro
         src={src}
         sizes={props.fill ? "32px" : "32px"}
         quality={20}
+        alt=""
         aria-hidden="true"
         className={previewClassName}
         onLoad={() => setPreviewLoaded(true)}
@@ -43,6 +52,7 @@ export default function ProgressiveImage({ className, src, sizes, onLoad, ...pro
           {...props}
           src={src}
           sizes={sizes}
+          alt={props.alt}
           className={fullClassName}
           onLoad={(event) => {
             setFullLoaded(true);
