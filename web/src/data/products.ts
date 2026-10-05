@@ -80,6 +80,8 @@ export interface Product {
   adminOnly?: boolean;
   /** 관리자 결제 연동 확인용 상품은 배송 대상이 아니므로 배송비를 부과하지 않는다. */
   freeShipping?: boolean;
+  /** 함께 포장할 수 있는 배송 그룹 */
+  shippingGroup?: string;
   /** 같은 상품의 옵션을 묶는 키. 개별 옵션도 주문 가능한 상품으로 유지한다. */
   optionGroup?: string;
   optionLabel?: string;
@@ -141,6 +143,7 @@ export const products: Product[] = [
     // 운영 할인: 기존 50,000원에서 90% 할인된 5,000원
     price: 5000,
     priceLabel: "5,000 KRW",
+    shippingGroup: "calendar-2026",
     link: "https://smartstore.naver.com/studioudn/products/12907475385",
   },
   {
@@ -159,6 +162,7 @@ export const products: Product[] = [
     link: "https://smartstore.naver.com/studioudn/products/13791005349",
     optionGroup: "rok-masking-tape",
     optionLabel: "그린 · 20mm × 7m",
+    shippingGroup: "calendar-2027-tape",
   },
   {
     slug: "rok-masking-tape-peach",
@@ -176,6 +180,7 @@ export const products: Product[] = [
     link: "https://smartstore.naver.com/studioudn/products/13791005348",
     optionGroup: "rok-masking-tape",
     optionLabel: "피치 · 20mm × 7m",
+    shippingGroup: "calendar-2027-tape",
   },
   {
     slug: "rok-masking-tape-nordic-blue",
@@ -193,6 +198,7 @@ export const products: Product[] = [
     link: "https://smartstore.naver.com/studioudn/products/13791005347",
     optionGroup: "rok-masking-tape",
     optionLabel: "노틱블루 · 15mm × 7m",
+    shippingGroup: "calendar-2027-tape",
   },
   {
     slug: "rok-masking-tape-purple",
@@ -210,6 +216,7 @@ export const products: Product[] = [
     link: "https://smartstore.naver.com/studioudn/products/13791005346",
     optionGroup: "rok-masking-tape",
     optionLabel: "퍼플 · 15mm × 7m",
+    shippingGroup: "calendar-2027-tape",
   },
   {
     slug: "neryge-to-slow",
@@ -349,6 +356,7 @@ export const products: Product[] = [
     // 현재가(원장 §7 2차 재확인 — dispSalePrice 20000·2026-10-01 2차 재추출·변동 없음)
     price: 20000,
     priceLabel: "20,000 KRW",
+    shippingGroup: "calendar-2027-tape",
     link: "https://smartstore.naver.com/studioudn/products/13767984847",
   },
   {

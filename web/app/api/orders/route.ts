@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { products } from "@/src/data/products";
-import { getShippingFee } from "@/src/lib/shipping";
+import { getShippingFee, getShippingGroupKey } from "@/src/lib/shipping";
 import { getAuthenticatedUserId } from "@/src/lib/session-user";
 
 export async function POST(request: Request) {
@@ -35,7 +35,13 @@ export async function POST(request: Request) {
   const isNonDeliveryTestOrder = validItems.every((item) =>
     products.find((product) => product.slug === item.productId)?.freeShipping,
   );
-  const totalAmount = subtotal + (isNonDeliveryTestOrder ? 0 : getShippingFee(subtotal));
+  const shippingGroups = new Set(
+    validItems
+      .map((item) => products.find((product) => product.slug === item.productId))
+      .filter((product) => !product?.freeShipping)
+      .map((product) => getShippingGroupKey(product!)),
+  );
+  const totalAmount = subtotal + (isNonDeliveryTestOrder ? 0 : getShippingFee(subtotal, shippingGroups.size));
 
   const order = await prisma.order.create({
     data: {

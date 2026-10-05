@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { removeFromCart, setCartQty, useCart } from "@/src/lib/store";
 import { getProduct } from "@/src/data/products";
 import { openNicePayment, type NicePaymentFields } from "@/src/lib/nicepay";
-import { FREE_SHIPPING_THRESHOLD, getShippingFee } from "@/src/lib/shipping";
+import { FREE_SHIPPING_THRESHOLD, getShippingFee, getShippingGroupKey, getShippingGroupLabel } from "@/src/lib/shipping";
 
 interface DaumPostcodeData {
   address: string;
@@ -74,9 +74,10 @@ export default function CheckoutPage() {
     );
 
   const total = items.reduce((sum, x) => sum + (x.product.price ?? 0) * x.item.qty, 0);
-  const shippingFee = items.every(({ product }) => product.freeShipping)
-    ? 0
-    : getShippingFee(total);
+  const shippingGroups = Array.from(
+    new Set(items.filter(({ product }) => !product.freeShipping).map(({ product }) => getShippingGroupKey(product))),
+  );
+  const shippingFee = shippingGroups.length === 0 ? 0 : getShippingFee(total, shippingGroups.length);
   const finalTotal = total + shippingFee;
 
   const handleSearchAddress = async () => {
@@ -478,10 +479,17 @@ export default function CheckoutPage() {
               <span className="text-muted">배송비</span>
               <span>{shippingFee === 0 ? "무료" : `${shippingFee.toLocaleString("ko-KR")} KRW`}</span>
             </div>
+            {shippingGroups.length > 0 && shippingFee > 0 && (
+              <div className="mt-2 space-y-1 text-right text-util text-muted">
+                {shippingGroups.map((group) => (
+                  <p key={group}>{getShippingGroupLabel(group)} · 4,000원</p>
+                ))}
+              </div>
+            )}
             <p className="mt-1 text-right text-util text-muted">
               {shippingFee === 0
                 ? "50만원 이상 구매로 무료 배송이 적용되었습니다."
-                : `상품 합계 ${FREE_SHIPPING_THRESHOLD.toLocaleString("ko-KR")}원 이상 구매 시 무료 배송`}
+                : `배송 그룹별 4,000원 · 상품 합계 ${FREE_SHIPPING_THRESHOLD.toLocaleString("ko-KR")}원 이상 구매 시 무료 배송`}
             </p>
             <div className="mt-4 flex items-center justify-between border-t border-line pt-4 text-nav font-bold text-text">
               <span>최종 결제 금액</span>
