@@ -308,14 +308,10 @@ export const products: Product[] = [
     title: "2027 달력 UDN 제철 캘린더 령令",
     category: "Calendar",
     kind: "product",
-    // 신 대표(2차 갱신 — md5 3c300eb0…·947×1661·원장 §7 2차·2026-10-01 재추출 PRELOADED_STATE).
-    // ※ dev 변형 캐시 잔상: 3300(무재기동)의 _next/image w=750 webp 변형이 구 rep.png 시점
-    // 바이트를 재사용(natural 750×1000·원본 947×1661 — curl png 변형은 신규 750×1315 서빙
-    // 실측). object-cover·컨테이너 aspect 947/1661(750×1315)로 렌더되므로 왜곡 0(가로 크롭만)
-    // ·자산 GET md5는 신규 정상. 3300 재기동(감수 국면) 시 변형 캐시 재생성으로 자동 해소 —
-    // 캐시버스터 쿼리(?v=) 시도는 localPatterns 재기동 필요로 기각(500 붕괴 실측 후 복구).
-    image: "/assets/portfolio_images/ryeong-2027/rep.png",
-    aspect: "947/1661",
+    // 대표 이미지는 운영에서 전달받은 최신 촬영 이미지로 교체했으며,
+    // 상품 카드 기준 비율(3959/2922)에 맞춰 표시한다.
+    image: "/assets/portfolio_images/ryeong-2027/main.jpg",
+    aspect: "3959/2922",
     // 스토어 실제 구성과 동등(파동5 검수 원칙 승계): 2차 갱신(원장 §7 2차 — board mup67e4uyywc·
     // 대표 지시 "2027년 달력 스마트스토어 이미지가 변경됐어. 참고해서 다시 맞춰서 변경해"):
     // 신규 대표 DQx9d(947×1661)가 맨 앞에 추가되고 구 대표(gO7hk·1086×1448·92cb6ea2)가
