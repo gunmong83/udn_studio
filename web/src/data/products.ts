@@ -426,21 +426,6 @@ export const products: Product[] = [
     description: "studioUDN 디렉터 명함 디자인",
   },
   {
-    slug: "uyujeok-minhwa-bizcard-postcards",
-    title: "유유자적민화 bizcard design·엽서 체험 및 채색 도안 작업",
-    category: "Total Branding",
-    kind: "work",
-    image: "/assets/portfolio_images/uyujeok-minhwa-bizcard-postcards/rep.jpg",
-    aspect: "1440/1440",
-    detailImages: [
-      { src: "/assets/portfolio_images/uyujeok-minhwa-bizcard-postcards/detail_1.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/uyujeok-minhwa-bizcard-postcards/detail_2.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/uyujeok-minhwa-bizcard-postcards/detail_3.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/uyujeok-minhwa-bizcard-postcards/detail_4.jpg", aspect: "1440/1440" },
-    ],
-    description: "유유자적민화 명함·엽서 체험 및 채색 도안 작업",
-  },
-  {
     slug: "chusa-art-festival-goods",
     title: "추사아트페스티벌 체험용 부스 굿즈 디자인",
     category: "Total Branding",
@@ -457,19 +442,6 @@ export const products: Product[] = [
     description: "추사아트페스티벌 체험용 부스 굿즈 디자인",
   },
   {
-    slug: "dohwaji-park-hee-jung-bizcard",
-    title: "도화지 박희정 작가님 명함",
-    category: "Total Branding",
-    kind: "work",
-    image: "/assets/portfolio_images/dohwaji-park-hee-jung-bizcard/rep.jpg",
-    aspect: "1440/1440",
-    detailImages: [
-      { src: "/assets/portfolio_images/dohwaji-park-hee-jung-bizcard/detail_1.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/dohwaji-park-hee-jung-bizcard/detail_2.jpg", aspect: "1440/1440" },
-    ],
-    description: "도화지 박희정 작가님 명함 디자인",
-  },
-  {
     slug: "daedong-bookstore-event",
     title: "안양 대동문고 서점이벤트",
     category: "Poster",
@@ -482,35 +454,6 @@ export const products: Product[] = [
       { src: "/assets/portfolio_images/picture-books-grown-up/rep.jpg", aspect: "7087/21260" },
     ],
     description: "안양 대동문고 서점이벤트 및 어른을 위한 그림책 공부 포스터·X배너",
-  },
-  {
-    slug: "itf-korea-france",
-    title: "잇-프 itF 한국-프랑스를 잇다",
-    category: "Exhibition Poster",
-    kind: "work",
-    image: "/assets/portfolio_images/itf-korea-france/rep.jpg",
-    aspect: "1440/1440",
-    detailImages: [
-      { src: "/assets/portfolio_images/itf-korea-france/detail_1.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/itf-korea-france/detail_2.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/itf-korea-france/detail_3.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/itf-korea-france/detail_4.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/itf-korea-france/detail_5.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/itf-korea-france/detail_6.jpg", aspect: "1440/1440" },
-    ],
-    description: "잇-프 itF 한국-프랑스를 잇다 전시 포스터·엽서",
-  },
-  {
-    slug: "udn-ci-businesscard",
-    title: "UDN studio CI businesscard design",
-    category: "Total Branding",
-    kind: "work",
-    image: "/assets/portfolio_images/udn-ci-businesscard/rep.jpg",
-    aspect: "1440/1440",
-    detailImages: [
-      { src: "/assets/portfolio_images/udn-ci-businesscard/detail_1.jpg", aspect: "1440/1440" },
-      { src: "/assets/portfolio_images/udn-ci-businesscard/detail_2.jpg", aspect: "1440/1440" },
-    ],
   },
 ];
 
