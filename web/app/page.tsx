@@ -1,4 +1,3 @@
-import Hero from "@/src/components/home/Hero";
 import ProductSlideshow from "@/src/components/home/ProductSlideshow";
 import AboutBlock from "@/src/components/home/AboutBlock";
 
@@ -7,7 +6,6 @@ import AboutBlock from "@/src/components/home/AboutBlock";
 export default function HomePage() {
   return (
     <>
-      <Hero />
       <ProductSlideshow />
       <AboutBlock />
     </>
