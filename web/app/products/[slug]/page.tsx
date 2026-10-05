@@ -53,6 +53,7 @@ export default async function ProductDetailPage({
     const session = await auth();
     if (session?.user?.role !== "admin") notFound();
   }
+  const isTape = product.optionGroup === "rok-masking-tape";
 
   return (
     <div className="w-full pb-[88px]">
@@ -106,17 +107,23 @@ export default async function ProductDetailPage({
         />
       </div>
 
-      {product.listingImage && product.image !== product.listingImage && (
+      {!isTape && product.listingImage && product.image !== product.listingImage && (
         <div className="relative mt-section w-full overflow-hidden" style={{ aspectRatio: product.aspect }}>
           <Image src={product.image} alt={`${product.title} 선택 옵션`} fill sizes="750px" className="object-cover" />
         </div>
       )}
 
+      {isTape && products.filter((candidate) => candidate.optionGroup === product.optionGroup).map((option) => (
+        <div key={option.slug} className="relative mt-section w-full overflow-hidden" style={{ aspectRatio: option.aspect }}>
+          <Image src={option.image} alt={`${option.optionLabel ?? product.title} detail`} fill sizes="750px" className="object-cover" />
+        </div>
+      ))}
+
       <div className="px-3 pt-4">
         <h1 className="text-drawer font-bold text-text">{product.title}</h1>
-        {product.priceLabel && (
+        {(product.displayPriceLabel ?? product.priceLabel) && (
           <p className="mt-3 text-body font-bold text-text">
-            {product.priceLabel}
+            {product.displayPriceLabel ?? product.priceLabel}
           </p>
         )}
         {product.description && (
@@ -150,7 +157,7 @@ export default async function ProductDetailPage({
       )}
 
       {/* 본문 이미지 — 원본 비율 전폡 스택(§7 #6 — per-asset aspect·무크롭) */}
-      {product.detailImages?.map((d) => (
+      {!isTape && product.detailImages?.map((d) => (
         <div
           key={d.src}
           className="relative mt-section w-full overflow-hidden"

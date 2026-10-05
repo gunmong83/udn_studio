@@ -75,6 +75,8 @@ export interface Product {
   price?: number;
   /** 가격 표기(예: "50,000 KRW") */
   priceLabel?: string;
+  /** 목록·상세에서 옵션 가격 범위를 함께 보여줄 때 사용 */
+  displayPriceLabel?: string;
   /** 구매 링크(스마트스토어) */
   link?: string;
   /** 공개 상품 목록에서 숨기고 관리자 테스트 화면에서만 사용하는 상품 */
@@ -149,7 +151,7 @@ export const products: Product[] = [
   },
   {
     slug: "rok-masking-tape-green",
-    title: "록 Rok 제철음식 마스킹 테이프 1개, 20mm×7m, 그린",
+    title: "록 Rok 제철음식 마스킹 테이프, (15mm/20mm x 7m), 4종",
     listingTitle: "록 Rok 제철음식 마스킹 테이프",
     category: "Goods",
     kind: "product",
@@ -166,6 +168,7 @@ export const products: Product[] = [
     artistNote: ARTIST_NOTE_ROK_MASKING_TAPE,
     price: 6000,
     priceLabel: "6,000 KRW",
+    displayPriceLabel: "5,000~6,000 KRW",
     link: "https://smartstore.naver.com/studioudn/products/13791005349",
     optionGroup: "rok-masking-tape",
     optionLabel: "그린 · 20mm × 7m",
@@ -173,7 +176,7 @@ export const products: Product[] = [
   },
   {
     slug: "rok-masking-tape-peach",
-    title: "록 Rok 제철음식 마스킹 테이프 1개, 20mm×7m, 피치",
+    title: "록 Rok 제철음식 마스킹 테이프, (15mm/20mm x 7m), 4종",
     listingTitle: "록 Rok 제철음식 마스킹 테이프",
     category: "Goods",
     kind: "product",
@@ -191,7 +194,7 @@ export const products: Product[] = [
   },
   {
     slug: "rok-masking-tape-nordic-blue",
-    title: "록 Rok 제철음식 마스킹 테이프 1개, 15mm×7m, 노틱블루",
+    title: "록 Rok 제철음식 마스킹 테이프, (15mm/20mm x 7m), 4종",
     listingTitle: "록 Rok 제철음식 마스킹 테이프",
     category: "Goods",
     kind: "product",
@@ -209,7 +212,7 @@ export const products: Product[] = [
   },
   {
     slug: "rok-masking-tape-purple",
-    title: "록 Rok 제철음식 마스킹 테이프 1개, 15mm×7m, 퍼플",
+    title: "록 Rok 제철음식 마스킹 테이프, (15mm/20mm x 7m), 4종",
     listingTitle: "록 Rok 제철음식 마스킹 테이프",
     category: "Goods",
     kind: "product",

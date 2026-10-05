@@ -49,7 +49,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </h3>
         {product.priceLabel && (
           <p className="mt-0.5 text-body font-bold leading-[18px] text-text">
-            {product.priceLabel}
+            {product.displayPriceLabel ?? product.priceLabel}
           </p>
         )}
       </div>
