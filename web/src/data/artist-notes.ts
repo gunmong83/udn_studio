@@ -85,6 +85,44 @@ My work engages with themes such as the erosion of identity, gender issues, unfa
 
 I hope the vessels I create may become a question for some, a source of comfort for others, and a place of reflection for those who encounter them.`;
 
+export const ARTIST_NOTE_ROK_MASKING_TAPE = `UDN studio original
+
+ver.01: 15x7000mm [ Fish, Veges ]
+ver.02: 20x7000mm [ fruit, seafood 01, 02 ]
+
+제철달력 [령令] : 시간을 담는 그릇의 사이드 프로젝트
+제철테잎 [록錄] : 시간의 기록
+A Lot for Time : TAPE [기록]
+
+시간의 기록은 삶의 기록입니다.
+기록으로 채워지는 기억들은 흐르는 삶을 잠시나마 멈추게 만드는 힘을 가지고 있습니다.
+
+UDN 작가노트
+
+UDN은 사람이 스스로 뿌리내리고 자랄 수 있는 교육 환경을 설계합니다. 자아 통합 시리즈의 첫 번째 프로젝트, 사람이 자랄 수 있는 흙과 땅을 그릇이라는 상징물로 표현한 이야기입니다. 그 그릇에는 언제나 무언가가 담겨있습니다. 그렇게 프로젝트 령은 시간의 지도를 담게 되었습니다.
+
+이번에는 그 령의 사이드 프로젝트로 시간의 기록을 붙이고, 강조하고, 전시하는 데 도움을 주는 마스킹테잎, 록[錄: Rok]을 소개합니다.
+
+각 테잎은 바다음식 시리즈 01, 02(폭 20mm)와 뭍의 음식인 야채 시리즈, 바다의 음식인 생선 시리즈(폭 15mm)로 구성되어 있습니다.
+
+마스킹테이프 특성상 떼었다 붙이기 편하며 손으로 뜯어내기 편리합니다. 당신이 기억하고 싶은 기억의 그릇들 vessels을 붙이고, 가공하는 데 도움을 줄 것입니다. 그리고 때때로, 먹고싶은 생선이나 야채들이 생각날지도 모릅니다. 우리의 삶을 채워 줄 먹거리들에게 감사하며.
+
+UDN Artist’s Note
+
+UDN designs learning environments where people can take root and grow on their own.
+
+The first project in our series on the integration of the self began with a vessel—a symbol of the soil and ground in which we grow. A vessel always holds something. In Ryung [令], it came to hold a map of time.
+
+Now, alongside Ryung, we introduce Rok [錄]: a collection of masking tapes to help you gather, highlight, and display the traces of time.
+
+The collection brings together Seafood 01 and 02, each 20 mm wide; Vegetables, gifts of the land; and Fish, gifts of the sea, each 15 mm wide.
+
+Easy to tear by hand, peel away, and place anew, these tapes help you arrange and shape your own vessels of memory—the pages, images, and small keepsakes that hold what you wish to remember.
+
+And now and then, a fish or a vegetable may catch your eye and awaken an appetite, calling to mind something you would like to taste.
+
+With gratitude for the food that nourishes us and fills our lives.`;
+
 export const ARTIST_NOTE_CALENDAR_2026 = `UDN studio original
 
 235x494mm

@@ -29,6 +29,7 @@
 
 import {
   ARTIST_NOTE_CALENDAR_2026,
+  ARTIST_NOTE_ROK_MASKING_TAPE,
   ARTIST_NOTE_RYEONG_2027,
 } from "./artist-notes";
 
@@ -156,7 +157,13 @@ export const products: Product[] = [
     listingImage: "/assets/products/rok-masking-tape/main.jpg",
     listingAspect: "3959/2922",
     aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/products/rok-masking-tape/peach.png", aspect: "2829/2122" },
+      { src: "/assets/products/rok-masking-tape/blue.png", aspect: "2829/2122" },
+      { src: "/assets/products/rok-masking-tape/purple.png", aspect: "2829/2122" },
+    ],
     description: "제철음식과 계절의 기록을 담은 제철테잎 록(錄) 그린.",
+    artistNote: ARTIST_NOTE_ROK_MASKING_TAPE,
     price: 6000,
     priceLabel: "6,000 KRW",
     link: "https://smartstore.naver.com/studioudn/products/13791005349",
