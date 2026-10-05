@@ -408,15 +408,6 @@ export const products: Product[] = [
     description: "초등무지개학교 입학설명회 포스터",
   },
   {
-    slug: "dugeumi-activity-checklist",
-    title: "두근미 활동 체크리스트",
-    category: "Total Branding",
-    kind: "work",
-    image: "/assets/portfolio_images/dugeumi-checklist/rep.jpg",
-    aspect: "4032/3024",
-    description: "두근미 활동 CHECKLIST",
-  },
-  {
     slug: "studio-udn-director-card",
     title: "studioUDN 디렉터 명함",
     category: "Total Branding",
