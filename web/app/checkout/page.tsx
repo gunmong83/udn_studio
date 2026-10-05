@@ -77,6 +77,8 @@ export default function CheckoutPage() {
   const shippingGroups = Array.from(
     new Set(items.filter(({ product }) => !product.freeShipping).map(({ product }) => getShippingGroupKey(product))),
   );
+  const groupedItems = Array.from(new Set(items.map(({ product }) => product.freeShipping ? "free" : getShippingGroupKey(product))))
+    .map((group) => ({ group, items: items.filter(({ product }) => (product.freeShipping ? "free" : getShippingGroupKey(product)) === group) }));
   const shippingFee = shippingGroups.length === 0 ? 0 : getShippingFee(total, shippingGroups.length);
   const finalTotal = total + shippingFee;
 
@@ -292,11 +294,17 @@ export default function CheckoutPage() {
             </Link>
           </div>
           <ul className="mt-4 divide-y divide-line">
-            {items.map(({ item, product }) => (
-              <li
-                key={item.slug}
-                className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
-              >
+            {groupedItems.map(({ group, items: groupItems }) => (
+              <li key={group} className="py-3">
+                <div className="mb-1 flex items-center justify-between border-b border-line bg-soft/40 px-2 py-2 text-util font-semibold text-text">
+                  <span>{group === "free" ? "배송 제외 상품" : getShippingGroupLabel(group)}</span>
+                  <span>{group === "free" ? "무료" : "배송비 4,000원"}</span>
+                </div>
+                {groupItems.map(({ item, product }) => (
+                <div
+                  key={item.slug}
+                  className="flex flex-col gap-3 border-b border-line py-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
+                >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <div className="relative aspect-card w-12 shrink-0 overflow-hidden bg-soft">
                     <Image
@@ -348,6 +356,8 @@ export default function CheckoutPage() {
                     {((product.price ?? 0) * item.qty).toLocaleString("ko-KR")} KRW
                   </p>
                 </div>
+                </div>
+                ))}
               </li>
             ))}
           </ul>
