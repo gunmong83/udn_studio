@@ -20,9 +20,9 @@ const slides = [
   })),
   {
     image: "/assets/landing/udn-calendar-2026-back.jpg",
-    alt: "2026년 달력 상세 이미지",
-    href: "/products/udn-calendar-2026",
-    title: "UDN Calendar 2026 제철달력 령令",
+    alt: "2027년 달력 패키지 이미지",
+    href: "/products/ryeong-2027",
+    title: "UDN Calendar 2027 Food in Season [令 Ryung]",
     category: "Calendar",
   },
 ];
