@@ -13,16 +13,40 @@ export default function ProductDetailInteractive({
   product: Product;
   options: Product[];
 }) {
-  const [selected, setSelected] = useState(product);
+  const hasOptions = options.length >= 2 && Boolean(product.optionGroup);
+  const [selected, setSelected] = useState<Product | null>(hasOptions ? null : product);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const purchaseProduct = selected ?? product;
+
+  const requestOption = () => {
+    setOptionsOpen(true);
+    window.requestAnimationFrame(() => {
+      document.querySelector("[data-product-options]")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
 
   return (
     <>
-      <ProductOptions product={selected} options={options} onSelect={setSelected} />
+      <ProductOptions
+        product={product}
+        options={options}
+        selected={selected}
+        open={optionsOpen}
+        onToggle={() => setOptionsOpen((open) => !open)}
+        onSelect={(option) => {
+          setSelected(option);
+          setOptionsOpen(false);
+        }}
+      />
       <div className="mt-6">
-        <ProductPurchaseBar product={selected} />
+        <ProductPurchaseBar
+          product={purchaseProduct}
+          requiresOption={hasOptions && !selected}
+          onRequestOption={requestOption}
+        />
       </div>
       <div className="px-3">
-        <ProductActions product={selected} accent />
+        <ProductActions product={purchaseProduct} accent />
       </div>
     </>
   );
