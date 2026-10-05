@@ -171,7 +171,7 @@ export const products: Product[] = [
     displayPriceLabel: "5,000~6,000 KRW",
     link: "https://smartstore.naver.com/studioudn/products/13791005349",
     optionGroup: "rok-masking-tape",
-    optionLabel: "그린 · 20mm × 7m",
+    optionLabel: "수산물 2 (그린 · 20mm × 7m) · +1,000원",
     shippingGroup: "calendar-2027-tape",
   },
   {
@@ -189,7 +189,7 @@ export const products: Product[] = [
     priceLabel: "6,000 KRW",
     link: "https://smartstore.naver.com/studioudn/products/13791005348",
     optionGroup: "rok-masking-tape",
-    optionLabel: "피치 · 20mm × 7m",
+    optionLabel: "수산물 1 (피치 · 20mm × 7m) · +1,000원",
     shippingGroup: "calendar-2027-tape",
   },
   {
@@ -207,7 +207,7 @@ export const products: Product[] = [
     priceLabel: "5,000 KRW",
     link: "https://smartstore.naver.com/studioudn/products/13791005347",
     optionGroup: "rok-masking-tape",
-    optionLabel: "노틱블루 · 15mm × 7m",
+    optionLabel: "야채 (노틱블루 · 15mm × 7m)",
     shippingGroup: "calendar-2027-tape",
   },
   {
@@ -225,7 +225,7 @@ export const products: Product[] = [
     priceLabel: "5,000 KRW",
     link: "https://smartstore.naver.com/studioudn/products/13791005346",
     optionGroup: "rok-masking-tape",
-    optionLabel: "퍼플 · 15mm × 7m",
+    optionLabel: "생선 (퍼플 · 15mm × 7m)",
     shippingGroup: "calendar-2027-tape",
   },
   {

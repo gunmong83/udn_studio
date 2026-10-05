@@ -14,6 +14,15 @@ export default function ProductDetailInteractive({
   options: Product[];
 }) {
   const hasOptions = options.length >= 2 && Boolean(product.optionGroup);
+  const orderedOptions = [...options].sort((a, b) => {
+    const order = [
+      "rok-masking-tape-purple",
+      "rok-masking-tape-nordic-blue",
+      "rok-masking-tape-peach",
+      "rok-masking-tape-green",
+    ];
+    return order.indexOf(a.slug) - order.indexOf(b.slug);
+  });
   const [selected, setSelected] = useState<Product[]>(hasOptions ? [] : [product]);
   const [quantities, setQuantities] = useState<Record<string, number>>({ [product.slug]: 1 });
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -30,7 +39,7 @@ export default function ProductDetailInteractive({
     <>
       <ProductOptions
         product={product}
-        options={options}
+        options={orderedOptions}
         selected={selected}
         quantities={quantities}
         open={optionsOpen}
