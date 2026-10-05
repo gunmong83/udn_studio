@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import ProductBrowser from "@/src/components/products/ProductBrowser";
 import { WORK_CATEGORY_FILTERS } from "@/src/data/products";
 
-export const metadata: Metadata = { title: "PORTFOLIO" };
+export const metadata: Metadata = {
+  title: "PORTFOLIO",
+  description: "Studio UDN 포트폴리오",
+  robots: { index: false, follow: true },
+};
 
 // 포트폴리오 목록(파동5 B1·§4 — muos3okq61ob) — ProductBrowser kind="work" 재사용:
 // - 6작품(NeRyGe·TOV·BeBe·Flowing·YAHO·Menbal — kind="work")

@@ -15,7 +15,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
-  return { title: product ? product.title : "PORTFOLIO" };
+  return {
+    title: product ? product.title : "PORTFOLIO",
+    robots: { index: false, follow: true },
+  };
 }
 
 // 포트폴리오 작품 상세(파동5 B1·§4·§7 #7 — muos3okq61ob) — products/[slug] 구조 재사용:

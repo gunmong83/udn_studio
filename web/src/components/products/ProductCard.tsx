@@ -27,7 +27,7 @@ export default function ProductCard({ product }: { product: Product }) {
     <Link href={href} className="block">
       <div className="relative aspect-card w-full overflow-hidden">
         <Image
-          src={product.image}
+          src={product.listingImage ?? product.image}
           alt={title}
           fill
           sizes="238px"
@@ -41,7 +41,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="pt-2">
         <h3 className="text-body font-semibold leading-[18px] text-text">
-          {title}
+          {product.listingTitle ?? title}
         </h3>
         {product.priceLabel && (
           <p className="mt-0.5 text-body font-bold leading-[18px] text-text">

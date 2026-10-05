@@ -3,8 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getProduct, products } from "@/src/data/products";
-import ProductActions from "@/src/components/products/ProductActions";
-import ProductPurchaseBar from "@/src/components/products/ProductPurchaseBar";
+import ProductDetailInteractive from "@/src/components/products/ProductDetailInteractive";
 import { auth } from "@/src/auth";
 
 // 관리자 전용 테스트 상품은 요청별 세션 권한으로만 렌더한다.
@@ -22,7 +21,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
-  return { title: product ? product.title : "PRODUCTS" };
+  return {
+    title: product ? product.title : "PRODUCTS",
+    description: product?.description ?? `${product?.title ?? "Studio UDN 상품"} 온라인 판매 페이지`,
+    alternates: { canonical: `/products/${slug}` },
+  };
 }
 
 // 상품 상세 — mujagi 상세 실측 (가이드 §2-2·§5-3·§6):
@@ -53,6 +56,33 @@ export default async function ProductDetailPage({
 
   return (
     <div className="w-full pb-[88px]">
+      {product.price != null && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: product.title,
+              description: product.description,
+              image: [
+                `https://studioundesignated.com${product.listingImage ?? product.image}`,
+                ...(product.listingImage && product.image !== product.listingImage
+                  ? [`https://studioundesignated.com${product.image}`]
+                  : []),
+              ],
+              brand: { "@type": "Brand", name: "Studio UDN" },
+              offers: {
+                "@type": "Offer",
+                url: `https://studioundesignated.com/products/${product.slug}`,
+                priceCurrency: "KRW",
+                price: product.price,
+                availability: "https://schema.org/InStock",
+              },
+            }),
+          }}
+        />
+      )}
       <nav className="px-3 pt-section text-body leading-[30px] text-muted">
         <Link href="/products" className="hover:text-text">
           PRODUCTS
@@ -64,10 +94,10 @@ export default async function ProductDetailPage({
       {/* 대표 이미지 — 원본 비율 전폡(§7 상세 축·무크롭) */}
       <div
         className="relative w-full overflow-hidden"
-        style={{ aspectRatio: product.aspect }}
+        style={{ aspectRatio: product.listingAspect ?? product.aspect }}
       >
         <Image
-          src={product.image}
+          src={product.listingImage ?? product.image}
           alt={product.title}
           fill
           priority
@@ -75,6 +105,12 @@ export default async function ProductDetailPage({
           className="object-cover"
         />
       </div>
+
+      {product.listingImage && product.image !== product.listingImage && (
+        <div className="relative mt-section w-full overflow-hidden" style={{ aspectRatio: product.aspect }}>
+          <Image src={product.image} alt={`${product.title} 선택 옵션`} fill sizes="750px" className="object-cover" />
+        </div>
+      )}
 
       <div className="px-3 pt-4">
         <h1 className="text-drawer font-bold text-text">{product.title}</h1>
@@ -90,13 +126,10 @@ export default async function ProductDetailPage({
         )}
       </div>
 
-      <div className="mt-6">
-        <ProductPurchaseBar product={product} />
-      </div>
-
-      <div className="px-3">
-        <ProductActions product={product} accent />
-      </div>
+      <ProductDetailInteractive
+        product={product}
+        options={products.filter((candidate) => candidate.optionGroup === product.optionGroup)}
+      />
 
       {/* 작가노트 원문 전문(§3 — 검수 승인 ②·원문 그대로 재작성 0) */}
       {product.artistNote && (

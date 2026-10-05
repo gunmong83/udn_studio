@@ -36,7 +36,8 @@ export type ProductCategory =
   | "Total Branding"
   | "Exhibition Poster"
   | "Poster"
-  | "Calendar";
+  | "Calendar"
+  | "Goods";
 
 /** 파동5 §1 IA — 판매 상품(PRODUCTS 축) vs 작품(PORTFOLIO 축) */
 export type ProductKind = "product" | "work";
@@ -53,6 +54,10 @@ export interface Product {
   category: ProductCategory;
   kind: ProductKind;
   image: string;
+  /** 상품 목록에서 사용할 대표 이미지(옵션 상품은 공통 메인 사진). */
+  listingImage?: string;
+  listingAspect?: string;
+  listingTitle?: string;
   /** 대표 이미지 원본 비율 "W/H"(§7 상세 축 — PIL 실측).
    *  파동5 B3: required로 전환 — 전 8항목 보유(작품 6·캘린더·령)·저널 상세 전폡(journal.ts
    *  aspect 승계)이 의존. 누락 시 빌드 실패(전폡은 실측 비율만 — 폴백 값 발명 금지). */
@@ -75,6 +80,9 @@ export interface Product {
   adminOnly?: boolean;
   /** 관리자 결제 연동 확인용 상품은 배송 대상이 아니므로 배송비를 부과하지 않는다. */
   freeShipping?: boolean;
+  /** 같은 상품의 옵션을 묶는 키. 개별 옵션도 주문 가능한 상품으로 유지한다. */
+  optionGroup?: string;
+  optionLabel?: string;
 }
 
 export const CATEGORY_FILTERS = [
@@ -83,6 +91,7 @@ export const CATEGORY_FILTERS = [
   "Exhibition Poster",
   "Poster",
   "Calendar",
+  "Goods",
 ] as const;
 
 /** PORTFOLIO 브랜드탭(§4) — Calendar 제외(캘린더 2종은 PRODUCTS 소속) */
@@ -134,6 +143,74 @@ export const products: Product[] = [
     price: 50000,
     priceLabel: "50,000 KRW",
     link: "https://smartstore.naver.com/studioudn/products/12907475385",
+  },
+  {
+    slug: "rok-masking-tape-green",
+    title: "록 Rok 제철음식 마스킹 테이프 1개, 20mm×7m, 그린",
+    listingTitle: "록 Rok 제철음식 마스킹 테이프",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/rok-masking-tape/green.png",
+    listingImage: "/assets/products/rok-masking-tape/main.jpg",
+    listingAspect: "3959/2922",
+    aspect: "3959/2922",
+    description: "제철음식과 계절의 기록을 담은 제철테잎 록(錄) 그린.",
+    price: 6000,
+    priceLabel: "6,000 KRW",
+    link: "https://smartstore.naver.com/studioudn/products/13791005349",
+    optionGroup: "rok-masking-tape",
+    optionLabel: "그린 · 20mm × 7m",
+  },
+  {
+    slug: "rok-masking-tape-peach",
+    title: "록 Rok 제철음식 마스킹 테이프 1개, 20mm×7m, 피치",
+    listingTitle: "록 Rok 제철음식 마스킹 테이프",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/rok-masking-tape/peach.png",
+    listingImage: "/assets/products/rok-masking-tape/main.jpg",
+    listingAspect: "3959/2922",
+    aspect: "2829/2122",
+    description: "제철음식과 계절의 기록을 담은 제철테잎 록(錄) 피치.",
+    price: 6000,
+    priceLabel: "6,000 KRW",
+    link: "https://smartstore.naver.com/studioudn/products/13791005348",
+    optionGroup: "rok-masking-tape",
+    optionLabel: "피치 · 20mm × 7m",
+  },
+  {
+    slug: "rok-masking-tape-nordic-blue",
+    title: "록 Rok 제철음식 마스킹 테이프 1개, 15mm×7m, 노틱블루",
+    listingTitle: "록 Rok 제철음식 마스킹 테이프",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/rok-masking-tape/blue.png",
+    listingImage: "/assets/products/rok-masking-tape/main.jpg",
+    listingAspect: "3959/2922",
+    aspect: "2829/2122",
+    description: "제철음식과 계절의 기록을 담은 제철테잎 록(錄) 노틱블루.",
+    price: 5000,
+    priceLabel: "5,000 KRW",
+    link: "https://smartstore.naver.com/studioudn/products/13791005347",
+    optionGroup: "rok-masking-tape",
+    optionLabel: "노틱블루 · 15mm × 7m",
+  },
+  {
+    slug: "rok-masking-tape-purple",
+    title: "록 Rok 제철음식 마스킹 테이프 1개, 15mm×7m, 퍼플",
+    listingTitle: "록 Rok 제철음식 마스킹 테이프",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/rok-masking-tape/purple.png",
+    listingImage: "/assets/products/rok-masking-tape/main.jpg",
+    listingAspect: "3959/2922",
+    aspect: "2829/2122",
+    description: "제철음식과 계절의 기록을 담은 제철테잎 록(錄) 퍼플.",
+    price: 5000,
+    priceLabel: "5,000 KRW",
+    link: "https://smartstore.naver.com/studioudn/products/13791005346",
+    optionGroup: "rok-masking-tape",
+    optionLabel: "퍼플 · 15mm × 7m",
   },
   {
     slug: "neryge-to-slow",
@@ -255,8 +332,7 @@ export const products: Product[] = [
       { src: "/assets/portfolio_images/ryeong-2027/detail_1.png", aspect: "1073/1466" },
       { src: "/assets/portfolio_images/ryeong-2027/detail_2.jpg", aspect: "3479/3918" },
       { src: "/assets/portfolio_images/ryeong-2027/detail_3.png", aspect: "1123/1401" },
-      { src: "/assets/portfolio_images/ryeong-2027/detail_4.jpg", aspect: "3024/2268" },
-      { src: "/assets/portfolio_images/ryeong-2027/detail_5.jpg", aspect: "3024/2275" },
+      // 작업 과정 사진(detail_4·detail_5)은 상품 상세에서 제외한다.
       // 파동7-3(mupf5norues9) — IG 확보분 중복 추가: Dd2z6CwEeIP_1(시트 확대 컷·
       // md5 cdbe93af·1080×810 — 기존 8종과 미중복). _2(detail_5 동일 촬영 저해상)는
       // qa-visual 미반영 권고 준수 — 미추가. 출처: instagram.com DC9WOdDSmwj 계열 아님·

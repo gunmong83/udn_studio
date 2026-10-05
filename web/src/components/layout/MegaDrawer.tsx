@@ -28,7 +28,7 @@ export default function MegaDrawer({
       aria-label="전체 메뉴"
       className="fixed left-[max(0px,calc(50%_-_400px))] top-[52px] z-[10502] h-[calc(100dvh-52px)] w-[391px] max-w-[calc(100vw-16px)] overflow-y-auto bg-bg shadow-lg"
     >
-      {/* 1차 — PRODUCTS · PORTFOLIO · JOURNAL · ABOUT (서브 없음) */}
+      {/* PRODUCTS · PORTFOLIO · ABOUT */}
       <Link
         href="/products"
         onClick={onClose}
@@ -42,13 +42,6 @@ export default function MegaDrawer({
         className="block px-6 py-5 text-drawer font-normal text-ink-strong hover:font-medium"
       >
         PORTFOLIO
-      </Link>
-      <Link
-        href="/journal"
-        onClick={onClose}
-        className="block px-6 py-5 text-drawer font-normal text-ink-strong hover:font-medium"
-      >
-        JOURNAL
       </Link>
       <Link
         href="/about"

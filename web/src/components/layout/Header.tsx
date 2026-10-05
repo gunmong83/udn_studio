@@ -13,7 +13,6 @@ import { usePathname } from "next/navigation";
 const MENU = [
   { label: "PRODUCTS", href: "/products" },
   { label: "PORTFOLIO", href: "/portfolio" },
-  { label: "JOURNAL", href: "/journal" },
   { label: "ABOUT", href: "/about" },
 ] as const;
 
