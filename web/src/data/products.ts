@@ -140,7 +140,6 @@ export const products: Product[] = [
       { src: "/assets/portfolio_images/udn-calendar-2026/detail_2.jpg", aspect: "3012/4799" },
       { src: "/assets/portfolio_images/udn-calendar-2026/detail_3.jpg", aspect: "3012/4799" },
       { src: "/assets/portfolio_images/udn-calendar-2026/detail_4.jpg", aspect: "3012/4799" },
-      { src: "/assets/portfolio_images/udn-calendar-2026/detail_5.jpg", aspect: "3959/2922" },
     ],
     // 원본(홈 카드·모달)에 설명 문구 없음 — 미설정(스토어 청크 "Click to view…"는 렌더 안 함)
     artistNote: ARTIST_NOTE_CALENDAR_2026,
