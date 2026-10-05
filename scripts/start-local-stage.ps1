@@ -44,7 +44,20 @@ $stageEnvironment = @{
   HOSTNAME = "0.0.0.0"
   PORT = "$Port"
 }
-$process = Start-Process -FilePath $nodeCommand -ArgumentList $arguments -WorkingDirectory $webRoot -Environment $stageEnvironment -RedirectStandardOutput $logFile -RedirectStandardError $errorLogFile -PassThru
+$environmentBackup = @{}
+foreach ($entry in $stageEnvironment.GetEnumerator()) {
+  $environmentBackup[$entry.Key] = [Environment]::GetEnvironmentVariable($entry.Key, "Process")
+  [Environment]::SetEnvironmentVariable($entry.Key, [string]$entry.Value, "Process")
+}
+try {
+  # Windows PowerShell 5.1에는 Start-Process -Environment가 없으므로
+  # 자식 프로세스 시작 직전에 프로세스 환경을 설정하고 곧바로 복원한다.
+  $process = Start-Process -FilePath $nodeCommand -ArgumentList $arguments -WorkingDirectory $webRoot -RedirectStandardOutput $logFile -RedirectStandardError $errorLogFile -PassThru
+} finally {
+  foreach ($entry in $environmentBackup.GetEnumerator()) {
+    [Environment]::SetEnvironmentVariable($entry.Key, $entry.Value, "Process")
+  }
+}
 Set-Content -LiteralPath $pidFile -Value $process.Id
 
 $baseUrl = "http://127.0.0.1:$Port"
