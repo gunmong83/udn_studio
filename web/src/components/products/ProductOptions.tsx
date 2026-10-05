@@ -7,16 +7,22 @@ export default function ProductOptions({
   product,
   options,
   selected,
+  quantities,
   open,
   onToggle,
   onSelect,
+  onRemove,
+  onQuantityChange,
 }: {
   product: Product;
   options: Product[];
-  selected: Product | null;
+  selected: Product[];
+  quantities: Record<string, number>;
   open: boolean;
   onToggle: () => void;
   onSelect: (product: Product) => void;
+  onRemove: (slug: string) => void;
+  onQuantityChange: (slug: string, quantity: number) => void;
 }) {
   if (!product.optionGroup || options.length < 2) return null;
 
@@ -31,7 +37,7 @@ export default function ProductOptions({
         aria-expanded={open}
         className="mt-3 flex w-full items-center justify-between border border-line-strong bg-bg px-3 py-3 text-left text-body transition-colors hover:bg-soft"
       >
-        <span>{selected ? `${selected.optionLabel} · ${selected.priceLabel}` : "옵션을 선택해 주세요 (필수)"}</span>
+        <span>{selected.length ? `${selected.length}개 옵션 선택됨` : "옵션을 선택해 주세요 (필수)"}</span>
         <span aria-hidden="true" className={`text-muted transition-transform ${open ? "rotate-180" : ""}`}>⌄</span>
       </button>
 
@@ -39,7 +45,7 @@ export default function ProductOptions({
         <div className="mt-2 border border-line bg-bg p-2">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {options.map((option) => {
-              const isSelected = option.slug === selected?.slug;
+              const isSelected = selected.some((item) => item.slug === option.slug);
               return (
                 <button
                   key={option.slug}
@@ -63,18 +69,28 @@ export default function ProductOptions({
         </div>
       )}
 
-      {selected && (
-        <div className="mt-3 flex items-center gap-3 border border-line bg-soft/40 p-3">
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-bg">
-            <Image src={selected.image} alt="" fill sizes="64px" className="object-cover" />
+      <div className="mt-3 space-y-2">
+        {selected.map((option) => (
+          <div key={option.slug} className="flex items-center gap-3 border border-line bg-soft/40 p-3">
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-bg">
+              <Image src={option.image} alt="" fill sizes="64px" className="object-cover" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-body font-semibold text-text">{option.title}</p>
+              <p className="mt-1 text-util text-muted">{option.optionLabel}</p>
+              <div className="mt-2 inline-flex items-center border border-line-strong bg-bg">
+                <button type="button" aria-label={`${option.optionLabel} 수량 줄이기`} onClick={() => onQuantityChange(option.slug, (quantities[option.slug] ?? 1) - 1)} className="h-7 w-7 text-body hover:bg-soft">−</button>
+                <span className="min-w-7 text-center text-util">{quantities[option.slug] ?? 1}</span>
+                <button type="button" aria-label={`${option.optionLabel} 수량 늘리기`} onClick={() => onQuantityChange(option.slug, (quantities[option.slug] ?? 1) + 1)} className="h-7 w-7 text-body hover:bg-soft">+</button>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-col items-end gap-2">
+              <p className="text-body font-bold text-text">{((option.price ?? 0) * (quantities[option.slug] ?? 1)).toLocaleString("ko-KR")} KRW</p>
+              <button type="button" onClick={() => onRemove(option.slug)} className="text-util text-muted underline hover:text-text">삭제</button>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-body font-semibold text-text">{selected.title}</p>
-            <p className="mt-1 text-util text-muted">{selected.optionLabel}</p>
-          </div>
-          <p className="shrink-0 text-body font-bold text-text">{selected.priceLabel}</p>
-        </div>
-      )}
+        ))}
+      </div>
     </section>
   );
 }

@@ -14,9 +14,10 @@ export default function ProductDetailInteractive({
   options: Product[];
 }) {
   const hasOptions = options.length >= 2 && Boolean(product.optionGroup);
-  const [selected, setSelected] = useState<Product | null>(hasOptions ? null : product);
+  const [selected, setSelected] = useState<Product[]>(hasOptions ? [] : [product]);
+  const [quantities, setQuantities] = useState<Record<string, number>>({ [product.slug]: 1 });
   const [optionsOpen, setOptionsOpen] = useState(false);
-  const purchaseProduct = selected ?? product;
+  const purchaseProduct = selected.length ? selected : [product];
 
   const requestOption = () => {
     setOptionsOpen(true);
@@ -31,22 +32,27 @@ export default function ProductDetailInteractive({
         product={product}
         options={options}
         selected={selected}
+        quantities={quantities}
         open={optionsOpen}
         onToggle={() => setOptionsOpen((open) => !open)}
         onSelect={(option) => {
-          setSelected(option);
-          setOptionsOpen(false);
+          setSelected((current) => current.some((item) => item.slug === option.slug) ? current : [...current, option]);
+          setQuantities((current) => ({ ...current, [option.slug]: current[option.slug] ?? 1 }));
+          setOptionsOpen(true);
         }}
+        onRemove={(slug) => setSelected((current) => current.filter((item) => item.slug !== slug))}
+        onQuantityChange={(slug, quantity) => setQuantities((current) => ({ ...current, [slug]: Math.max(1, Math.min(99, quantity)) }))}
       />
       <div className="mt-6">
         <ProductPurchaseBar
-          product={purchaseProduct}
-          requiresOption={hasOptions && !selected}
+          products={purchaseProduct}
+          quantities={quantities}
+          requiresOption={hasOptions && !selected.length}
           onRequestOption={requestOption}
         />
       </div>
       <div className="px-3">
-        <ProductActions product={purchaseProduct} accent />
+        <ProductActions product={purchaseProduct[0]} accent />
       </div>
     </>
   );
