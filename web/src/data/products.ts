@@ -8,7 +8,7 @@
 // - artistNote: 스마트스토어 상세 설명 원문 전문(파동5 B2·검수 승인 ② — 발췌 금지·원문 전체).
 //   artist-notes.ts 참조(python이 원본 txt에서 바이트 보존 생성).
 // - price·link: 가격 현재가 원칙(파동4 "카피 원문만"의 유일 예외 — service-lead 확정).
-//   관측: 2026-10-01 09:20 KST 스토어 재확인(캘린더 50,000·령 25,000 — 검수 3경로 확정과 일치).
+//   관측: 2026-10-01 09:20 KST 스토어 재확인(기존 가격 기록 보존용 주석).
 //
 // 파동5 B1(2026-10-01·muos3okq61ob + 보강 muos4z6xg80x) — kind 스키마 + §7 비율 필드:
 // - kind: "product"(판매 상품 — PRODUCTS 축) | "work"(작품 — PORTFOLIO 축).
@@ -24,7 +24,7 @@
 //
 // 파동5 B2(muosdkwtl1yu ②) — §3 PRODUCTS 재구성:
 // - 령 2027 신규(자산 8종 md5 원장 대조 반입 — rep·detail 1~6·declaration).
-// - 캘린더 가격 19,000→50,000 갱신(현재가 원칙)·detail 4종(파동4 수집 d1~4).
+// - 캘린더 가격은 운영 할인 정책에 따라 별도 관리·detail 4종(파동4 수집 d1~4).
 // - 순서: 원본 홈 순서 7건 + 령 append(§5 — 원본 순서가 유일한 순서 신호).
 
 import {
@@ -138,10 +138,9 @@ export const products: Product[] = [
     ],
     // 원본(홈 카드·모달)에 설명 문구 없음 — 미설정(스토어 청크 "Click to view…"는 렌더 안 함)
     artistNote: ARTIST_NOTE_CALENDAR_2026,
-    // 파동5 B2: 가격 현재가 갱신(원본 사이트 카드 19,000 → 스토어 현재 50,000 —
-    // 2026-10-01 09:20 KST 재확인·검수 3경로 확정 muos2v2imfo9)
-    price: 50000,
-    priceLabel: "50,000 KRW",
+    // 운영 할인: 기존 50,000원에서 90% 할인된 5,000원
+    price: 5000,
+    priceLabel: "5,000 KRW",
     link: "https://smartstore.naver.com/studioudn/products/12907475385",
   },
   {
