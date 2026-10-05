@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/src/components/ui/ProgressiveImage";
 import Link from "next/link";
 import { journalEntries } from "@/src/data/journal";
 

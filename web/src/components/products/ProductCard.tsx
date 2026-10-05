@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/src/components/ui/ProgressiveImage";
 import Link from "next/link";
 import type { Product } from "@/src/data/products";
 

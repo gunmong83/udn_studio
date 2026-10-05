@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/src/components/ui/ProgressiveImage";
 import { useSession } from "next-auth/react";
 import { removeFromCart, setCartQty, useCart } from "@/src/lib/store";
 import { getProduct } from "@/src/data/products";

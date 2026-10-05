@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/src/components/ui/ProgressiveImage";
 import Link from "next/link";
 import { clearCart, removeFromCart, setCartQty, useCart } from "@/src/lib/store";
 import { getProduct } from "@/src/data/products";

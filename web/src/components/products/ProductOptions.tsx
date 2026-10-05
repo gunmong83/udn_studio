@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/src/components/ui/ProgressiveImage";
 import type { Product } from "@/src/data/products";
 
 export default function ProductOptions({
