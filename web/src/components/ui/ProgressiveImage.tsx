@@ -23,16 +23,17 @@ export default function ProgressiveImage({ className, src, sizes, onLoad, ...pro
 function ProgressiveImageLayer({ className, src, sizes, onLoad, ...props }: ImageProps) {
   const [previewLoaded, setPreviewLoaded] = useState(false);
   const [fullLoaded, setFullLoaded] = useState(false);
+  const externallyHidden = className?.split(/\s+/).includes("opacity-0") ?? false;
 
   const previewClassName = [
     className,
     "scale-[1.02] blur-sm transition-opacity duration-300",
-    previewLoaded ? "opacity-100" : "opacity-0",
+    !externallyHidden && previewLoaded ? "opacity-100" : "opacity-0",
   ].filter(Boolean).join(" ");
   const fullClassName = [
     className,
     "transition-opacity duration-300",
-    fullLoaded ? "opacity-100" : "opacity-0",
+    !externallyHidden && fullLoaded ? "opacity-100" : "opacity-0",
   ].filter(Boolean).join(" ");
 
   return (
