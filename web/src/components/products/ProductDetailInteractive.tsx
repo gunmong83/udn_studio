@@ -49,6 +49,7 @@ export default function ProductDetailInteractive({
         open={optionsOpen}
         onToggle={() => setOptionsOpen((open) => !open)}
         onSelect={(option) => {
+          if (option.soldOut) return;
           setSelected((current) => current.some((item) => item.slug === option.slug) ? current : [...current, option]);
           setQuantities((current) => ({ ...current, [option.slug]: current[option.slug] ?? 1 }));
           setOptionsOpen(true);

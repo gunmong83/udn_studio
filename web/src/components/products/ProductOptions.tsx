@@ -50,9 +50,12 @@ export default function ProductOptions({
                 <button
                   key={option.slug}
                   type="button"
-                  onClick={() => onSelect(option)}
+                  onClick={() => {
+                    if (!option.soldOut) onSelect(option);
+                  }}
+                  disabled={option.soldOut}
                   aria-pressed={isSelected}
-                  className={`border px-3 py-2 text-left text-util transition-colors ${
+                  className={`border px-3 py-2 text-left text-util transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                     isSelected
                       ? "border-text bg-text text-bg hover:bg-[#444]"
                       : "border-line text-text hover:bg-soft"
