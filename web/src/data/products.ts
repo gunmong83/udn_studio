@@ -30,7 +30,6 @@
 import {
   ARTIST_NOTE_CALENDAR_2026,
   ARTIST_NOTE_ROK_MASKING_TAPE,
-  ARTIST_NOTE_RYEONG_2027,
 } from "./artist-notes";
 
 export type ProductCategory =
@@ -229,6 +228,82 @@ export const products: Product[] = [
     shippingGroup: "calendar-2027-tape",
   },
   {
+    slug: "che-postcard-2026",
+    title: "UDN PostCard 2026 Four Season [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-postcard-2026/main.jpg",
+    aspect: "3959/2922",
+    description: `the Vessel series 02
+[彩]Che, the color of mind
+Four Season Post Card
+100x148mm
+
+당신의 마음을 색으로 담아 전달하는 그릇시리즈, Che의 엽서 버전입니다.
+네가지의 계절과, 식용이 가능한 그 시기에 피는 꽃들을 넣었습니다.
+뒷면에는 각각의 계절에 맞는 마음들이 글귀로 새겨져있어 당신이 다 전달하지 못하는 마음을 대신합니다.
+
+This postcard edition of Che, our Vessel series, carries your feelings through color.
+The collection celebrates the four seasons, featuring edible flowers that bloom in each.
+On the reverse, words inspired by each season give voice to the feelings you cannot fully express.`,
+    price: 2000,
+    priceLabel: "2,000 KRW",
+    optionGroup: "che-postcard-2026",
+    shippingGroup: "che-postcard-2026",
+  },
+  {
+    slug: "che-postcard-2026-spring",
+    title: "UDN PostCard 2026 Four Season [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-postcard-2026/spring.jpg",
+    aspect: "3959/2922",
+    price: 2000,
+    priceLabel: "2,000 KRW",
+    optionGroup: "che-postcard-2026",
+    optionLabel: "봄 (목련) · 2,000원",
+    shippingGroup: "che-postcard-2026",
+  },
+  {
+    slug: "che-postcard-2026-summer",
+    title: "UDN PostCard 2026 Four Season [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-postcard-2026/summer.jpg",
+    aspect: "3959/2922",
+    price: 2000,
+    priceLabel: "2,000 KRW",
+    optionGroup: "che-postcard-2026",
+    optionLabel: "여름 (연꽃) · 2,000원",
+    shippingGroup: "che-postcard-2026",
+  },
+  {
+    slug: "che-postcard-2026-autumn",
+    title: "UDN PostCard 2026 Four Season [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-postcard-2026/autumn.jpg",
+    aspect: "3959/2922",
+    price: 2000,
+    priceLabel: "2,000 KRW",
+    optionGroup: "che-postcard-2026",
+    optionLabel: "가을 (국화) · 2,000원",
+    shippingGroup: "che-postcard-2026",
+  },
+  {
+    slug: "che-postcard-2026-winter",
+    title: "UDN PostCard 2026 Four Season [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-postcard-2026/winter.jpg",
+    aspect: "3959/2922",
+    price: 2000,
+    priceLabel: "2,000 KRW",
+    optionGroup: "che-postcard-2026",
+    optionLabel: "겨울 (동백) · 2,000원",
+    shippingGroup: "che-postcard-2026",
+  },
+  {
     slug: "neryge-to-slow",
     title: "NeRyGe : To Slow",
     category: "Total Branding",
@@ -357,8 +432,18 @@ export const products: Product[] = [
       { src: "/assets/portfolio_images/ryeong-2027/new-photos/march-green.jpg", aspect: "2829/4964" },
       { src: "/assets/portfolio_images/ryeong-2027/new-photos/january-detail.jpg", aspect: "2829/4964" },
     ],
-    // 원문 description 부재(원본 사이트 청크 부재 — 지어내지 않음)
-    artistNote: ARTIST_NOTE_RYEONG_2027,
+    description: `the Vessel series 01
+[令]Ryung, the map of time
+Food in Season Calendar
+150x170mm
+
+당신의 날짜들과 달, 계절들을 제 시간에 맞게, 하늘의 부름인 령에 맞게 보낼 수 있게 도와주는 교구입니다.
+누가 알려주지 않아도 제 시기를 찾아 자라나는 작물들을 가장 건강할 때 만날 수 있도록 시간의 지도가 되어 당신을 안내합니다.
+숫자보다도 당신의 삶이, 날짜보다도 우리의 제 철에 맞는 성장이 중요함을 잊지 않게 해주길 바랍니다.
+
+A learning companion to help you move through your days, months, and seasons in their own time, guided by 令—Ryeong, the call of the heavens.
+Like a map of time, it guides you toward the crops that find their season and grow without being told, so you may meet them at their fullest and most nourishing.
+May it remind you that your life matters more than numbers, and that growing in our own season matters more than the dates we count.`,
     // 현재가(원장 §7 2차 재확인 — dispSalePrice 20000·2026-10-01 2차 재추출·변동 없음)
     price: 20000,
     priceLabel: "20,000 KRW",

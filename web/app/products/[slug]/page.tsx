@@ -53,7 +53,7 @@ export default async function ProductDetailPage({
     const session = await auth();
     if (session?.user?.role !== "admin") notFound();
   }
-  const isTape = product.optionGroup === "rok-masking-tape";
+  const isOptionProduct = Boolean(product.optionGroup);
 
   return (
     <div className="w-full pb-[88px]">
@@ -107,13 +107,13 @@ export default async function ProductDetailPage({
         />
       </div>
 
-      {!isTape && product.listingImage && product.image !== product.listingImage && (
+      {!isOptionProduct && product.listingImage && product.image !== product.listingImage && (
         <div className="relative mt-section w-full overflow-hidden" style={{ aspectRatio: product.aspect }}>
           <Image src={product.image} alt={`${product.title} 선택 옵션`} fill sizes="750px" className="object-cover" />
         </div>
       )}
 
-      {isTape && products.filter((candidate) => candidate.optionGroup === product.optionGroup).map((option) => (
+      {isOptionProduct && products.filter((candidate) => candidate.optionGroup === product.optionGroup && candidate.optionLabel).map((option) => (
         <div key={option.slug} className="relative mt-section w-full overflow-hidden" style={{ aspectRatio: option.aspect }}>
           <Image src={option.image} alt={`${option.optionLabel ?? product.title} detail`} fill sizes="750px" className="object-cover" />
         </div>
@@ -127,7 +127,7 @@ export default async function ProductDetailPage({
           </p>
         )}
         {product.description && (
-          <p className="mt-4 text-body leading-[21.6px] text-text">
+          <p className="mt-4 whitespace-pre-line text-body leading-[21.6px] text-text">
             {product.description}
           </p>
         )}
@@ -135,7 +135,7 @@ export default async function ProductDetailPage({
 
       <ProductDetailInteractive
         product={product}
-        options={products.filter((candidate) => candidate.optionGroup === product.optionGroup)}
+        options={products.filter((candidate) => candidate.optionGroup === product.optionGroup && candidate.optionLabel)}
       />
 
       {/* 작가노트 원문 전문(§3 — 검수 승인 ②·원문 그대로 재작성 0) */}
@@ -157,7 +157,7 @@ export default async function ProductDetailPage({
       )}
 
       {/* 본문 이미지 — 원본 비율 전폡 스택(§7 #6 — per-asset aspect·무크롭) */}
-      {!isTape && product.detailImages?.map((d) => (
+      {!isOptionProduct && product.detailImages?.map((d) => (
         <div
           key={d.src}
           className="relative mt-section w-full overflow-hidden"

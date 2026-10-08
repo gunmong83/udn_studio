@@ -20,6 +20,10 @@ export default function ProductDetailInteractive({
       "rok-masking-tape-nordic-blue",
       "rok-masking-tape-peach",
       "rok-masking-tape-green",
+      "che-postcard-2026-spring",
+      "che-postcard-2026-summer",
+      "che-postcard-2026-autumn",
+      "che-postcard-2026-winter",
     ];
     return order.indexOf(a.slug) - order.indexOf(b.slug);
   });

@@ -13,7 +13,7 @@ export interface SearchDoc {
 }
 
 export const searchIndex: SearchDoc[] = [
-  ...products.filter((p) => !p.adminOnly && (!p.optionGroup || p.slug === "rok-masking-tape-green")).map((p) => ({
+  ...products.filter((p) => !p.adminOnly && (!p.optionGroup || p.slug === "rok-masking-tape-green" || p.slug === "che-postcard-2026")).map((p) => ({
     type: "product" as const,
     slug: p.slug,
     title: p.title,

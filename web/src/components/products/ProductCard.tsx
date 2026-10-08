@@ -23,6 +23,8 @@ export default function ProductCard({ product }: { product: Product }) {
     product.kind === "work" && !product.title.startsWith("[")
       ? `[ ${product.title} ]`
       : product.title;
+  const displayTitle = product.listingTitle ?? title;
+  const titleParts = product.kind === "product" ? displayTitle.split(/\s+(?=\[)/, 2) : [displayTitle];
   return (
     <Link href={href} className="block">
       <div
@@ -45,7 +47,11 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="pt-2">
         <h3 className="text-body font-semibold leading-[18px] text-text">
-          {product.listingTitle ?? title}
+          {titleParts.map((part, index) => (
+            <span key={`${part}-${index}`} className={index > 0 ? "block" : undefined}>
+              {part}
+            </span>
+          ))}
         </h3>
         {product.priceLabel && (
           <p className="mt-0.5 text-body font-bold leading-[18px] text-text">
