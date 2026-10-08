@@ -121,7 +121,9 @@ export default async function ProductDetailPage({
 
       <div className="px-3 pt-4">
         <h1 className="text-drawer font-bold text-text">{product.title}</h1>
-        {(product.displayPriceLabel ?? product.priceLabel) && (
+        {product.soldOut ? (
+          <p className="mt-3 text-body font-bold text-muted">SOLD OUT</p>
+        ) : (product.displayPriceLabel ?? product.priceLabel) && (
           <p className="mt-3 text-body font-bold text-text">
             {product.displayPriceLabel ?? product.priceLabel}
           </p>

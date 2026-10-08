@@ -21,6 +21,19 @@ export default function ProductPurchaseBar({
   const { data: session } = useSession();
 
   if (!products.length || products.some((product) => product.price == null)) return null;
+  if (products.some((product) => product.soldOut)) {
+    return (
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-canvas border-y border-line bg-bg/95 px-3 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] backdrop-blur-sm">
+        <button
+          type="button"
+          disabled
+          className="h-10 w-full border border-line bg-soft px-2 text-nav font-medium text-muted"
+        >
+          SOLD OUT
+        </button>
+      </div>
+    );
+  }
 
   const requestOption = () => {
     onRequestOption?.();

@@ -74,6 +74,8 @@ export interface Product {
   price?: number;
   /** 가격 표기(예: "50,000 KRW") */
   priceLabel?: string;
+  /** 현재 판매를 중지한 상품 — 상세·목록에는 노출하되 구매 CTA를 비활성화한다. */
+  soldOut?: boolean;
   /** 목록·상세에서 옵션 가격 범위를 함께 보여줄 때 사용 */
   displayPriceLabel?: string;
   /** 구매 링크(스마트스토어) */
@@ -248,6 +250,7 @@ The collection celebrates the four seasons, featuring edible flowers that bloom 
 On the reverse, words inspired by each season give voice to the feelings you cannot fully express.`,
     price: 2000,
     priceLabel: "2,000 KRW",
+    soldOut: true,
     optionGroup: "che-postcard-2026",
     shippingGroup: "che-postcard-2026",
   },
@@ -260,6 +263,7 @@ On the reverse, words inspired by each season give voice to the feelings you can
     aspect: "3959/2922",
     price: 2000,
     priceLabel: "2,000 KRW",
+    soldOut: true,
     optionGroup: "che-postcard-2026",
     optionLabel: "봄 (목련) · 2,000원",
     shippingGroup: "che-postcard-2026",
@@ -273,6 +277,7 @@ On the reverse, words inspired by each season give voice to the feelings you can
     aspect: "3959/2922",
     price: 2000,
     priceLabel: "2,000 KRW",
+    soldOut: true,
     optionGroup: "che-postcard-2026",
     optionLabel: "여름 (연꽃) · 2,000원",
     shippingGroup: "che-postcard-2026",
@@ -286,6 +291,7 @@ On the reverse, words inspired by each season give voice to the feelings you can
     aspect: "3959/2922",
     price: 2000,
     priceLabel: "2,000 KRW",
+    soldOut: true,
     optionGroup: "che-postcard-2026",
     optionLabel: "가을 (국화) · 2,000원",
     shippingGroup: "che-postcard-2026",
@@ -299,6 +305,7 @@ On the reverse, words inspired by each season give voice to the feelings you can
     aspect: "3959/2922",
     price: 2000,
     priceLabel: "2,000 KRW",
+    soldOut: true,
     optionGroup: "che-postcard-2026",
     optionLabel: "겨울 (동백) · 2,000원",
     shippingGroup: "che-postcard-2026",
