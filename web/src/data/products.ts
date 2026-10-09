@@ -263,7 +263,6 @@ Fruits in season Post Card
 This is the fruit-bearing tree edition of Che [彩], the Colors of the Heart series from A Vessel for the Heart. Fruit seems to gather the heart, little by little, until it ripens into something tangible and leaves its presence in the world. As I look upon these fruits, each coming to fruition in its own hue, I wonder whether we, too, are gathering the many colors of our hearts toward something we hope one day to bring to fruition. I find myself contemplating the colors and feelings of the season that is uniquely my own.`,
     price: 2000,
     priceLabel: "2,000 KRW",
-    soldOut: true,
     optionGroup: "che-postcard-2026-fruits",
     shippingGroup: "che-postcard-2026-fruits",
   },
