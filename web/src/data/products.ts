@@ -247,6 +247,25 @@ Edible flowers in season Post Card
     shippingGroup: "che-postcard-2026",
   },
   {
+    slug: "buhm-postcard-2026",
+    title: "UDN PostCard 2026 Geometric Net [範 Buhm]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/buhm-postcard-2026/main.jpg",
+    aspect: "3959/2922",
+    description: `the Vessel series 04
+[範]Buhm, the Law of Structure
+Amethyst Post Card
+100x148mm
+
+구조의 법을 담는 그릇, 범[範] 시리즈의 첫 번째 작품으로, 수학을 좋아하는 첫째 아이가 만든 전개도를 그래픽화 한 작업입니다. 구조를 관통하는 근본 원리, 법을 담는 이 그릇은 사물 안에 존재하는 구조적 질서를 표현합니다. 겉으로 보이는 것과 그 구조가 어떻게, 얼마나 다른지 직관적으로 알 수 있도록 전개도로 펼쳐두고 앞과 뒤에 담아 당신을 상상하게 만듭니다. 자수정이라고 이름을 지은 것은 전개도를 그린 아이가 붙여준 제목입니다. 그 결정을 닮았다고 느꼈다고 합니다.
+
+The first work in Buhm[範], a series of vessels that hold The Law of Structure, transforms into a graphic composition a geometric net created by my eldest child, who loves mathematics. This vessel—holding the fundamental principle that runs through all structure—expresses the structural order inherent within things. The form is unfolded into a net and carried across the front and reverse, allowing us to perceive intuitively how, and how greatly, a thing may differ from the structure concealed within its outward appearance. In that space between the visible form and its underlying order, the work invites you to imagine. The title Amethyst was chosen by the child who drew the net. They felt that its form resembled the crystalline structure of an amethyst.`,
+    price: 2000,
+    priceLabel: "2,000 KRW",
+    soldOut: true,
+  },
+  {
     slug: "che-postcard-2026-spring",
     title: "UDN PostCard 2026 Four Season [彩 Che]",
     category: "Goods",

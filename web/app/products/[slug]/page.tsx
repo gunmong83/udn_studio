@@ -121,13 +121,12 @@ export default async function ProductDetailPage({
 
       <div className="px-3 pt-4">
         <h1 className="text-drawer font-bold text-text">{product.title}</h1>
-        {product.soldOut ? (
-          <p className="mt-3 text-body font-bold text-muted">SOLD OUT</p>
-        ) : (product.displayPriceLabel ?? product.priceLabel) && (
+          {(product.displayPriceLabel ?? product.priceLabel) && (
           <p className="mt-3 text-body font-bold text-text">
             {product.displayPriceLabel ?? product.priceLabel}
           </p>
         )}
+          {product.soldOut && <p className="text-util font-medium text-muted">SOLD OUT</p>}
         {product.description && (
           <p className="mt-4 whitespace-pre-line text-body leading-[21.6px] text-text">
             {product.description}

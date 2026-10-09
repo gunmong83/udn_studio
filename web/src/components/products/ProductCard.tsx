@@ -53,13 +53,12 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           ))}
         </h3>
-        {product.soldOut ? (
-          <p className="mt-0.5 text-body font-bold leading-[18px] text-muted">SOLD OUT</p>
-        ) : product.priceLabel && (
+        {product.priceLabel && (
           <p className="mt-0.5 text-body font-bold leading-[18px] text-text">
             {product.displayPriceLabel ?? product.priceLabel}
           </p>
         )}
+        {product.soldOut && <p className="text-util font-medium text-muted">SOLD OUT</p>}
       </div>
     </Link>
   );
