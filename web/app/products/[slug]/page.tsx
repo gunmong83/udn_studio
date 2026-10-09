@@ -114,9 +114,14 @@ export default async function ProductDetailPage({
       )}
 
       {isOptionProduct && products.filter((candidate) => candidate.optionGroup === product.optionGroup && candidate.optionLabel).map((option) => (
-        <div key={option.slug} className="relative mt-section w-full overflow-hidden" style={{ aspectRatio: option.aspect }}>
-          <Image src={option.image} alt={`${option.optionLabel ?? product.title} detail`} fill sizes="750px" className="object-cover" />
-        </div>
+        <figure key={option.slug} className="mt-section">
+          <div className="relative w-full overflow-hidden" style={{ aspectRatio: option.aspect }}>
+            <Image src={option.image} alt={`${option.optionLabel ?? product.title} detail`} fill sizes="750px" className="object-cover" />
+          </div>
+          <figcaption className="px-3 pt-2 text-util text-muted">
+            {option.optionLabel?.replace(/\s·\s[\d,]+원$/, "") ?? option.title}
+          </figcaption>
+        </figure>
       ))}
 
       <div className="px-3 pt-4">
