@@ -238,16 +238,8 @@ export const products: Product[] = [
     aspect: "3959/2922",
     description: `the Vessel series 02
 [彩]Che, the color of mind
-Four Season Post Card
-100x148mm
-
-당신의 마음을 색으로 담아 전달하는 그릇시리즈, Che의 엽서 버전입니다.
-네가지의 계절과, 식용이 가능한 그 시기에 피는 꽃들을 넣었습니다.
-뒷면에는 각각의 계절에 맞는 마음들이 글귀로 새겨져있어 당신이 다 전달하지 못하는 마음을 대신합니다.
-
-This postcard edition of Che, our Vessel series, carries your feelings through color.
-The collection celebrates the four seasons, featuring edible flowers that bloom in each.
-On the reverse, words inspired by each season give voice to the feelings you cannot fully express.`,
+Edible flowers in season Post Card
+100x148mm`,
     price: 2000,
     priceLabel: "2,000 KRW",
     soldOut: true,
