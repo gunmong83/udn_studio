@@ -29,7 +29,9 @@ export default function ProductOptions({
   return (
     <section data-product-options className="mt-6 px-3" aria-labelledby="product-options-title">
       <h2 id="product-options-title" className="text-body font-semibold text-text">
-        {product.optionGroup === "che-postcard-2026" ? "계절 선택" : "색상 · 사이즈 선택"}
+        {product.optionGroup === "che-postcard-2026" || product.optionGroup === "che-postcard-2026-fruits"
+          ? "계절 선택"
+          : "색상 · 사이즈 선택"}
       </h2>
       <button
         type="button"

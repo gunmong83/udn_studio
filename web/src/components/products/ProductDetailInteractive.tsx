@@ -24,6 +24,14 @@ export default function ProductDetailInteractive({
       "che-postcard-2026-summer",
       "che-postcard-2026-autumn",
       "che-postcard-2026-winter",
+      "che-postcard-2026-fruits-spring-strawberry",
+      "che-postcard-2026-fruits-spring-cheonhyehyang",
+      "che-postcard-2026-fruits-summer-maesil",
+      "che-postcard-2026-fruits-summer-peach",
+      "che-postcard-2026-fruits-autumn-grape",
+      "che-postcard-2026-fruits-autumn-persimmon",
+      "che-postcard-2026-fruits-winter-sansuyu",
+      "che-postcard-2026-fruits-winter-yuja",
     ];
     return order.indexOf(a.slug) - order.indexOf(b.slug);
   });

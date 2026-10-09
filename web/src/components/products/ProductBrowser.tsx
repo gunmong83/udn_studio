@@ -39,8 +39,8 @@ export default function ProductBrowser({
   const filters = kind === "work" ? WORK_CATEGORY_FILTERS : CATEGORY_FILTERS;
   const showTabs = kind !== "product";
   const pool = kind
-    ? products.filter((p) => p.kind === kind && (!p.adminOnly || isAdmin) && (!p.optionGroup || p.slug === "rok-masking-tape-green" || p.slug === "che-postcard-2026"))
-    : products.filter((p) => !p.adminOnly || isAdmin).filter((p) => !p.optionGroup || p.slug === "rok-masking-tape-green" || p.slug === "che-postcard-2026");
+    ? products.filter((p) => p.kind === kind && (!p.adminOnly || isAdmin) && (!p.optionGroup || p.slug === "rok-masking-tape-green" || p.slug === "che-postcard-2026" || p.slug === "che-postcard-2026-fruits"))
+    : products.filter((p) => !p.adminOnly || isAdmin).filter((p) => !p.optionGroup || p.slug === "rok-masking-tape-green" || p.slug === "che-postcard-2026" || p.slug === "che-postcard-2026-fruits");
   const [filter, setFilter] = useState<CategoryFilter>(
     normalizeCategory(initialCategory, filters),
   );
