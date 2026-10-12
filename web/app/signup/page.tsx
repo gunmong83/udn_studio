@@ -68,7 +68,7 @@ function SignupContent() {
           <p className="text-util font-medium text-text">회원가입을 위해 아래 약관에 동의해주세요.</p>
           <div className="mt-3 space-y-3">
             <label className="flex gap-2 text-util"><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> <span><Link href="/terms" className="underline transition-colors hover:text-text">이용약관</Link> 동의 (필수)</span></label>
-            <label className="flex gap-2 text-util"><input type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} /> <span><Link href="/privacy" className="underline transition-colors hover:text-text">개인정보 수집·이용</Link> 동의 (필수)</span></label>
+            <label className="flex gap-2 text-util"><input type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} /> <span><Link href="/privacy" className="underline transition-colors hover:text-text">개인정보 수집·이용</Link> 동의 (필수, 휴대전화번호 포함)</span></label>
           </div>
         </div>
         {!pendingToken && <div className="flex gap-3">
