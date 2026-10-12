@@ -37,6 +37,7 @@ export default function ProductCard({ product }: { product: Product }) {
           alt={title}
           fill
           sizes="238px"
+          quality={90}
           className="object-cover"
           style={
             product.objectPosition
