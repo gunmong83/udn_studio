@@ -933,6 +933,15 @@ May it remind you that your life matters more than numbers, and that growing in 
 
 현장 교사 신천주 강사의 강연 「몰입해서 놀고 읽는 아이들의 힘」을 위한 포스터입니다. 잘 노는 것과 책 읽는 교육의 의미를 살펴보고, 몰입독서의 뜻과 방법·효과, IB 프로그램 속 몰입독서를 소개하는 교육 내용을 담았습니다.`,
   },
+  {
+    slug: "dubgeuk-after-school-business-card",
+    title: "두근두근방과후 명함",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/dubgeuk-business-card/rep.jpg",
+    aspect: "3959/2922",
+    description: "두근두근방과후의 로고와 컬러 아이덴티티를 담아 앞·뒷면으로 구성한 명함 디자인입니다.",
+  },
 ];
 
 export function getProduct(slug: string): Product | undefined {
