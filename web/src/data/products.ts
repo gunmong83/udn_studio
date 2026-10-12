@@ -942,6 +942,29 @@ May it remind you that your life matters more than numbers, and that growing in 
     aspect: "3959/2922",
     description: "두근두근방과후의 로고와 컬러 아이덴티티를 담아 앞·뒷면으로 구성한 명함 디자인입니다.",
   },
+  {
+    slug: "mnm-2012-honors-benefit-invitation",
+    title: "MNM 2012 Honors benefit Invitation full package",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/mnm-2012-honors-invitation/rep.jpg",
+    aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/portfolio_images/mnm-2012-honors-invitation/detail_1.jpg", aspect: "3959/2922" },
+      { src: "/assets/portfolio_images/mnm-2012-honors-invitation/detail_2.jpg", aspect: "3959/2922" },
+    ],
+    description: "Malaria No More International Honors의 2012년 베네핏 초청장 패키지입니다. 접이식 초청장과 행사 프로그램, 봉투를 한 세트로 구성하고 모노톤 타이포그래피에 선명한 오렌지 포인트를 더했습니다.",
+  },
+  {
+    slug: "mushmina-total-branding",
+    title: "Mushmina Total Branding",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/mushmina-total-branding/rep.jpg",
+    aspect: "3959/2922",
+    description:
+      "A complete brand identity for Mushmina, bringing together its distinctive wordmark, business cards, product tags, and packaging. Inspired by Moroccan craft and handmade accessories, the system pairs ornate detailing with a warm, understated palette across bags, pouches, and jewelry.",
+  },
 ];
 
 export function getProduct(slug: string): Product | undefined {

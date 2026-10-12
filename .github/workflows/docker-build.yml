@@ -99,6 +99,9 @@ jobs:
               curl -fsS http://127.0.0.1:3001/ >/dev/null && break || sleep 2
             done
             curl -fsS http://127.0.0.1:3001/ >/dev/null
+            # Verify the runtime Next config is loaded by exercising the
+            # low-quality preview requested by ProgressiveImage.
+            curl -fsS 'http://127.0.0.1:3001/_next/image?url=%2Fassets%2Fproducts%2Fche-card-2026%2Fmain.jpg&w=3840&q=20' -o /dev/null
             if [ "${{ inputs.purge_member_data }}" = "PURGE" ]; then
               test -f /data/udn.db
               BACKUP="/data/udn.db.before-member-purge-${{ github.run_id }}"
