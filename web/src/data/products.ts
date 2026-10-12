@@ -418,6 +418,18 @@ The fruits of Che [彩], the colour series of A Vessel for the Heart, take on a 
     soldOut: true,
   },
   {
+    slug: "udn-package-2027",
+    title: "UDN Package 2027",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/landing/udn-calendar-2026-back.jpg",
+    aspect: "3959/2922",
+    description: `UDN Package 2027 상품 상세 설명입니다.\n자세한 내용은 준비 중입니다.`,
+    price: 1000,
+    priceLabel: "1,000 KRW",
+    soldOut: true,
+  },
+  {
     slug: "che-postcard-2026-spring",
     title: "UDN PostCard 2026 Edible flowers in Season [彩 Che]",
     category: "Goods",

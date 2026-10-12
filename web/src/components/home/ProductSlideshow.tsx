@@ -7,7 +7,7 @@ import { products } from "@/src/data/products";
 
 // 랜딩에서는 판매 상품만 순환한다. 옵션 상품은 대표 옵션 한 장으로 묶어
 // 같은 상품이 반복 노출되지 않도록 한다.
-const productSlides = ["ryeong-2027", "udn-calendar-2026", "rok-masking-tape-green", "che-postcard-2026", "buhm-postcard-2026", "che-postcard-2026-fruits", "che-sticker-2026-fruits"]
+const productSlides = ["ryeong-2027", "udn-calendar-2026", "rok-masking-tape-green", "che-postcard-2026", "buhm-postcard-2026", "che-postcard-2026-fruits", "che-sticker-2026-fruits", "udn-package-2027"]
   .map((slug) => products.find((item) => item.slug === slug))
   .filter((item): item is (typeof products)[number] => Boolean(item));
 const slides = [
@@ -18,13 +18,6 @@ const slides = [
     title: item.listingTitle ?? item.title,
     category: item.category,
   })),
-  {
-    image: "/assets/landing/udn-calendar-2026-back.jpg",
-    alt: "2027년 달력 패키지 이미지",
-    href: "/products/ryeong-2027",
-    title: "UDN Calendar 2027 Food in Season [令 Ryung]",
-    category: "Calendar",
-  },
 ];
 const AUTO_INTERVAL_MS = 5000;
 const FADE_MS = 600;
