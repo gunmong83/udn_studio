@@ -399,6 +399,25 @@ The first work in Buhm[範], a series of vessels that hold The Law of Structure,
     soldOut: true,
   },
   {
+    slug: "che-sticker-2026-fruits",
+    title: "UDN STICKER 2026 Fruits in season [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-sticker-2026-fruits/main.jpg",
+    aspect: "3959/2922",
+    description: `the Vessel series 03
+[彩]Che, the color of mind
+Fruits Character Sticker
+200x140mm
+
+마음을 담는 그릇의 색채 시리즈 채[彩]Che의 과실들 캐릭터 버젼입니다. 다양한 모양 속에 갖가지 감정과 표정이 드러납니다. 이토록 다채로움을 담은 색채 그릇, 채가 이번에는 좀 더 가볍고 다가가기 쉬운 형태로 단순화 되었습니다. 다이어리를 꾸미거나 동봉하는 편지지에 붙여도 좋겠습니다. 투명한 PET재질로 되어있어 일반 스티커보다는 단단하고, 색상은 조금 더 화사합니다.
+
+The fruits of Che [彩], the colour series of A Vessel for the Heart, take on a playful life as characters. Within their many shapes, a whole spectrum of feelings finds a face. Che, a vessel holding these many shades of the heart, now takes a simpler, lighter form—one that feels a little easier to welcome into everyday life. Let them brighten the pages of your journal, or carry a little feeling on the stationery tucked into a letter. Made from clear PET, they are firmer than ordinary stickers, with colours that bloom a little brighter.`,
+    price: 3000,
+    priceLabel: "3,000 KRW",
+    soldOut: true,
+  },
+  {
     slug: "che-postcard-2026-spring",
     title: "UDN PostCard 2026 Edible flowers in Season [彩 Che]",
     category: "Goods",
