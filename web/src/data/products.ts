@@ -419,12 +419,22 @@ The fruits of Che [彩], the colour series of A Vessel for the Heart, take on a 
   },
   {
     slug: "udn-package-2027",
-    title: "UDN Package 2027",
+    title: "UDN Mailer bag 2026 Food in season [達 DaL]",
     category: "Goods",
     kind: "product",
     image: "/assets/landing/udn-calendar-2026-back.jpg",
     aspect: "3959/2922",
-    description: `UDN Package 2027 상품 상세 설명입니다.\n자세한 내용은 준비 중입니다.`,
+    description: `the Vessel series 04
+[達]DaL, the vessel to reach
+White craft paper
+145x195mm
+
+당신에게 다다르다는 뜻의 다섯번째 그릇 시리즈 달[達]DaL은 그릇을 담는 그릇을 의미합니다. 이 안에는 UDN의 어떠한 상품도 담길 수 있겠지요.  소중하게 포장된 그릇은 당신에게 도달하는 길을 찾기 전까지 멈추지 않을 거에요. 당신에게 이르는 길이 안전하길 기원하며.
+
+The fifth vessel in the UDN series, 達 DaL, means to reach you.
+A vessel that carries another vessel, DaL is made to hold any creation from UDN, each one carefully wrapped and entrusted to its care.
+Bearing what was made with love and intention, it will not rest until it finds its way to you.
+May its journey be gentle, its passage safe, and all that it carries arrive in your hands with the care in which it was made.`,
     price: 1000,
     priceLabel: "1,000 KRW",
     soldOut: true,
