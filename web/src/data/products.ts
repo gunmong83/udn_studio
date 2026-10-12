@@ -34,6 +34,9 @@ import {
 
 export type ProductCategory =
   | "Total Branding"
+  | "Editorial Design"
+  | "Packaging Design"
+  | "Exhibition Design"
   | "Exhibition Poster"
   | "Poster"
   | "Calendar"
@@ -96,6 +99,9 @@ export interface Product {
 export const CATEGORY_FILTERS = [
   "All",
   "Total Branding",
+  "Editorial Design",
+  "Packaging Design",
+  "Exhibition Design",
   "Exhibition Poster",
   "Poster",
   "Calendar",
@@ -106,6 +112,9 @@ export const CATEGORY_FILTERS = [
 export const WORK_CATEGORY_FILTERS = [
   "All",
   "Total Branding",
+  "Editorial Design",
+  "Packaging Design",
+  "Exhibition Design",
   "Exhibition Poster",
   "Poster",
 ] as const;
@@ -964,6 +973,109 @@ May it remind you that your life matters more than numbers, and that growing in 
     aspect: "3959/2922",
     description:
       "A complete brand identity for Mushmina, bringing together its distinctive wordmark, business cards, product tags, and packaging. Inspired by Moroccan craft and handmade accessories, the system pairs ornate detailing with a warm, understated palette across bags, pouches, and jewelry.",
+  },
+  {
+    slug: "the-wine-occasional-party-wine",
+    title: "[the]Wine — Occasional Party Wine",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/the-wine/rep.jpg",
+    aspect: "2048/1512",
+    detailImages: [
+      { src: "/assets/portfolio_images/the-wine/detail_1.jpg", aspect: "2048/1512" },
+    ],
+    description:
+      "Occasional party wine branding built around three playful varieties—Tailgate, Clambake, and Bachelorette. Hand-drawn illustrations bring each bottle label to life, paired with a matching postcard to create a spirited, cohesive identity for gathering and celebration.",
+  },
+  {
+    slug: "kyungnong-herbicide-resistance-book",
+    title: "경농 — Resistance of Herbicide",
+    category: "Editorial Design",
+    kind: "work",
+    image: "/assets/portfolio_images/kyungnong-herbicide-resistance-book/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "경농의 제초제와 저항성 관련 정보를 담은 전문 서적 편집 디자인입니다. 식물 이미지와 작용 기전 도해, 화학 구조식, 비교 차트를 일정한 그리드 안에 배치해 복잡한 정보를 읽기 쉽게 구성했습니다. 차분한 회녹색을 중심으로 장별 색상과 선명한 강조색을 적용하고, 알파벳 표제와 탐색 요소로 정보를 찾기 쉬운 지면을 설계했습니다. 210×297mm 판형의 150페이지 책입니다.",
+  },
+  {
+    slug: "allen-organ-product-catalog",
+    title: "Allen Organ — 제품 브로슈어 & 카탈로그",
+    category: "Editorial Design",
+    kind: "work",
+    image: "/assets/portfolio_images/allen-organ-product-catalog/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "Allen Korea의 오르간을 소개하는 브로슈어·카탈로그 디자인입니다. 건반과 스톱, 목재 외장의 세부 사진을 넓은 가로 지면에 배치해 악기의 구조와 소재감을 보여줍니다. 제품별 색상 구분과 일관된 정보 블록을 사용해 섹션을 정리하고, 표지부터 내지까지 사진과 여백의 리듬을 이어 제품의 특징을 명료하게 전달하도록 구성했습니다.",
+  },
+  {
+    slug: "samsung-caster-2017-calendar",
+    title: "삼성캐스터 — 2017 월 캘린더",
+    category: "Editorial Design",
+    kind: "work",
+    image: "/assets/portfolio_images/samsung-caster-2017-calendar/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "삼성캐스터의 제품 이미지를 담은 2017년 벽걸이 캘린더 디자인입니다. 큰 월 숫자와 정돈된 날짜 배열을 중심으로 캐스터 제품 사진과 정보를 함께 배치했습니다. 제품의 금속 질감과 바퀴의 색상을 살리는 배경색, 명확한 타이포그래피로 일상적인 일정 확인과 제품 소개가 자연스럽게 이어지도록 구성했습니다. 380×660mm 판형의 13페이지 캘린더입니다.",
+  },
+  {
+    slug: "renault-samsung-happycare-brochure",
+    title: "르노삼성 — HappyCare Auto Solution",
+    category: "Editorial Design",
+    kind: "work",
+    image: "/assets/portfolio_images/renault-samsung-happycare-brochure/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "르노삼성의 HappyCare Auto Solution을 소개하는 3단 접지 브로슈어 디자인 시안입니다. 자동차 사진과 입체적인 H 형태의 그래픽을 결합해 서비스의 이름을 시각적으로 표현했습니다. 회색과 흰색을 바탕으로 노란색을 강조색으로 사용하고, 접힌 표지와 펼친 내지의 정보 흐름을 연결해 차량 관리 서비스의 내용을 단계적으로 읽을 수 있도록 구성했습니다.",
+  },
+  {
+    slug: "seoul-samgaetang-brand-identity",
+    title: "서울삼계탕 — 브랜드 아이덴티티",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/seoul-samgaetang-brand-identity/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "서울삼계탕의 매장과 인쇄물에 적용한 브랜드 아이덴티티 디자인입니다. 전통적인 닭의 형상과 친근한 캐릭터, 붓글씨 느낌의 한글 로고를 중심으로 음식점의 개성을 표현했습니다. 짙은 바탕에 빨강·파랑·초록의 색띠를 더해 간판, 명함, 메뉴판에 통일된 인상을 주고, 매장 입구의 캐릭터 조형물까지 브랜드의 시각 언어를 확장했습니다.",
+  },
+  {
+    slug: "kyungnong-divide-water-packaging",
+    title: "경농 — DIVIDE WATER® 나누다 분수호스",
+    category: "Packaging Design",
+    kind: "work",
+    image: "/assets/portfolio_images/kyungnong-divide-water-packaging/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "경농의 나누다 분수호스 DIVIDE WATER® 박스 패키지 디자인입니다. 물을 연상시키는 파란색과 흰색을 사용하고, 호스처럼 이어지는 선과 물방울 그래픽을 상자의 여러 면에 연결했습니다. 제품명, 규격, 사용 정보와 도해를 구분해 배치해 쌓인 상자에서도 제품을 식별하기 쉽게 구성했습니다. 전개도와 실제 패키지에 동일한 그래픽 체계를 적용한 460×250×300mm 박스입니다.",
+  },
+  {
+    slug: "mnm-endmalaria-campaign",
+    title: "Malaria No More — #EndMalaria 캠페인 & 로고",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/mnm-endmalaria-campaign/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "Malaria No More의 캠페인 로고와 #EndMalaria 디지털 홍보 디자인입니다. Young Ambassadors와 TEAM 2012 등 여러 활동의 로고를 구성하고, 인물 사진과 큰 타이포그래피로 캠페인의 메시지를 전달했습니다. 오렌지와 청록 계열의 강조색을 중심으로 AOL 웹페이지와 다양한 규격의 배너를 전개해, 매체가 달라져도 캠페인의 인상과 참여를 유도하는 메시지가 이어지도록 설계했습니다.",
+  },
+  {
+    slug: "korean-afoc-exhibition",
+    title: "대한민국 공군 — AFOC 전시 공간 디자인",
+    category: "Exhibition Design",
+    kind: "work",
+    image: "/assets/portfolio_images/korean-afoc-exhibition/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "대한민국 공군의 역사와 활동을 소개하는 전시 공간 및 설치 디자인입니다. 시대별 기록과 사진, 항공기 이미지와 도면을 벽면에 구성해 관람 동선을 따라 전시 내용을 읽을 수 있도록 설계했습니다. 파란색과 회색을 중심으로 방향성을 가진 그래픽과 연대별 표제를 연결하고, 입체 패널과 조명, 모형 전시를 함께 배치해 기록과 실물이 이어지는 공간을 구성했습니다.",
+  },
+  {
+    slug: "korean-marine-corps-exhibition",
+    title: "대한민국 해병대 — 역사 전시 공간 디자인",
+    category: "Exhibition Design",
+    kind: "work",
+    image: "/assets/portfolio_images/korean-marine-corps-exhibition/rep.jpg",
+    aspect: "2551/3579",
+    description:
+      "대한민국 해병대의 역사와 활동을 소개하는 전시 공간 및 설치 디자인입니다. 팔각형을 중심 모티프로 삼아 시대별 기록, 사진, 지도와 연표를 연결하고, 빨강·연두·초록의 색상으로 전시 구역을 구분했습니다. 벽면 그래픽과 영상 화면, 실물 전시, 중앙 조형물을 하나의 시각 체계로 구성해 관람객이 공간을 이동하며 전시의 흐름을 따라갈 수 있도록 설계했습니다.",
   },
 ];
 

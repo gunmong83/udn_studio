@@ -59,6 +59,7 @@ export default async function PortfolioDetailPage({
           fill
           priority
           sizes="750px"
+          quality={90}
           className="object-cover"
         />
       </div>
@@ -85,6 +86,7 @@ export default async function PortfolioDetailPage({
             alt={`${product.title} detail`}
             fill
             sizes="750px"
+            quality={90}
             className="object-cover"
           />
         </div>

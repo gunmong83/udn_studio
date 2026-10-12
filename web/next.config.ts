@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Keep dev artifacts separate so a local dev server can run alongside
+  // production `next start` instances without replacing their build output.
+  distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
   async headers() {
     const contentSecurityPolicy = [
       "default-src 'self'",

@@ -36,7 +36,7 @@ export default function ProductCard({ product }: { product: Product }) {
           src={product.listingImage ?? product.image}
           alt={title}
           fill
-          sizes="238px"
+          sizes="calc((100vw - 36px) / 3)"
           quality={90}
           className="object-cover"
           style={
