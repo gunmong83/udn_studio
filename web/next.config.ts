@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
   // 파동8-② v2(designer 승인 mup5yqc8sdqn·스펙 §5-3 렌더 보조): 리컬러 장표
   // 서빙 품질 75→95 — Next Image 재압축(3579→750px 축소)에서 안티앨리어싱
   // 열화·밝은 테두리 강화 완화. 원본 무손실 PNG(recolored-v2/)와 병행.
-  images: { qualities: [75, 95] },
+  images: { qualities: [20, 75, 95] },
 };
 
 export default nextConfig;
