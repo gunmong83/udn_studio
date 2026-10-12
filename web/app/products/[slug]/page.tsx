@@ -78,7 +78,9 @@ export default async function ProductDetailPage({
                 url: `https://studioundesignated.com/products/${product.slug}`,
                 priceCurrency: "KRW",
                 price: product.price,
-                availability: "https://schema.org/InStock",
+                availability: product.soldOut
+                  ? "https://schema.org/OutOfStock"
+                  : "https://schema.org/InStock",
               },
             }),
           }}
@@ -113,7 +115,7 @@ export default async function ProductDetailPage({
         </div>
       )}
 
-      {isOptionProduct && products.filter((candidate) => candidate.optionGroup === product.optionGroup && candidate.optionLabel).map((option) => (
+      {isOptionProduct && product.optionGallery !== false && products.filter((candidate) => candidate.optionGroup === product.optionGroup && candidate.optionLabel).map((option) => (
         <figure key={option.slug} className="mt-section">
           <div className="relative w-full overflow-hidden" style={{ aspectRatio: option.aspect }}>
             <Image src={option.image} alt={`${option.optionLabel ?? product.title} detail`} fill sizes="750px" className="object-cover" />
@@ -163,7 +165,7 @@ export default async function ProductDetailPage({
       )}
 
       {/* 본문 이미지 — 원본 비율 전폡 스택(§7 #6 — per-asset aspect·무크롭) */}
-      {!isOptionProduct && product.detailImages?.map((d) => (
+      {(!isOptionProduct || product.optionGallery === false) && product.detailImages?.map((d) => (
         <div
           key={d.src}
           className="relative mt-section w-full overflow-hidden"

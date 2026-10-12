@@ -66,6 +66,8 @@ export interface Product {
   objectPosition?: string;
   /** 상세 부가 이미지(§7 원본 비율 전폡 — B2 통합 스키마) */
   detailImages?: ProductImageAsset[];
+  /** 옵션별 이미지가 아닌 공통 상세 이미지를 표시할 때 false */
+  optionGallery?: boolean;
   /** 원본 설명 원문 — 없는 항목은 undefined(지어내지 않음) */
   description?: string;
   /** 스마트스토어 상세 설명 원문 전문(§3 작가노트 배치 — 검수 승인 ②) */
@@ -386,7 +388,7 @@ This is the fruit-bearing tree edition of Che [彩], the Colors of the Heart ser
     kind: "product",
     image: "/assets/products/buhm-postcard-2026/main.jpg",
     aspect: "3959/2922",
-    description: `the Vessel series 04
+    description: `the Vessel series 07
 [範]Buhm, the Law of Structure
 Amethyst Post Card
 100x148mm
@@ -405,7 +407,7 @@ The first work in Buhm[範], a series of vessels that hold The Law of Structure,
     kind: "product",
     image: "/assets/products/che-sticker-2026-fruits/main.jpg",
     aspect: "3959/2922",
-    description: `the Vessel series 03
+    description: `the Vessel series 02
 [彩]Che, the color of mind
 Fruits Character Sticker
 200x140mm
@@ -424,7 +426,7 @@ The fruits of Che [彩], the colour series of A Vessel for the Heart, take on a 
     kind: "product",
     image: "/assets/landing/udn-calendar-2026-back.jpg",
     aspect: "3959/2922",
-    description: `the Vessel series 04
+    description: `the Vessel series 05
 [達]DaL, the vessel to reach
 White craft paper
 145x195mm
@@ -437,7 +439,113 @@ Bearing what was made with love and intention, it will not rest until it finds i
 May its journey be gentle, its passage safe, and all that it carries arrive in your hands with the care in which it was made.`,
     price: 1000,
     priceLabel: "1,000 KRW",
+    soldOut: false,
+  },
+  {
+    slug: "udn-tissue-paper-2026",
+    title: "UDN Tissue Paper 2026 Food in season [達 DaL]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/udn-tissue-paper-2026/main.jpg",
+    aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/products/udn-tissue-paper-2026/detail_1.jpg", aspect: "3959/2922" },
+      { src: "/assets/products/udn-tissue-paper-2026/detail_2.jpg", aspect: "3959/2922" },
+    ],
+    description: `the Vessel series 05
+[達]DaL, the vessel to reach
+White wrapping tissue paper
+720x500mm
+
+당신에게 다다른다는 뜻의 다섯번째 그릇 시리즈 달[達]DaL은 그릇을 담는 그릇을 의미합니다. 그 중에서도 소중한 그릇을 안전하게 보호하기 위해 최선을 다할 포장지를 소개합니다. UDN의 그릇들이 당신에게 안전하게 다다르길.
+
+DaL [達], the fifth chapter in our Vessel series, takes its name from the meaning “to reach you”—a vessel that holds other vessels.
+Here, it takes the form of wrapping paper, made with care to gently shelter the precious vessels within.
+May UDN’s vessels find their way safely to you.`,
+    price: 500,
+    priceLabel: "500 KRW",
+    soldOut: false,
+  },
+  {
+    slug: "udn-sticky-notes-2026-fruits",
+    title: "UDN Sticky Notes 2026 Seasonal Fruits [標 Pyo]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/udn-sticky-notes-2026-fruits/main.jpg",
+    aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/products/udn-sticky-notes-2026-fruits/detail_1.jpg", aspect: "3959/2922" },
+    ],
+    optionGallery: false,
+    description: `the Vessel series 04.
+[標]Pyo, the pattern of imprint
+Fruits in season Sticky Note.
+70x70mm
+
+흔적의 패턴을 담는 네번째 그릇 시리즈의 표[標]Pyo는 인장이나 마크를 의미합니다. 중요한 정보들을 표시할 수 있고, 기존의 무언가에 나의 흔적을 남길 수 있습니다. 이 포스트잇은 글씨를 쓰기 어려운 구조로 되어있으며, 당신의 메세지를 찾아내는 데 많은 공을 들이게 할 것입니다. 내부에는 해당 과일의 조생종과 만생종, 그리고 품종이 적혀 있습니다.
+
+Pyo[標], meaning a seal or mark, is the fourth series in A Vessel—a vessel holding the patterns of the traces we leave. It marks what matters and lets you leave something of yourself upon what is already there. These sticky notes offer little room for writing, inviting you to take time and care in finding a place for your message. Within each fruit are the names of its varieties, including those that ripen early and those that ripen late.`,
+    price: 5000,
+    priceLabel: "5,000 KRW",
     soldOut: true,
+    optionGroup: "udn-sticky-notes-2026-fruits",
+    shippingGroup: "udn-sticky-notes-2026-fruits",
+  },
+  {
+    slug: "udn-sticky-notes-2026-peach",
+    title: "UDN Sticky Notes 2026 Seasonal Fruits [標 Pyo]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/udn-sticky-notes-2026-fruits/main.jpg",
+    aspect: "3959/2922",
+    price: 5000,
+    priceLabel: "5,000 KRW",
+    soldOut: true,
+    optionGroup: "udn-sticky-notes-2026-fruits",
+    optionLabel: "복숭아 · 5,000원",
+    shippingGroup: "udn-sticky-notes-2026-fruits",
+  },
+  {
+    slug: "udn-sticky-notes-2026-grape",
+    title: "UDN Sticky Notes 2026 Seasonal Fruits [標 Pyo]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/udn-sticky-notes-2026-fruits/main.jpg",
+    aspect: "3959/2922",
+    price: 5000,
+    priceLabel: "5,000 KRW",
+    soldOut: true,
+    optionGroup: "udn-sticky-notes-2026-fruits",
+    optionLabel: "포도 · 5,000원",
+    shippingGroup: "udn-sticky-notes-2026-fruits",
+  },
+  {
+    slug: "udn-sticky-notes-2026-strawberry",
+    title: "UDN Sticky Notes 2026 Seasonal Fruits [標 Pyo]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/udn-sticky-notes-2026-fruits/main.jpg",
+    aspect: "3959/2922",
+    price: 5000,
+    priceLabel: "5,000 KRW",
+    soldOut: true,
+    optionGroup: "udn-sticky-notes-2026-fruits",
+    optionLabel: "딸기 · 5,000원",
+    shippingGroup: "udn-sticky-notes-2026-fruits",
+  },
+  {
+    slug: "udn-sticky-notes-2026-yuju",
+    title: "UDN Sticky Notes 2026 Seasonal Fruits [標 Pyo]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/udn-sticky-notes-2026-fruits/main.jpg",
+    aspect: "3959/2922",
+    price: 5000,
+    priceLabel: "5,000 KRW",
+    soldOut: true,
+    optionGroup: "udn-sticky-notes-2026-fruits",
+    optionLabel: "유자 · 5,000원",
+    shippingGroup: "udn-sticky-notes-2026-fruits",
   },
   {
     slug: "che-postcard-2026-spring",
@@ -494,6 +602,84 @@ May its journey be gentle, its passage safe, and all that it carries arrive in y
     optionGroup: "che-postcard-2026",
     optionLabel: "겨울 (동백) · 2,000원",
     shippingGroup: "che-postcard-2026",
+  },
+  {
+    slug: "che-card-2026",
+    title: "UDN CARD 2026 Edible Flowers [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-card-2026/main.jpg",
+    aspect: "3959/2922",
+    description: `the Vessel series 02.
+[彩]Che, the color of mind
+Edible flowers in season greeeting card.
+110x220mm
+
+마음을 담는 그릇의 색채 시리즈 채[彩]Che의 프리미엄 카드입니다. 이 카드들은 4개의 다양한 계절과 감정을 담고 있습니다. 해당 계절에만 볼 수 있고, 음식으로 사용되어질 수 있는 꽃들을 선보입니다. 이들 모두가 먹을 수 있다는 것은 첫번째 그릇 시리즈 령令과도 자연스럽게 이어집니다.  안부를 묻고 상대를 생각하는 마음을 담은 채彩 식용화 카드로 말만으로는 설명하기 어려운 당신의 감정을 더욱 선명하게 전달하길 기대합니다.
+
+These premium cards belong to Che[彩], the colour series of vessels that hold the heart. Each carries a season and the feelings that unfold within it, through edible flowers that bloom in their own time. Flowers that may nourish us as well as move us—a quiet thread connecting these cards to Ryung [令], the first vessel series.
+With a thought of someone dear, Che[彩] the edible flower cards hold what you wish to share. May they lend colour and clarity to the feelings that words alone cannot quite express.`,
+    price: 7000,
+    priceLabel: "7,000 KRW",
+    soldOut: true,
+    optionGroup: "che-card-2026",
+    shippingGroup: "che-card-2026",
+  },
+  {
+    slug: "che-card-2026-spring",
+    title: "UDN CARD 2026 Edible Flowers [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-card-2026/spring.jpg",
+    aspect: "3959/2922",
+    price: 7000,
+    priceLabel: "7,000 KRW",
+    soldOut: true,
+    optionGroup: "che-card-2026",
+    optionLabel: "봄 (목련) · 7,000원",
+    shippingGroup: "che-card-2026",
+  },
+  {
+    slug: "che-card-2026-summer",
+    title: "UDN CARD 2026 Edible Flowers [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-card-2026/summer.jpg",
+    aspect: "3959/2922",
+    price: 7000,
+    priceLabel: "7,000 KRW",
+    soldOut: true,
+    optionGroup: "che-card-2026",
+    optionLabel: "여름 (연꽃) · 7,000원",
+    shippingGroup: "che-card-2026",
+  },
+  {
+    slug: "che-card-2026-autumn",
+    title: "UDN CARD 2026 Edible Flowers [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-card-2026/autumn.jpg",
+    aspect: "3959/2922",
+    price: 7000,
+    priceLabel: "7,000 KRW",
+    soldOut: true,
+    optionGroup: "che-card-2026",
+    optionLabel: "가을 (국화) · 7,000원",
+    shippingGroup: "che-card-2026",
+  },
+  {
+    slug: "che-card-2026-winter",
+    title: "UDN CARD 2026 Edible Flowers [彩 Che]",
+    category: "Goods",
+    kind: "product",
+    image: "/assets/products/che-card-2026/winter.jpg",
+    aspect: "3959/2922",
+    price: 7000,
+    priceLabel: "7,000 KRW",
+    soldOut: true,
+    optionGroup: "che-card-2026",
+    optionLabel: "겨울 (동백) · 7,000원",
+    shippingGroup: "che-card-2026",
   },
   {
     slug: "neryge-to-slow",
@@ -735,6 +921,17 @@ May it remind you that your life matters more than numbers, and that growing in 
       { src: "/assets/portfolio_images/picture-books-grown-up/rep.jpg", aspect: "7087/21260" },
     ],
     description: "안양 대동문고 서점이벤트 및 어른을 위한 그림책 공부 포스터·X배너",
+  },
+  {
+    slug: "dubgeuk-immersive-play-reading",
+    title: "몰입해서 놀고 읽는 아이들의 힘",
+    category: "Poster",
+    kind: "work",
+    image: "/assets/portfolio_images/dubgeuk-immersive-reading/rep.jpg",
+    aspect: "3959/2922",
+    description: `2025 두근 상반기 조합원 교육 포스터
+
+현장 교사 신천주 강사의 강연 「몰입해서 놀고 읽는 아이들의 힘」을 위한 포스터입니다. 잘 노는 것과 책 읽는 교육의 의미를 살펴보고, 몰입독서의 뜻과 방법·효과, IB 프로그램 속 몰입독서를 소개하는 교육 내용을 담았습니다.`,
   },
 ];
 

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   const productId = typeof body?.productId === "string" ? body.productId : "";
   const quantity = Number(body?.quantity);
   const product = getProduct(productId);
-  if (!product || product.kind !== "product" || product.price == null || !Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+  if (!product || product.kind !== "product" || product.soldOut || product.price == null || !Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
     return NextResponse.json({ error: "Invalid cart item" }, { status: 400 });
   }
   if (product.adminOnly) {

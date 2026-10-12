@@ -6,14 +6,30 @@ import { AUTH_SESSION_COOKIE, authSessionCookieOptions } from "@/src/lib/auth-se
 
 export const runtime = "nodejs";
 
+function normalizeMobilePhone(value: unknown) {
+  const phone = String(value ?? "").replace(/\D/g, "");
+  return /^01[016789]\d{7,8}$/.test(phone) ? phone : null;
+}
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as {
     pendingToken?: string;
+    phone?: string;
+    recipientName?: string;
+    zonecode?: string;
+    address?: string;
+    addressDetail?: string;
     termsAccepted?: boolean;
     privacyAccepted?: boolean;
   } | null;
   if (!body?.pendingToken || !body.termsAccepted || !body.privacyAccepted) {
     return NextResponse.json({ error: "필수 약관 동의 후 가입을 진행해주세요." }, { status: 400 });
+  }
+  const recipientName = String(body.recipientName ?? "").trim();
+  const zonecode = String(body.zonecode ?? "").trim();
+  const address = String(body.address ?? "").trim();
+  if (!recipientName || !zonecode || !address) {
+    return NextResponse.json({ error: "받는 분과 기본 배송지를 입력해주세요." }, { status: 400 });
   }
 
   try {
@@ -41,6 +57,9 @@ export async function POST(request: Request) {
         if (emailOwner) throw new Error("EMAIL_ALREADY_IN_USE");
       }
 
+      const phone = normalizeMobilePhone(body.phone);
+      if (!phone) throw new Error("INVALID_PHONE");
+
       const agreedAt = new Date();
       const user = await tx.user.create({
         data: {
@@ -48,6 +67,12 @@ export async function POST(request: Request) {
           name: pending.name,
           image: pending.image,
           role: pending.email?.toLowerCase() === ADMIN_EMAIL ? "ADMIN" : "CUSTOMER",
+          phone,
+          defaultRecipientName: recipientName.slice(0, 80),
+          defaultPhone: phone,
+          defaultZonecode: zonecode.slice(0, 20),
+          defaultAddress: address.slice(0, 200),
+          defaultAddressDetail: String(body.addressDetail ?? "").trim().slice(0, 200) || null,
           termsAgreedAt: agreedAt,
           privacyAgreedAt: agreedAt,
           accounts: {
@@ -86,6 +111,9 @@ export async function POST(request: Request) {
         { error: "같은 이메일로 가입된 계정이 있습니다. 기존 계정으로 로그인한 뒤 소셜 계정을 연결해주세요." },
         { status: 409 },
       );
+    }
+    if (error instanceof Error && error.message === "INVALID_PHONE") {
+      return NextResponse.json({ error: "올바른 휴대전화번호를 입력해주세요." }, { status: 400 });
     }
     console.error("[oauth-registration] completion failed", { errorCode: error instanceof Error ? error.name : "unknown" });
     return NextResponse.json({ error: "소셜 회원가입 처리 중 오류가 발생했습니다." }, { status: 500 });

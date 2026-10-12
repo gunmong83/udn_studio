@@ -14,6 +14,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing order information" }, { status: 400 });
   }
 
+  const requestedProductIds = new Set(
+    items.map((item: { productId?: string }) => item.productId).filter((id: unknown): id is string => typeof id === "string"),
+  );
+  if (products.some((product) => product.soldOut && requestedProductIds.has(product.slug))) {
+    return NextResponse.json({ error: "품절된 상품은 주문할 수 없습니다." }, { status: 409 });
+  }
+
   const orderItems: ({ productId: string; title: string; unitPrice: number; quantity: number } | null)[] = items.map((item: { productId?: string; quantity?: number }) => {
     const product = products.find((candidate) => candidate.slug === item.productId && candidate.kind === "product");
     const quantity = Number(item.quantity);
