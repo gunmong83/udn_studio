@@ -6,6 +6,7 @@ import {
   CATEGORY_FILTERS,
   WORK_CATEGORY_FILTERS,
   products,
+  getWorks,
   type CategoryFilter,
 } from "@/src/data/products";
 import ProductCard from "./ProductCard";
@@ -39,7 +40,7 @@ export default function ProductBrowser({
   const filters = kind === "work" ? WORK_CATEGORY_FILTERS : CATEGORY_FILTERS;
   const showTabs = kind !== "product";
   const pool = kind
-    ? products.filter((p) => p.kind === kind && (!p.adminOnly || isAdmin) && (!p.optionGroup || p.slug === "rok-masking-tape-green" || p.slug === "che-postcard-2026" || p.slug === "che-postcard-2026-fruits" || p.slug === "udn-sticky-notes-2026-fruits" || p.slug === "che-card-2026"))
+    ? (kind === "work" ? getWorks() : products).filter((p) => p.kind === kind && (!p.adminOnly || isAdmin) && (!p.optionGroup || p.slug === "rok-masking-tape-green" || p.slug === "che-postcard-2026" || p.slug === "che-postcard-2026-fruits" || p.slug === "udn-sticky-notes-2026-fruits" || p.slug === "che-card-2026"))
     : products.filter((p) => !p.adminOnly || isAdmin).filter((p) => !p.optionGroup || p.slug === "rok-masking-tape-green" || p.slug === "che-postcard-2026" || p.slug === "che-postcard-2026-fruits" || p.slug === "udn-sticky-notes-2026-fruits" || p.slug === "che-card-2026");
   const [filter, setFilter] = useState<CategoryFilter>(
     normalizeCategory(initialCategory, filters),

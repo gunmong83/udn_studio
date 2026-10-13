@@ -117,6 +117,7 @@ export const WORK_CATEGORY_FILTERS = [
   "Exhibition Design",
   "Exhibition Poster",
   "Poster",
+  "Goods",
 ] as const;
 
 export type CategoryFilter = (typeof CATEGORY_FILTERS)[number];
@@ -838,26 +839,37 @@ May it remind you that your life matters more than numbers, and that growing in 
     link: "https://smartstore.naver.com/studioudn/products/13767984847",
   },
   {
-    // 파동7-3(mupf5norues9) — 인스타 확보분 반영(qa-visual 판독 mupf59ufjt30 정본
-    // wave13-ig-triage.md). 신규 1: 두근두근방과후 교육포스터(신규 확정 4/4).
-    // 출처: instagram.com 게시물 DC9WOdDSmwj(캐러셀 4장·원본 바이트 그대로·편집 0).
-    // 캡션 원문(full-captions.json — 재작성 0): "studioUDN / 두근두근방과후 교육포스터들
-    // -스키마독서 -진로설정과 홀랜드검사 -두근두근 댄스수업".
-    // designer 감수 확정(mupfk5she6me·2026-10-01 — Poster·work·Book 미신설·연도별 분리
-    // 적용·docs/designer/wave7-3-ig-review.md).
     slug: "dubgeuk-after-school-posters",
-    title: "두근두근방과후 교육포스터",
+    title: "두근두근방과후 — 댄스 수업 포스터",
     category: "Poster",
     kind: "work",
     image: "/assets/portfolio_images/dubgeuk-after-school-posters/rep.jpg",
     aspect: "1080/1080",
+    description:
+      "두근두근방과후의 댄스 수업을 알리는 포스터입니다. 보라색 배경에 노랑·분홍의 큰 제목을 배치하고, 춤추는 사람들과 호랑이, 별, 새, 음표를 함께 그려 움직임과 리듬을 표현했습니다. 표정이 있는 해와 다양한 캐릭터로 몸을 움직이는 즐거움을 전달하고, 수업 일정과 장소는 흰색 글씨로 명확하게 구분했습니다.",
+  },
+  {
+    slug: "dubgeuk-schema-immersive-reading-poster",
+    title: "두근두근방과후 — 스키마 독서와 몰입 독서",
+    category: "Poster",
+    kind: "work",
+    image: "/assets/portfolio_images/dubgeuk-after-school-posters/detail_1.jpg",
+    aspect: "720/720",
+    description:
+      "스키마 독서와 몰입 독서를 소개하는 두근두근방과후 교육 포스터입니다. 커다란 노란 원 안에 책 읽는 아이와 책을 나르는 캐릭터, 돋보기와 전구, 로켓과 행성을 배치해 독서에서 시작되는 탐색과 상상력을 표현했습니다. 밝은 색상과 친근한 캐릭터를 사용하고, 하단에는 교육 주제와 안내 문구를 배치해 즐거운 독서의 이미지를 전달했습니다.",
+  },
+  {
+    slug: "dubgeuk-future-competencies-career-education",
+    title: "두근두근방과후 — 우리 아이 미래 역량 키우기",
+    category: "Poster",
+    kind: "work",
+    image: "/assets/portfolio_images/dubgeuk-after-school-posters/detail_2.jpg",
+    aspect: "1080/1080",
     detailImages: [
-      { src: "/assets/portfolio_images/dubgeuk-after-school-posters/detail_1.jpg", aspect: "720/720" },
-      { src: "/assets/portfolio_images/dubgeuk-after-school-posters/detail_2.jpg", aspect: "1080/1080" },
       { src: "/assets/portfolio_images/dubgeuk-after-school-posters/detail_3.jpg", aspect: "1080/1080" },
     ],
     description:
-      "두근두근방과후 교육포스터들\n\n-스키마독서\n-진로설정과 홀랜드검사\n-두근두근 댄스수업",
+      "부모가 도울 수 있는 자녀의 성장과 미래 역량을 주제로 한 교육 강연의 홍보 포스터와 안내 이미지입니다. 초록 들판 위의 작은 아이들과 구름을 그린 대표 포스터에 강연 제목과 일정을 배치했습니다. 함께 구성한 안내 이미지는 노랑·파랑의 질감 있는 배경 위에 학습 준비, 진로흥미탐색과 홀랜드 검사에 대한 질문·답변을 정리해 강연의 내용과 참여 방법을 전달합니다.",
   },
   {
     // 파동7-3 — 신규 2: theTOVbooks 『놀라운 환대』(책 표지+출판 마케팅 4/4).
@@ -891,15 +903,6 @@ May it remind you that your life matters more than numbers, and that growing in 
     image: "/assets/portfolio_images/rainbow-school/rep.jpg",
     aspect: "842/1191",
     description: "초등무지개학교 입학설명회 포스터",
-  },
-  {
-    slug: "studio-udn-director-card",
-    title: "studioUDN 디렉터 명함",
-    category: "Total Branding",
-    kind: "work",
-    image: "/assets/portfolio_images/studio-udn-director-card/rep.jpg",
-    aspect: "3024/4032",
-    description: "studioUDN 디렉터 명함 디자인",
   },
   {
     slug: "chusa-art-festival-goods",
@@ -1077,12 +1080,156 @@ May it remind you that your life matters more than numbers, and that growing in 
     description:
       "대한민국 해병대의 역사와 활동을 소개하는 전시 공간 및 설치 디자인입니다. 팔각형을 중심 모티프로 삼아 시대별 기록, 사진, 지도와 연표를 연결하고, 빨강·연두·초록의 색상으로 전시 구역을 구분했습니다. 벽면 그래픽과 영상 화면, 실물 전시, 중앙 조형물을 하나의 시각 체계로 구성해 관람객이 공간을 이동하며 전시의 흐름을 따라갈 수 있도록 설계했습니다.",
   },
+  {
+    slug: "farfars-steady-hand-storybook",
+    title: "The Secret of Farfar’s Steady Hand",
+    category: "Editorial Design",
+    kind: "work",
+    image: "/assets/portfolio_images/farfars-steady-hand-storybook/rep.jpg",
+    aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/portfolio_images/farfars-steady-hand-storybook/detail_1.jpg", aspect: "3959/2922" },
+      { src: "/assets/portfolio_images/farfars-steady-hand-storybook/detail_2.jpg", aspect: "3959/2922" },
+    ],
+    description:
+      "Created in just one week at a client’s personal request, this illustrated storybook celebrates Edlund’s 65th birthday, looking back on his life through a collection of short fairy tales.",
+  },
+  {
+    slug: "connecting-ib-beyond-ib",
+    title: "Connecting IB Beyond IB",
+    category: "Editorial Design",
+    kind: "work",
+    image: "/assets/portfolio_images/connecting-ib-beyond-ib/rep.jpg",
+    aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/portfolio_images/connecting-ib-beyond-ib/detail_1.jpg", aspect: "3959/2922" },
+      { src: "/assets/portfolio_images/connecting-ib-beyond-ib/detail_2.jpg", aspect: "3959/2922" },
+    ],
+    description:
+      "128 × 210 mm. I designed the book and directed its title development, overall content structure, and editorial review. Bringing together classroom teachers’ firsthand experiences with IB education, the book features their personal reflections on its cover flaps.",
+  },
+  {
+    slug: "moonwon-charm-journal-grade-2",
+    title: "Moonwon Elementary School — CHARM Character Development Journal, Grade 2",
+    category: "Editorial Design",
+    kind: "work",
+    image: "/assets/portfolio_images/moonwon-charm-journal-grade-2/rep.jpg",
+    aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/portfolio_images/moonwon-charm-journal-grade-2/detail_1.jpg", aspect: "3959/2922" },
+    ],
+    description:
+      "A CHARM character development journal for Grade 2 students at Moonwon Elementary School. A turquoise palette, cheerful flower characters, and diamond motifs connect the cover with the activity pages. Clear prompts and structured writing spaces invite children to explore self-management, practise ways of handling emotions, and reflect on the promises they make with their families.",
+  },
+  {
+    slug: "pearl-fan-coloring-postcard",
+    title: "Pearl Fan Coloring Postcard",
+    category: "Goods",
+    kind: "work",
+    image: "/assets/portfolio_images/pearl-fan-coloring-postcard/rep.jpg",
+    aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/portfolio_images/pearl-fan-coloring-postcard/detail_1.jpg", aspect: "3959/2922" },
+    ],
+    description:
+      "Neon Green: 172 × 297 mm. Blue: 126 × 178 mm. Coloring postcards in two editions: green for adults and blue for children. Inspired by the traditional pearl fan, the designs pair floral line illustrations with space for a handwritten message on the reverse.",
+  },
+  {
+    slug: "itf-exhibition-poster",
+    title: "ITF POSTER",
+    category: "Exhibition Poster",
+    kind: "work",
+    image: "/assets/portfolio_images/itf-exhibition-poster/rep.jpg",
+    aspect: "3959/2922",
+    description:
+      "297 × 420 mm. An exhibition poster for 잇-프, a Korea–France exchange exhibition. Sweeping blue curves bring two contrasting artworks into one composition, echoing the exhibition’s theme of connection. Bold blue typography and a clear hierarchy organise the exhibition title, dates, and artist information alongside the paintings.",
+  },
+  {
+    slug: "twice-a-day-blue-hour-poster",
+    title: "Twice a Day, Blue Hour Poster",
+    category: "Exhibition Poster",
+    kind: "work",
+    image: "/assets/portfolio_images/twice-a-day-blue-hour-poster/rep.jpg",
+    aspect: "3959/2922",
+    description:
+      "297 × 420 mm. A poster for An Sun Young’s solo exhibition, Twice a Day, Blue Hour, at Redboots Gallery. The painting’s layered blues, luminous moon, and delicate butterflies set the atmosphere, while white typography carries the exhibition title and information. The composition preserves the artwork’s texture and quiet sense of light, reflecting the fleeting blue hours at dawn and dusk.",
+  },
+  {
+    slug: "yuyujajuk-minhwa-exhibition-brochure",
+    title: "The First Yuyujajuk Minhwa Members’ Exhibition Brochure",
+    category: "Editorial Design",
+    kind: "work",
+    image: "/assets/portfolio_images/yuyujajuk-minhwa-exhibition-brochure/rep.jpg",
+    aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/portfolio_images/yuyujajuk-minhwa-exhibition-brochure/detail_1.jpg", aspect: "3959/2922" },
+    ],
+    description:
+      "297 × 420 mm. A folding brochure for the first Yuyujajuk Minhwa members’ exhibition. The cover pairs vertical Korean typography with floral and bird motifs, while the unfolded interior presents the members’ paintings alongside their titles and artist names. A light, spacious layout lets the varied colours and traditional subjects of the works take centre stage, bringing the exhibition information and artwork selection together in one compact piece.",
+  },
+  {
+    slug: "cest-si-bon-business-card",
+    title: "C’est Si Bon Business Card",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/cest-si-bon-business-card/rep.jpg",
+    aspect: "3959/2922",
+    description:
+      "Jazz Club in Seoul, Gangnam. 40 × 90 mm. The client requested a design that would immediately convey the bar’s identity as a place to enjoy jazz while clearly presenting its name, C’est Si Bon.",
+  },
 ];
 
 export function getProduct(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);
 }
 
+// Mix artwork, photography, and presentation boards across the three-column grid.
+// Keep the order stable when visitors reload or return from a project.
+const WORK_DISPLAY_ORDER = [
+  "neryge-to-slow",
+  "kyungnong-herbicide-resistance-book",
+  "itf-exhibition-poster",
+  "mushmina-total-branding",
+  "flowing-lines-staying-moon",
+  "connecting-ib-beyond-ib",
+  "dubgeuk-schema-immersive-reading-poster",
+  "allen-organ-product-catalog",
+  "the-tov",
+  "seoul-samgaetang-brand-identity",
+  "cest-si-bon-business-card",
+  "the-10th-yaho-festival",
+  "korean-afoc-exhibition",
+  "farfars-steady-hand-storybook",
+  "kyungnong-divide-water-packaging",
+  "dubgeuk-future-competencies-career-education",
+  "rainbow-school-information-session",
+  "samsung-caster-2017-calendar",
+  "menbal-kindergarten",
+  "dubgeuk-after-school-posters",
+  "chusa-art-festival-goods",
+  "twice-a-day-blue-hour-poster",
+  "korean-marine-corps-exhibition",
+  "moonwon-charm-journal-grade-2",
+  "the-wine-occasional-party-wine",
+  "daedong-bookstore-event",
+  "mnm-2012-honors-benefit-invitation",
+  "renault-samsung-happycare-brochure",
+  "dubgeuk-immersive-play-reading",
+  "mnm-endmalaria-campaign",
+  "pearl-fan-coloring-postcard",
+  "the-tov-books",
+  "louivis-bebe",
+  "dubgeuk-after-school-business-card",
+  "yuyujajuk-minhwa-exhibition-brochure",
+] as const;
+
+const workDisplayRanks = new Map<string, number>(
+  WORK_DISPLAY_ORDER.map((slug, index) => [slug, index]),
+);
+
 export function getWorks(): Product[] {
-  return products.filter((p) => p.kind === "work");
+  return products.filter((p) => p.kind === "work").sort((a, b) =>
+    (workDisplayRanks.get(a.slug) ?? Number.MAX_SAFE_INTEGER) -
+    (workDisplayRanks.get(b.slug) ?? Number.MAX_SAFE_INTEGER),
+  );
 }
