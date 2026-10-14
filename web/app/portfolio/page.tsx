@@ -4,8 +4,16 @@ import { WORK_CATEGORY_FILTERS } from "@/src/data/products";
 
 export const metadata: Metadata = {
   title: "PORTFOLIO",
-  description: "Studio UDN 포트폴리오",
-  robots: { index: false, follow: true },
+  description:
+    "Studio UDN의 브랜딩, 편집 디자인, 전시 및 포스터 프로젝트를 소개합니다.",
+  alternates: { canonical: "/portfolio" },
+  openGraph: {
+    url: "https://studioundesignated.com/portfolio",
+    title: "PORTFOLIO | 스튜디오 UDN",
+    description:
+      "Studio UDN의 브랜딩, 편집 디자인, 전시 및 포스터 프로젝트를 소개합니다.",
+  },
+  robots: { index: true, follow: true },
 };
 
 // 포트폴리오 목록(파동5 B1·§4 — muos3okq61ob) — ProductBrowser kind="work" 재사용:

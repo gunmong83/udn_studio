@@ -1,19 +1,25 @@
 import type { MetadataRoute } from "next";
-import { products } from "@/src/data/products";
+import { getWorks, products } from "@/src/data/products";
 import { journalEntries } from "@/src/data/journal";
 
 const baseUrl = "https://studioundesignated.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // 검색엔진에는 판매 상품과 핵심 안내 페이지만 제출한다. 포트폴리오는
-  // 페이지 자체에서 noindex 처리하고 사이트맵에서도 제외해 상품 검색 의도를 보존한다.
-  const staticPages = ["", "/about", "/products", "/journal"];
+  const staticPages = ["", "/about", "/products", "/journal", "/portfolio"];
   const productPages = products.map((product) => `/products/${product.slug}`);
   const journalPages = journalEntries.map((entry) => `/journal/${entry.slug}`);
+  const portfolioPages = getWorks().map((work) => ({
+    url: `${baseUrl}/portfolio/${work.slug}`,
+    images: [work.image, ...(work.detailImages ?? []).map((image) => image.src)].map(
+      (image) => `${baseUrl}${image}`,
+    ),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
 
   const now = new Date();
 
-  return [...new Set([...staticPages, ...productPages, ...journalPages])].map(
+  const pageEntries = [...new Set([...staticPages, ...productPages, ...journalPages])].map(
     (path) => ({
       url: `${baseUrl}${path}`,
       lastModified: now,
@@ -21,4 +27,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: path === "" ? 1 : 0.7,
     }),
   );
+
+  return [...pageEntries, ...portfolioPages];
 }

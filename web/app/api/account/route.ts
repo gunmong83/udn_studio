@@ -85,6 +85,7 @@ export async function DELETE(request: Request) {
 
     await prisma.$transaction(async (tx) => {
       // Keep the order/payment ledger, but remove customer-identifying data.
+      await tx.shipmentNotification.deleteMany({ where: { order: { is: { userId } } } });
       await tx.order.updateMany({
         where: { userId },
         data: {

@@ -56,6 +56,8 @@ GitHub Actions의 **Production release** 워크플로에서 **Run workflow**를 
   - `DATABASE_URL`: `file:C:/Users/gunmong/source/udn_studio/.local-stage-data/udn.db` (로컬 SQLite)
   - `NICEPAY_CLIENT_ID`: 나이스페이 테스트 상점의 Server 승인 클라이언트 키(`S2_...`)
   - `NICEPAY_SECRET_KEY`: 같은 테스트 상점의 Basic 인증 시크릿 키
+  - `SENS_ALIMTALK_SERVICE_ID`, `SENS_ALIMTALK_CHANNEL_ID`, `SENS_ACCESS_KEY`, `SENS_SECRET_KEY`: 승인된 NAVER Cloud SENS Biz Message 서비스와 채널 설정 (SMS 서비스 ID와 구분)
+  - `EPOST_SERVICE_KEY`: 우체국 국내우편물 종적조회 OpenAPI의 서비스 인증키
 - **용도**: 로컬에서 `pnpm dev -p 3100` 또는 `scripts/start-local-stage.ps1` 실행 시 자동 로드되어 샌드박스 결제 및 테스트 로그인을 안전하게 검증합니다.
 
 ### 2. 프로덕션 환경 (`/opt/udn_studio/.env.production`)
@@ -65,8 +67,19 @@ GitHub Actions의 **Production release** 워크플로에서 **Run workflow**를 
   - `DATABASE_URL`: `file:/data/udn.db` (서버 Docker 볼륨 마운트)
   - `NICEPAY_CLIENT_ID`: 나이스페이 운영 상점의 Server 승인 클라이언트 키(`R2_...`)
   - `NICEPAY_SECRET_KEY`: 같은 운영 상점의 Basic 인증 시크릿 키
+  - `SENS_ALIMTALK_SERVICE_ID`, `SENS_ALIMTALK_CHANNEL_ID`, `SENS_ACCESS_KEY`, `SENS_SECRET_KEY`: 승인된 NAVER Cloud SENS Biz Message 서비스와 채널 설정 (SMS 서비스 ID와 구분)
+  - `EPOST_SERVICE_KEY`: 우체국 국내우편물 종적조회 OpenAPI의 운영 서비스 인증키
+  - `EPOST_POLLING_TOKEN`: 매시간 배송조회 작업을 인증하는 비밀 토큰 (같은 값을 GitHub Actions secret에도 설정)
 - **서버 적용 방법**:
   - Lightsail 서버 접속 후 `/opt/udn_studio/.env.production` 파일 생성 또는 수정
   - GitHub Actions의 Docker 배포 시 `--env-file /opt/udn_studio/.env.production` 옵션으로 컨테이너에 주입됩니다.
 
+SENS 및 우체국 키는 서버 전용 환경 변수로만 관리합니다. 우체국 명세서에 기재된 API는 HTTP이며 TLS 전송 암호화가 표시되어 있지 않으므로, 서비스 키는 TLS로 보호되지 않은 연결을 통해 전송됩니다. 우체국 API 호출은 인증키가 없거나 API가 실패하면 저장을 차단합니다. 실제 서비스 설정·알림톡 승인 본문·테스트 절차는 [alimtalk-shipping.md](alimtalk-shipping.md)를 확인하세요. Docker 시작 시 마이그레이션 이력이 없는 현재 구조는 `prisma db push --skip-generate`로 새 인증/발송기록 테이블을 적용합니다. 데이터 삭제를 승인하는 옵션은 사용하지 않습니다.
+
 > **보안 주의사항**: `.env.local` 및 `.env.production`은 `.gitignore`에 등록되어 Git 저장소에 커밋되지 않으므로 키 노출 위험이 없습니다.
+
+## 운영 SQLite 백업
+
+Production release는 새 컨테이너를 교체하기 전에 Python 표준 라이브러리의 SQLite 온라인 백업 API로 `/data/udn.db`의 일관된 스냅샷을 만듭니다. 백업은 `/data/backups/udn-<commit>-<run>.sqlite.gz`에 저장하고 SQLite 무결성 검사와 gzip 검사가 모두 통과해야 배포를 계속합니다. 실패하면 앱 교체 및 스키마 적용을 중단합니다. 백업 디렉터리는 권한 `0700`, 백업 파일은 `0600`으로 설정하고 30일 지난 배포 백업만 제거합니다. 별도 유료 스토리지는 추가되지 않지만, 압축 백업이 Lightsail의 `/data` 디스크를 사용하므로 사용량은 배포 빈도와 DB 크기에 따라 달라집니다. 워크플로 로그에는 압축 백업 크기만 출력됩니다.
+
+같은 서버 디스크에 저장하므로 서버나 디스크 자체 장애에 대비한 오프사이트 백업은 아닙니다. 복구할 때는 선택한 `.sqlite.gz`를 `/data/udn.db`로 복원한 뒤 애플리케이션을 시작해야 합니다. 복원 리허설과 오프사이트 복제는 별도 운영 항목입니다.

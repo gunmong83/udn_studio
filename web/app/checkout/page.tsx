@@ -8,48 +8,8 @@ import { removeFromCart, setCartQty, useCart } from "@/src/lib/store";
 import { getProduct } from "@/src/data/products";
 import { openNicePayment, type NicePaymentFields } from "@/src/lib/nicepay";
 import { FREE_SHIPPING_THRESHOLD, getShippingFee, getShippingGroupKey, getShippingGroupLabel } from "@/src/lib/shipping";
-
-interface DaumPostcodeData {
-  address: string;
-  zonecode: string;
-  roadAddress: string;
-  jibunAddress: string;
-  buildingName: string;
-  bname: string;
-  apartment: string;
-}
-
-declare global {
-  interface Window {
-    daum?: {
-      Postcode: new (options: {
-        oncomplete: (data: DaumPostcodeData) => void;
-      }) => {
-        open: () => void;
-      };
-    };
-  }
-}
-
-function loadDaumPostcodeScript(): Promise<void> {
-  if (typeof window === "undefined") return Promise.reject();
-  if (window.daum?.Postcode) return Promise.resolve();
-
-  return new Promise((resolve, reject) => {
-    const existing = document.querySelector('script[src*="postcode.v2.js"]');
-    if (existing) {
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("우편번호 스크립트 로드 실패")));
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("다음 주소 검색 서비스를 불러오지 못했습니다."));
-    document.head.appendChild(script);
-  });
-}
+import PostcodeSearch from "@/src/components/orders/PostcodeSearch";
+import { formatPostcodeAddress } from "@/src/lib/postcode";
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
@@ -63,6 +23,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"카드" | "계좌이체">("카드");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [addressSearchOpen, setAddressSearchOpen] = useState(false);
 
   const addressDetailInputRef = useRef<HTMLInputElement>(null);
 
@@ -82,42 +43,7 @@ export default function CheckoutPage() {
   const shippingFee = shippingGroups.length === 0 ? 0 : getShippingFee(total, shippingGroups.length);
   const finalTotal = total + shippingFee;
 
-  const handleSearchAddress = async () => {
-    try {
-      await loadDaumPostcodeScript();
-      if (!window.daum?.Postcode) {
-        throw new Error("다음 주소 검색 서비스를 실행할 수 없습니다.");
-      }
-
-      new window.daum.Postcode({
-        oncomplete: (data: DaumPostcodeData) => {
-          let fullAddr = data.roadAddress || data.jibunAddress;
-          let extraAddr = "";
-
-          if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
-            extraAddr += data.bname;
-          }
-          if (data.buildingName !== "" && data.apartment === "Y") {
-            extraAddr += extraAddr !== "" ? `, ${data.buildingName}` : data.buildingName;
-          }
-          if (extraAddr !== "") {
-            fullAddr += ` (${extraAddr})`;
-          }
-
-          setZonecode(data.zonecode);
-          setAddress(fullAddr);
-
-          // 상세 주소 입력창으로 포커스 이동
-          setTimeout(() => {
-            addressDetailInputRef.current?.focus();
-          }, 100);
-        },
-      }).open();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "주소 검색을 불러오지 못했습니다.";
-      alert(msg);
-    }
-  };
+  const handleSearchAddress = () => setAddressSearchOpen(true);
 
   const loadDefaultAddress = async () => {
     try {
@@ -436,6 +362,12 @@ export default function CheckoutPage() {
                   주소 검색
                 </button>
               </div>
+              {addressSearchOpen && <PostcodeSearch onClose={() => setAddressSearchOpen(false)} onSelect={(data) => {
+                setZonecode(data.zonecode);
+                setAddress(formatPostcodeAddress(data));
+                setAddressSearchOpen(false);
+                window.setTimeout(() => addressDetailInputRef.current?.focus(), 100);
+              }} />}
             </div>
 
             {/* 상세 주소 입력 */}

@@ -3,18 +3,15 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { ADMIN_EMAIL } from "@/src/lib/admin";
 import { AUTH_SESSION_COOKIE, authSessionCookieOptions } from "@/src/lib/auth-session";
+import { consumePhoneVerification, normalizeMobilePhone } from "@/src/lib/phone-verification";
 
 export const runtime = "nodejs";
-
-function normalizeMobilePhone(value: unknown) {
-  const phone = String(value ?? "").replace(/\D/g, "");
-  return /^01[016789]\d{7,8}$/.test(phone) ? phone : null;
-}
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as {
     pendingToken?: string;
     phone?: string;
+    phoneVerificationToken?: string;
     recipientName?: string;
     zonecode?: string;
     address?: string;
@@ -25,6 +22,7 @@ export async function POST(request: Request) {
   if (!body?.pendingToken || !body.termsAccepted || !body.privacyAccepted) {
     return NextResponse.json({ error: "필수 약관 동의 후 가입을 진행해주세요." }, { status: 400 });
   }
+  if (!/^[\w-]{43}$/.test(String(body.phoneVerificationToken ?? ""))) return NextResponse.json({ error: "휴대전화번호 인증을 완료해주세요." }, { status: 400 });
   const recipientName = String(body.recipientName ?? "").trim();
   const zonecode = String(body.zonecode ?? "").trim();
   const address = String(body.address ?? "").trim();
@@ -59,6 +57,8 @@ export async function POST(request: Request) {
 
       const phone = normalizeMobilePhone(body.phone);
       if (!phone) throw new Error("INVALID_PHONE");
+      const phoneVerifiedAt = await consumePhoneVerification(tx, phone, body.phoneVerificationToken!);
+      if (!phoneVerifiedAt) throw new Error("PHONE_NOT_VERIFIED");
 
       const agreedAt = new Date();
       const user = await tx.user.create({
@@ -68,6 +68,7 @@ export async function POST(request: Request) {
           image: pending.image,
           role: pending.email?.toLowerCase() === ADMIN_EMAIL ? "ADMIN" : "CUSTOMER",
           phone,
+          phoneVerifiedAt,
           defaultRecipientName: recipientName.slice(0, 80),
           defaultPhone: phone,
           defaultZonecode: zonecode.slice(0, 20),
@@ -106,6 +107,7 @@ export async function POST(request: Request) {
     response.cookies.set(AUTH_SESSION_COOKIE, sessionToken, authSessionCookieOptions);
     return response;
   } catch (error) {
+    if (error instanceof Error && error.message === "PHONE_NOT_VERIFIED") return NextResponse.json({ error: "휴대폰 인증이 만료되었거나 이미 사용되었습니다. 다시 인증해주세요." }, { status: 400 });
     if (error instanceof Error && error.message === "EMAIL_ALREADY_IN_USE") {
       return NextResponse.json(
         { error: "같은 이메일로 가입된 계정이 있습니다. 기존 계정으로 로그인한 뒤 소셜 계정을 연결해주세요." },

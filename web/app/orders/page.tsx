@@ -30,6 +30,11 @@ interface Order {
   addressDetail?: string | null;
   carrier?: string | null;
   trackingNumber?: string | null;
+  epostDeliveryStatus?: string | null;
+  epostLatestEventDate?: string | null;
+  epostLatestEventTime?: string | null;
+  epostLatestEventLocation?: string | null;
+  epostLatestEventStatus?: string | null;
   createdAt: string;
   updatedAt: string;
   items: OrderItem[];
@@ -428,6 +433,11 @@ function OrdersContent() {
                 status={order.status}
                 carrier={order.carrier}
                 trackingNumber={order.trackingNumber}
+                epostDeliveryStatus={order.epostDeliveryStatus}
+                epostLatestEventDate={order.epostLatestEventDate}
+                epostLatestEventTime={order.epostLatestEventTime}
+                epostLatestEventLocation={order.epostLatestEventLocation}
+                epostLatestEventStatus={order.epostLatestEventStatus}
               />
 
               {/* 주문 상품 목록 */}

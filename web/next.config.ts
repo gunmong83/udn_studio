@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   // production `next start` instances without replacing their build output.
   distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
   async headers() {
+    // The postcode SDK follows the page protocol. Local HTTP development
+    // therefore needs this exact frame origin; production stays HTTPS-only.
+    const postcodeDevFrame = process.env.NODE_ENV === "development"
+      ? " http://postcode.map.kakao.com"
+      : "";
     const contentSecurityPolicy = [
       "default-src 'self'",
       "base-uri 'self'",
@@ -17,8 +22,8 @@ const nextConfig: NextConfig = {
       "font-src 'self' data: https://cdn.jsdelivr.net",
       "img-src 'self' data: blob: https:",
       "connect-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://*.daumcdn.net https://postcode.map.daum.net",
-      "frame-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://postcode.map.daum.net https://*.daumcdn.net https://*.daum.net https://*.kakao.com",
-      "child-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://postcode.map.daum.net https://*.daumcdn.net",
+      `frame-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://postcode.map.daum.net https://*.daumcdn.net https://*.daum.net https://*.kakao.com${postcodeDevFrame}`,
+      `child-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://postcode.map.daum.net https://postcode.map.kakao.com https://*.daumcdn.net${postcodeDevFrame}`,
     ].join("; ");
 
     return [{

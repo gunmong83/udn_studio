@@ -86,6 +86,37 @@ jobs:
               echo 'AUTH_URL must be https://studioundesignated.com in production.' >&2
               exit 1
             fi
+            # Back up the live SQLite database before the new container runs
+            # Prisma schema synchronization. SQLite's online backup API keeps
+            # this consistent without stopping the current app.
+            test -s /data/udn.db
+            BACKUP_DIR=/data/backups
+            BACKUP_TMP="$BACKUP_DIR/.udn-${{ github.run_id }}.sqlite"
+            BACKUP_FILE="$BACKUP_DIR/udn-${{ github.sha }}-${{ github.run_id }}.sqlite.gz"
+            sudo mkdir -p "$BACKUP_DIR"
+            sudo chmod 700 "$BACKUP_DIR"
+            trap 'sudo rm -f "$BACKUP_TMP" "$BACKUP_TMP.gz"' EXIT
+            sudo python3 - "$BACKUP_TMP" <<'PY'
+            import sqlite3
+            import sys
+
+            source = sqlite3.connect("/data/udn.db", timeout=30)
+            target = sqlite3.connect(sys.argv[1], timeout=30)
+            try:
+                source.backup(target, pages=256, sleep=0.05)
+                if target.execute("PRAGMA integrity_check").fetchone() != ("ok",):
+                    raise RuntimeError("SQLite backup integrity check failed")
+            finally:
+                target.close()
+                source.close()
+            PY
+            sudo gzip -f "$BACKUP_TMP"
+            sudo mv "$BACKUP_TMP.gz" "$BACKUP_FILE"
+            sudo chmod 600 "$BACKUP_FILE"
+            sudo gzip -t "$BACKUP_FILE"
+            sudo du -h "$BACKUP_FILE"
+            sudo find "$BACKUP_DIR" -maxdepth 1 -type f -name 'udn-*.sqlite.gz' -mtime +30 -delete
+            trap - EXIT
             sudo docker rm -f udn-web-new >/dev/null 2>&1 || true
             # Port 3001 is the stable local Nginx upstream. Stop the previous
             # container before binding it so repeated deployments are safe.

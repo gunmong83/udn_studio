@@ -18,6 +18,7 @@ model User {
   termsAgreedAt DateTime?
   privacyAgreedAt DateTime?
   phone         String?
+  phoneVerifiedAt DateTime?
   defaultRecipientName String?
   defaultPhone  String?
   defaultZonecode String?
@@ -70,6 +71,25 @@ model RequestRateLimit {
   @@index([blockedUntil])
 }
 
+// Short-lived signup verification state. OTP codes and completion tokens are
+// stored only as keyed hashes; old records are pruned by the send endpoint.
+model PhoneVerificationChallenge {
+  id                       String   @id @default(cuid())
+  phone                    String
+  requestIpHash            String
+  codeHash                 String
+  verificationTokenHash    String?
+  attempts                 Int      @default(0)
+  expiresAt                DateTime
+  verifiedAt               DateTime?
+  consumedAt               DateTime?
+  createdAt                DateTime @default(now())
+
+  @@index([phone, createdAt])
+  @@index([requestIpHash, createdAt])
+  @@index([expiresAt])
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -115,10 +135,36 @@ model Order {
   addressDetail String?
   carrier       String?
   trackingNumber String?
+  epostDeliveryStatus String?
+  epostLatestEventDate String?
+  epostLatestEventTime String?
+  epostLatestEventLocation String?
+  epostLatestEventStatus String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items         OrderItem[]
+  shipmentNotification ShipmentNotification?
+}
+
+// One shipment-start notice per order. SENS acceptance is not delivery success.
+model ShipmentNotification {
+  id             String   @id @default(cuid())
+  orderId        String   @unique
+  carrier        String
+  trackingNumber String
+  status         String   @default("READY")
+  attempts       Int      @default(0)
+  requestId      String?
+  messageId      String?
+  errorCode      String?
+  acceptedAt     DateTime?
+  deliveredAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([status, updatedAt])
 }
 
 model OrderItem {

@@ -1,5 +1,8 @@
 "use client";
 
+import { getTrackingUrl } from "@/src/lib/delivery-carriers";
+export { getTrackingUrl } from "@/src/lib/delivery-carriers";
+
 export type OrderStatusType =
   | "PENDING"
   | "PAID"
@@ -13,6 +16,11 @@ export interface DeliveryTrackerProps {
   status: OrderStatusType | string;
   carrier?: string | null;
   trackingNumber?: string | null;
+  epostDeliveryStatus?: string | null;
+  epostLatestEventDate?: string | null;
+  epostLatestEventTime?: string | null;
+  epostLatestEventLocation?: string | null;
+  epostLatestEventStatus?: string | null;
   className?: string;
 }
 
@@ -22,29 +30,6 @@ const STEPS = [
   { key: "SHIPPED", label: "배송중", desc: "택배사로 인계되어 안전하게 이동 중입니다." },
   { key: "DELIVERED", label: "배송 완료", desc: "고객님께 배송이 완료되었습니다." },
 ];
-
-export function getTrackingUrl(carrier?: string | null, trackingNumber?: string | null): string | null {
-  if (!trackingNumber) return null;
-  const clean = trackingNumber.trim().replace(/[^0-9]/g, "");
-  const c = (carrier ?? "").trim();
-
-  if (c.includes("CJ") || c.includes("대한통운")) {
-    return `https://www.cjlogistics.com/ko/tool/parcel/tracking?gnbInvcNo=${clean}`;
-  }
-  if (c.includes("우체국")) {
-    return `https://service.epost.go.kr/trace.RetrieveDomRcvTraceList.comm?sid1=${clean}`;
-  }
-  if (c.includes("한진")) {
-    return `https://www.hanjin.com/kor/CMS/DeliveryMgr/WaybillResult.do?mCode=MN038&wblnum=${clean}`;
-  }
-  if (c.includes("롯데")) {
-    return `https://www.lotteglogis.com/home/reservation/tracking/linkView?InvNo=${clean}`;
-  }
-  if (c.includes("로젠")) {
-    return `https://www.ilogen.com/web/personal/trace/${clean}`;
-  }
-  return `https://search.naver.com/search.naver?query=${encodeURIComponent(`${carrier || "택배"} ${trackingNumber}`)}`;
-}
 
 export function getStatusIndex(status: string): number {
   switch (status) {
@@ -85,6 +70,11 @@ export default function DeliveryTracker({
   status,
   carrier,
   trackingNumber,
+  epostDeliveryStatus,
+  epostLatestEventDate,
+  epostLatestEventTime,
+  epostLatestEventLocation,
+  epostLatestEventStatus,
   className = "",
 }: DeliveryTrackerProps) {
   const isCancelled = status === "CANCELLED" || status === "REFUNDED";
@@ -92,6 +82,7 @@ export default function DeliveryTracker({
   const currentIndex = getStatusIndex(status);
   const badge = getStatusBadge(status);
   const trackingUrl = getTrackingUrl(carrier, trackingNumber);
+  const hasEpostTracking = carrier === "우체국택배" && (epostDeliveryStatus || epostLatestEventStatus);
 
   return (
     <div className={`rounded-sm border border-line bg-bg p-5 ${className}`}>
@@ -213,6 +204,19 @@ export default function DeliveryTracker({
               );
             })}
           </div>
+        </div>
+      )}
+
+      {hasEpostTracking && (
+        <div className="mt-5 border-t border-line pt-4" aria-live="polite">
+          <p className="text-util font-semibold text-text">우체국 배송 현황</p>
+          <p className="mt-1 text-body text-text">
+            {epostLatestEventStatus || epostDeliveryStatus}
+            {epostLatestEventLocation ? ` · ${epostLatestEventLocation}` : ""}
+          </p>
+          {(epostLatestEventDate || epostLatestEventTime) && (
+            <p className="mt-1 text-[11px] text-muted">{[epostLatestEventDate, epostLatestEventTime].filter(Boolean).join(" ")}</p>
+          )}
         </div>
       )}
     </div>

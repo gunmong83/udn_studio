@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { clearCart } from "@/src/lib/store";
@@ -18,6 +18,11 @@ interface OrderDetail {
   paymentKey?: string | null;
   carrier?: string | null;
   trackingNumber?: string | null;
+  epostDeliveryStatus?: string | null;
+  epostLatestEventDate?: string | null;
+  epostLatestEventTime?: string | null;
+  epostLatestEventLocation?: string | null;
+  epostLatestEventStatus?: string | null;
   createdAt: string;
   items?: {
     id: string;
@@ -39,25 +44,28 @@ function SuccessContent() {
   const [order, setOrder] = useState<OrderDetail | null>(null);
 
   const missingParams = !paymentKey || !orderId;
-  const isConfirmingRef = useRef(false);
 
   useEffect(() => {
     if (!paymentKey || !orderId) {
       return;
     }
 
-    // React Strict Mode 또는 중복 렌더링 시 이중 호출 방지
-    if (isConfirmingRef.current) {
-      return;
-    }
-    isConfirmingRef.current = true;
-
     const safeOrderId = orderId;
     let isMounted = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15_000);
+    setLoading(true);
+    setError(null);
+    setOrder(null);
 
     async function loadOrder() {
       try {
-        const res = await fetch(`/api/orders?id=${encodeURIComponent(safeOrderId)}`);
+        // 읽기 전용 조회: Strict Mode의 setup → cleanup → setup에서도 다시 실행한다.
+        // 결제 승인은 서버 return 라우트에서만 수행한다.
+        const res = await fetch(`/api/orders?id=${encodeURIComponent(safeOrderId)}`, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
 
         const data = await res.json().catch(() => null);
 
@@ -67,18 +75,27 @@ function SuccessContent() {
           throw new Error(data?.error || "주문 정보를 불러오지 못했습니다.");
         }
 
-        // 결제 승인 완료 -> 장바구니 비우기 및 주문 정보 반영
+        const confirmedOrder = data?.order as OrderDetail | undefined;
+        if (!confirmedOrder || confirmedOrder.id !== safeOrderId ||
+            confirmedOrder.paymentStatus !== "PAID" || confirmedOrder.paymentKey !== paymentKey) {
+          throw new Error("이 주문의 결제 완료 상태를 확인할 수 없습니다. 주문 내역을 확인해주세요.");
+        }
+
+        // URL만 믿지 않고 서버에서 승인된 주문을 확인한 뒤 장바구니를 비운다.
         clearCart();
-        setOrder(data.order || null);
+        setOrder(confirmedOrder);
       } catch (err: unknown) {
         if (isMounted) {
           const msg =
-            err instanceof Error
+            controller.signal.aborted
+              ? "주문 조회 시간이 초과되었습니다. 주문 내역에서 결제 상태를 확인해주세요."
+              : err instanceof Error
               ? err.message
               : "주문 정보를 불러오는 중 오류가 발생했습니다.";
           setError(msg);
         }
       } finally {
+        clearTimeout(timeout);
         if (isMounted) setLoading(false);
       }
     }
@@ -87,6 +104,8 @@ function SuccessContent() {
 
     return () => {
       isMounted = false;
+      clearTimeout(timeout);
+      controller.abort();
     };
   }, [missingParams, paymentKey, orderId, amount, provider]);
 
@@ -134,17 +153,17 @@ function SuccessContent() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600">
           ✕
         </div>
-        <h2 className="mt-4 text-heading font-bold text-text">결제 승인 실패</h2>
+        <h2 className="mt-4 text-heading font-bold text-text">결제 상태 확인 필요</h2>
         <p className="mt-2 text-body text-red-600">{error}</p>
         <p className="mt-2 text-util text-muted">
-          결제 승인이 완료되지 않았거나 이미 취소된 거래일 수 있습니다.
+          조회 오류가 결제 실패를 의미하지는 않습니다. 다시 결제하기 전에 주문 내역을 확인해주세요.
         </p>
         <div className="mt-8 flex flex-col gap-2">
           <Link
-            href="/checkout"
+            href={`/orders?id=${encodeURIComponent(orderId || "")}`}
             className="flex h-11 w-full items-center justify-center bg-text text-nav font-medium text-bg hover:bg-[#444]"
           >
-            다시 결제 시도하기
+            주문 내역 확인하기
           </Link>
           <Link
             href="/cart"
@@ -173,6 +192,11 @@ function SuccessContent() {
           status={order?.status || "PAID"}
           carrier={order?.carrier}
           trackingNumber={order?.trackingNumber}
+          epostDeliveryStatus={order?.epostDeliveryStatus}
+          epostLatestEventDate={order?.epostLatestEventDate}
+          epostLatestEventTime={order?.epostLatestEventTime}
+          epostLatestEventLocation={order?.epostLatestEventLocation}
+          epostLatestEventStatus={order?.epostLatestEventStatus}
         />
       </div>
 

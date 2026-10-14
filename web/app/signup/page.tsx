@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import GoogleMark from "@/src/components/auth/GoogleMark";
 import SignupAddressField, { type SignupAddress } from "@/src/components/auth/SignupAddressField";
+import PhoneVerificationField from "@/src/components/auth/PhoneVerificationField";
 
 function SignupContent() {
   const router = useRouter();
@@ -22,6 +23,11 @@ function SignupContent() {
   const [recipientName, setRecipientName] = useState("");
   const [shippingAddress, setShippingAddress] = useState<SignupAddress>({ zonecode: "", address: "", addressDetail: "" });
   const [phone, setPhone] = useState("");
+  const [phoneVerificationToken, setPhoneVerificationToken] = useState<string | null>(null);
+  const onPhoneVerified = useCallback((verifiedPhone: string | null, token: string | null) => {
+    setPhone(verifiedPhone ?? "");
+    setPhoneVerificationToken(token);
+  }, []);
   const [loading, setLoading] = useState<"google" | "naver" | "form" | null>(null);
   const [message, setMessage] = useState("");
   const validEmail = /^\S+@\S+\.\S+$/.test(email.trim());
@@ -31,7 +37,7 @@ function SignupContent() {
   const validPhone = /^01[016789]\d{7,8}$/.test(normalizedPhone);
   const effectiveRecipientName = recipientName.trim() || name.trim();
   const shippingReady = Boolean(effectiveRecipientName && shippingAddress.zonecode && shippingAddress.address);
-  const readyForSignup = Boolean(terms && privacy && validPhone && shippingReady && (pendingToken || (name.trim() && validEmail && validPassword && passwordsMatch)));
+  const readyForSignup = Boolean(terms && privacy && validPhone && phoneVerificationToken && shippingReady && (pendingToken || (name.trim() && validEmail && validPassword && passwordsMatch)));
 
   const oauth = async (provider: "google" | "naver") => {
     setLoading(provider);
@@ -42,13 +48,14 @@ function SignupContent() {
     setMessage("");
     if (!terms || !privacy) return setMessage("이용약관과 개인정보 수집·이용에 동의해주세요.");
     if (!validPhone) return setMessage("휴대전화번호를 확인해주세요.");
+    if (!phoneVerificationToken) return setMessage("휴대전화번호 인증을 완료해주세요.");
     if (pendingToken) {
       setLoading("form");
       try {
         const response = await fetch("/api/register/oauth", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ pendingToken, phone: normalizedPhone, recipientName: effectiveRecipientName, ...shippingAddress, termsAccepted: terms, privacyAccepted: privacy }),
+          body: JSON.stringify({ pendingToken, phone: normalizedPhone, phoneVerificationToken, recipientName: effectiveRecipientName, ...shippingAddress, termsAccepted: terms, privacyAccepted: privacy }),
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error ?? "가입에 실패했습니다.");
@@ -63,7 +70,7 @@ function SignupContent() {
     if (password !== passwordConfirm) return setMessage("비밀번호 확인이 일치하지 않습니다.");
     setLoading("form");
     try {
-      const response = await fetch("/api/register", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, name, password, phone: normalizedPhone, recipientName: effectiveRecipientName, ...shippingAddress, termsAccepted: terms, privacyAccepted: privacy }) });
+      const response = await fetch("/api/register", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, name, password, phone: normalizedPhone, phoneVerificationToken, recipientName: effectiveRecipientName, ...shippingAddress, termsAccepted: terms, privacyAccepted: privacy }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "가입에 실패했습니다.");
       await signIn("credentials", { email, password, callbackUrl: "/" });
@@ -107,8 +114,7 @@ function SignupContent() {
           {!effectiveRecipientName && <p className="-mt-3 text-util text-muted">기본 배송지의 받는 분 이름을 입력해주세요.</p>}
           <SignupAddressField value={shippingAddress} onChange={setShippingAddress} />
           {!shippingAddress.address && <p className="-mt-3 text-util text-muted">기본 배송지 주소를 검색해 선택해주세요.</p>}
-          <label className="block text-util text-text">휴대전화번호 <span className="text-red-600">(필수)</span><input required type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(event) => setPhone(event.target.value)} aria-invalid={Boolean(phone && !validPhone)} className="mt-2 h-11 w-full border border-line px-3" placeholder="010-1234-5678" /></label>
-          {phone && !validPhone && <p className="-mt-3 text-util text-red-600">휴대전화번호 형식을 확인해주세요.</p>}
+          <PhoneVerificationField onVerified={onPhoneVerified} disabled={loading !== null} />
           {message && <p role="alert" className="text-util text-red-600">{message}</p>}
           <button type="button" disabled={loading !== null || !readyForSignup} aria-busy={loading === "form"} onClick={() => void register()} className="h-11 w-full bg-text text-nav font-medium text-bg transition-colors transition-transform hover:bg-[#444] active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text disabled:cursor-not-allowed disabled:opacity-40">{loading === "form" ? "가입 처리 중…" : "가입하기"}</button>
           <p className="text-util text-muted">모든 필수 항목을 입력하면 가입할 수 있어요. 오류가 생겨도 입력 내용은 유지됩니다.</p>

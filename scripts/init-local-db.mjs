@@ -8,12 +8,16 @@ db.exec(`
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS User (
   id TEXT PRIMARY KEY NOT NULL,
+  role TEXT NOT NULL DEFAULT 'CUSTOMER',
   email TEXT UNIQUE,
   name TEXT,
   image TEXT,
   emailVerified DATETIME,
   passwordHash TEXT,
+  termsAgreedAt DATETIME,
+  privacyAgreedAt DATETIME,
   phone TEXT,
+  phoneVerifiedAt DATETIME,
   defaultRecipientName TEXT,
   defaultPhone TEXT,
   defaultZonecode TEXT,
@@ -38,6 +42,29 @@ CREATE TABLE IF NOT EXISTS Account (
   FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
   UNIQUE(provider, providerAccountId)
 );
+CREATE TABLE IF NOT EXISTS RequestRateLimit (
+  key TEXT PRIMARY KEY NOT NULL,
+  count INTEGER NOT NULL DEFAULT 0,
+  windowStartedAt DATETIME NOT NULL,
+  blockedUntil DATETIME,
+  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS RequestRateLimit_blockedUntil_idx ON RequestRateLimit(blockedUntil);
+CREATE TABLE IF NOT EXISTS PhoneVerificationChallenge (
+  id TEXT PRIMARY KEY NOT NULL,
+  phone TEXT NOT NULL,
+  requestIpHash TEXT NOT NULL,
+  codeHash TEXT NOT NULL,
+  verificationTokenHash TEXT,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  expiresAt DATETIME NOT NULL,
+  verifiedAt DATETIME,
+  consumedAt DATETIME,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS PhoneVerificationChallenge_phone_createdAt_idx ON PhoneVerificationChallenge(phone, createdAt);
+CREATE INDEX IF NOT EXISTS PhoneVerificationChallenge_requestIpHash_createdAt_idx ON PhoneVerificationChallenge(requestIpHash, createdAt);
+CREATE INDEX IF NOT EXISTS PhoneVerificationChallenge_expiresAt_idx ON PhoneVerificationChallenge(expiresAt);
 CREATE TABLE IF NOT EXISTS CartItem (
   id TEXT PRIMARY KEY NOT NULL,
   userId TEXT NOT NULL,
@@ -63,6 +90,11 @@ CREATE TABLE IF NOT EXISTS "Order" (
   addressDetail TEXT,
   carrier TEXT,
   trackingNumber TEXT,
+  epostDeliveryStatus TEXT,
+  epostLatestEventDate TEXT,
+  epostLatestEventTime TEXT,
+  epostLatestEventLocation TEXT,
+  epostLatestEventStatus TEXT,
   createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (userId) REFERENCES User(id) ON DELETE SET NULL
@@ -76,13 +108,42 @@ CREATE TABLE IF NOT EXISTS OrderItem (
   quantity INTEGER NOT NULL,
   FOREIGN KEY (orderId) REFERENCES "Order"(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS ShipmentNotification (
+  id TEXT PRIMARY KEY NOT NULL,
+  orderId TEXT NOT NULL UNIQUE,
+  carrier TEXT NOT NULL,
+  trackingNumber TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'READY',
+  attempts INTEGER NOT NULL DEFAULT 0,
+  requestId TEXT,
+  messageId TEXT,
+  errorCode TEXT,
+  acceptedAt DATETIME,
+  deliveredAt DATETIME,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (orderId) REFERENCES "Order"(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS ShipmentNotification_status_updatedAt_idx ON ShipmentNotification(status, updatedAt);
 `);
-for (const column of ["defaultRecipientName", "defaultPhone", "defaultZonecode", "defaultAddress", "defaultAddressDetail"]) {
+for (const column of ["epostDeliveryStatus", "epostLatestEventDate", "epostLatestEventTime", "epostLatestEventLocation", "epostLatestEventStatus"]) {
+  try {
+    db.exec(`ALTER TABLE "Order" ADD COLUMN ${column} TEXT`);
+  } catch {
+    // Column already exists in a previously initialized local database.
+  }
+}
+for (const column of ["termsAgreedAt", "privacyAgreedAt", "phoneVerifiedAt", "defaultRecipientName", "defaultPhone", "defaultZonecode", "defaultAddress", "defaultAddressDetail"]) {
   try {
     db.exec(`ALTER TABLE User ADD COLUMN ${column} TEXT`);
   } catch {
     // Column already exists in a previously initialized local database.
   }
+}
+try {
+  db.exec("ALTER TABLE User ADD COLUMN role TEXT NOT NULL DEFAULT 'CUSTOMER'");
+} catch {
+  // Column already exists in a previously initialized local database.
 }
 db.close();
 console.log(`Local SQLite ready: ${dbPath}`);

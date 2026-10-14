@@ -15,9 +15,21 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
+  if (!product || product.kind !== "work") {
+    return { title: "PORTFOLIO", robots: { index: false, follow: true } };
+  }
+
   return {
-    title: product ? product.title : "PORTFOLIO",
-    robots: { index: false, follow: true },
+    title: product.title,
+    description: product.description ?? `${product.title} — Studio UDN portfolio project.`,
+    alternates: { canonical: `/portfolio/${product.slug}` },
+    openGraph: {
+      url: `https://studioundesignated.com/portfolio/${product.slug}`,
+      title: product.title,
+      description: product.description ?? `${product.title} — Studio UDN portfolio project.`,
+      images: [`https://studioundesignated.com${product.image}`],
+    },
+    robots: { index: true, follow: true },
   };
 }
 

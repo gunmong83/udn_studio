@@ -8,6 +8,7 @@ import DeliveryTracker, {
   getTrackingUrl,
 } from "@/src/components/orders/DeliveryTracker";
 import TrafficAnalyticsTab from "@/src/components/admin/TrafficAnalyticsTab";
+import { DELIVERY_CARRIERS, validateShipment } from "@/src/lib/delivery-carriers";
 
 interface OrderItem {
   id: string;
@@ -30,9 +31,15 @@ interface Order {
   addressDetail?: string | null;
   carrier?: string | null;
   trackingNumber?: string | null;
+  epostDeliveryStatus?: string | null;
+  epostLatestEventDate?: string | null;
+  epostLatestEventTime?: string | null;
+  epostLatestEventLocation?: string | null;
+  epostLatestEventStatus?: string | null;
   createdAt: string;
   updatedAt: string;
   items: OrderItem[];
+  shipmentNotification?: { status: string; errorCode: string | null; deliveredAt: string | null } | null;
   user?: {
     id: string;
     email: string | null;
@@ -51,15 +58,12 @@ interface Member {
   };
 }
 
-const CARRIERS = [
-  "CJ대한통운",
-  "우체국택배",
-  "한진택배",
-  "롯데택배",
-  "로젠택배",
-  "경동택배",
-  "일양로지스",
-];
+const CARRIERS = DELIVERY_CARRIERS.map((carrier) => carrier.name);
+const NOTICE_LABELS: Record<string, string> = {
+  READY: "발송 대기", SENDING: "발송 요청 중", ACCEPTED: "SENS 접수 완료 · 수신 결과 확인 중",
+  SENT: "수신 성공", FAILED: "발송 실패 · 설정/수신번호 확인 후 재시도 가능",
+  UNKNOWN: "결과 미확인 · 중복 방지를 위해 SENS 콘솔에서 확인 필요",
+};
 
 const STATUS_LABELS: Record<OrderStatusType, string> = {
   PENDING: "결제 대기",
@@ -88,10 +92,12 @@ export default function AdminPage() {
   // 편집 상태
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
   const [editStatus, setEditStatus] = useState<OrderStatusType>("PAID");
-  const [editCarrier, setEditCarrier] = useState("");
+  const [editCarrier, setEditCarrier] = useState("우체국택배");
   const [editTrackingNumber, setEditTrackingNumber] = useState("");
   const [saving, setSaving] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [checkingEpostOrderId, setCheckingEpostOrderId] = useState<string | null>(null);
+  const [epostStatusMessage, setEpostStatusMessage] = useState<{ orderId: string; text: string; completed: boolean } | null>(null);
 
   const fetchOrders = async () => {
     try {
@@ -178,12 +184,13 @@ export default function AdminPage() {
   const openEdit = (order: Order) => {
     setEditingOrderId(order.id);
     setEditStatus(order.status);
-    setEditCarrier(order.carrier || "CJ대한통운");
+    setEditCarrier(order.carrier || "우체국택배");
     setEditTrackingNumber(order.trackingNumber || "");
   };
 
   const handleUpdate = async (orderId: string) => {
     setSaving(true);
+    setError(null);
     try {
       const res = await fetch("/api/admin/orders", {
         method: "PATCH",
@@ -191,22 +198,77 @@ export default function AdminPage() {
         body: JSON.stringify({
           orderId,
           status: editStatus,
-          carrier: editCarrier,
-          trackingNumber: editTrackingNumber,
+          ...(["SHIPPED", "DELIVERED"].includes(editStatus) ? {
+            carrier: editCarrier,
+            trackingNumber: editTrackingNumber,
+          } : {}),
         }),
       });
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || "상태 변경 실패");
       }
+      const result = await res.json();
       await fetchOrders();
       setEditingOrderId(null);
+      if (["FAILED", "UNKNOWN"].includes(result.order?.shipmentNotification?.status)) {
+        setError("배송정보는 저장됐지만 알림톡 수신이 확인되지 않았습니다. 주문의 알림톡 상태를 확인해주세요.");
+      }
     } catch (err) {
       alert(err instanceof Error ? err.message : "저장 중 오류 발생");
     } finally {
       setSaving(false);
     }
   };
+
+  const retryNotice = async (orderId: string) => {
+    setSaving(true);
+    try {
+      const response = await fetch("/api/admin/orders", {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, retryAlimtalk: true }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "재발송 요청 실패");
+      await fetchOrders();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "재발송 요청 실패");
+    } finally { setSaving(false); }
+  };
+
+  const checkEpostDelivery = async (orderId: string) => {
+    setCheckingEpostOrderId(orderId);
+    setEpostStatusMessage(null);
+    try {
+      const response = await fetch("/api/admin/orders/epost-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "우체국 배송상태 조회 실패");
+      const event = result.latestEvent;
+      const detail = event ? ` · ${event.date} ${event.time} ${event.location} ${event.status}` : "";
+      setEpostStatusMessage({
+        orderId,
+        completed: Boolean(result.completed),
+        text: result.completed
+          ? `우체국 API에서 배달완료를 확인해 주문 상태를 배송 완료로 변경했습니다.${detail}`
+          : `우체국 API 현재 상태: ${result.deliveryStatus || event?.status || "배송정보 확인 중"}${detail}`,
+      });
+      await fetchOrders();
+    } catch (err) {
+      setEpostStatusMessage({ orderId, completed: false, text: err instanceof Error ? err.message : "우체국 배송상태 조회 실패" });
+    } finally {
+      setCheckingEpostOrderId(null);
+    }
+  };
+
+  let shipmentError = "";
+  if (editStatus === "SHIPPED" || editStatus === "DELIVERED") {
+    try { validateShipment(editCarrier, editTrackingNumber); }
+    catch (error) { shipmentError = error instanceof Error ? error.message : "배송정보를 확인해주세요."; }
+  }
 
   if (authStatus === "loading" || loading) {
     return (
@@ -560,7 +622,18 @@ export default function AdminPage() {
                         status={order.status}
                         carrier={order.carrier}
                         trackingNumber={order.trackingNumber}
+                        epostDeliveryStatus={order.epostDeliveryStatus}
+                        epostLatestEventDate={order.epostLatestEventDate}
+                        epostLatestEventTime={order.epostLatestEventTime}
+                        epostLatestEventLocation={order.epostLatestEventLocation}
+                        epostLatestEventStatus={order.epostLatestEventStatus}
                       />
+                      {order.shipmentNotification && <div className="mt-3 flex flex-wrap items-center gap-3 text-util" role="status">
+                        <span>배송 알림톡: {NOTICE_LABELS[order.shipmentNotification.status] ?? order.shipmentNotification.status}</span>
+                        {order.shipmentNotification.errorCode && <span className="text-muted">({order.shipmentNotification.errorCode})</span>}
+                        {order.status === "SHIPPED" && ["READY", "FAILED"].includes(order.shipmentNotification.status) &&
+                          <button type="button" disabled={saving} onClick={() => void retryNotice(order.id)} className="border border-line px-2 py-1 disabled:opacity-40">알림톡 재발송</button>}
+                      </div>}
                     </div>
 
                     {/* 배송 설정 인라인 에디터 패널 */}
@@ -584,6 +657,7 @@ export default function AdminPage() {
                             </select>
                           </div>
 
+                          {(editStatus === "SHIPPED" || editStatus === "DELIVERED") && <>
                           <div>
                             <label className="block text-util font-medium text-muted">택배사 선택</label>
                             <select
@@ -601,16 +675,24 @@ export default function AdminPage() {
                           </div>
 
                           <div>
-                            <label className="block text-util font-medium text-muted">운송장 번호</label>
+                            <label htmlFor={`tracking-number-${order.id}`} className="block text-util font-medium text-muted">운송장 번호</label>
                             <input
+                              id={`tracking-number-${order.id}`}
                               type="text"
+                              inputMode="numeric"
+                              autoComplete="off"
                               value={editTrackingNumber}
                               onChange={(e) => setEditTrackingNumber(e.target.value)}
-                              placeholder="숫자만 입력 (예: 68160868)"
+                              placeholder={DELIVERY_CARRIERS.find((carrier) => carrier.name === editCarrier)?.hint ?? "택배사를 먼저 선택해주세요"}
                               className="mt-1 h-9 w-full rounded-xs border border-line bg-bg px-2 text-util text-text focus:border-text focus:outline-none"
                             />
                           </div>
+                          </>}
                         </div>
+                        {editStatus === "PREPARING" && <p className="mt-3 text-util text-muted">상품 준비중은 배송 상태만 저장합니다. 택배사와 운송장 번호는 배송중으로 변경할 때 입력해주세요.</p>}
+                        {editStatus === "SHIPPED" && <p className="mt-3 text-util text-muted">배송중 + 택배사 + 유효한 송장번호를 저장하면 주문의 수신번호로 배송 시작 알림톡이 발송됩니다. 실제 발급된 송장번호인지 확인해주세요.</p>}
+                        {editStatus === "DELIVERED" && editCarrier === "우체국택배" && <p className="mt-3 text-util text-muted">우체국 API에서 배달완료가 확인된 경우에만 배송 완료로 저장됩니다.</p>}
+                        {shipmentError && <p className="mt-2 text-util text-red-600" role="alert">{shipmentError}</p>}
 
                         <div className="mt-4 flex items-center justify-end gap-2">
                           <button
@@ -622,11 +704,11 @@ export default function AdminPage() {
                           </button>
                           <button
                             type="button"
-                            disabled={saving}
+                            disabled={saving || Boolean(shipmentError)}
                             onClick={() => handleUpdate(order.id)}
                             className="h-8 bg-text px-4 text-util font-medium text-bg hover:bg-[#444] disabled:opacity-50"
                           >
-                            {saving ? "저장 중..." : "✓ 변경사항 저장"}
+                            {saving ? ((editStatus === "SHIPPED" || editStatus === "DELIVERED") && editCarrier === "우체국택배" ? "우체국 API 조회 및 저장 중..." : "저장 중...") : "✓ 변경사항 저장"}
                           </button>
                         </div>
                       </div>
@@ -664,7 +746,7 @@ export default function AdminPage() {
                           {order.address} {order.addressDetail ?? ""}
                         </p>
                         {order.carrier && order.trackingNumber && (
-                          <div className="mt-2 flex items-center gap-2">
+                          <div className="mt-2 flex flex-wrap items-center gap-2">
                             <span className="text-muted">배송정보:</span>
                             <span className="font-semibold text-text">{order.carrier}</span>
                             <span className="font-mono text-text">{order.trackingNumber}</span>
@@ -678,8 +760,19 @@ export default function AdminPage() {
                                 배송조회 ↗
                               </a>
                             )}
+                            {order.status === "SHIPPED" && order.carrier === "우체국택배" && (
+                              <button
+                                type="button"
+                                disabled={checkingEpostOrderId === order.id}
+                                onClick={() => void checkEpostDelivery(order.id)}
+                                className="rounded-xs border border-line bg-soft px-1.5 py-0.5 text-[11px] text-text hover:bg-line disabled:opacity-50"
+                              >
+                                {checkingEpostOrderId === order.id ? "우체국 조회 중..." : "우체국 배송상태 확인"}
+                              </button>
+                            )}
                           </div>
                         )}
+                        {epostStatusMessage?.orderId === order.id && <p className={`mt-2 text-[11px] ${epostStatusMessage.completed ? "text-emerald-700" : "text-muted"}`} role="status">{epostStatusMessage.text}</p>}
                       </div>
 
                       <div className="space-y-1 md:text-right">
