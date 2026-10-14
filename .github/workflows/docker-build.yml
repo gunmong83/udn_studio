@@ -65,31 +65,7 @@ jobs:
               exit 1
             fi
             test -f /opt/udn_studio/.env.production
-            sudo --preserve-env=EPOST_POLLING_TOKEN python3 - <<'PY'
-            import os
-            import pathlib
-            import tempfile
-
-            path = pathlib.Path('/opt/udn_studio/.env.production')
-            token = os.environ['EPOST_POLLING_TOKEN']
-            if not token or '\n' in token or '\r' in token:
-                raise SystemExit('EPOST_POLLING_TOKEN is empty or malformed.')
-            original = path.read_text()
-            lines = [line for line in original.splitlines() if not line.startswith('EPOST_POLLING_TOKEN=')]
-            lines.append('EPOST_POLLING_TOKEN=' + token)
-            content = '\n'.join(lines) + '\n'
-            fd, temporary = tempfile.mkstemp(prefix='.env.production.', dir=path.parent)
-            try:
-                with os.fdopen(fd, 'w') as output:
-                    output.write(content)
-                    output.flush()
-                    os.fsync(output.fileno())
-                os.chmod(temporary, 0o600)
-                os.replace(temporary, path)
-            finally:
-                if os.path.exists(temporary):
-                    os.unlink(temporary)
-            PY
+            sudo --preserve-env=EPOST_POLLING_TOKEN python3 -c 'import os,pathlib,tempfile; p=pathlib.Path("/opt/udn_studio/.env.production"); t=os.environ["EPOST_POLLING_TOKEN"]; assert t and "\n" not in t and "\r" not in t, "EPOST_POLLING_TOKEN is malformed"; lines=[line for line in p.read_text().splitlines() if not line.startswith("EPOST_POLLING_TOKEN=")]; lines.append("EPOST_POLLING_TOKEN="+t); content="\n".join(lines)+"\n"; fd,tmp=tempfile.mkstemp(prefix=".env.production.",dir=p.parent); out=os.fdopen(fd,"w"); out.write(content); out.flush(); os.fsync(out.fileno()); out.close(); os.chmod(tmp,0o600); os.replace(tmp,p)'
             echo 'EPOST polling token configured in the production environment.'
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:${{ github.sha }}"
             sudo docker pull "$IMAGE"
@@ -135,20 +111,7 @@ jobs:
             sudo mkdir -p "$BACKUP_DIR"
             sudo chmod 700 "$BACKUP_DIR"
             trap 'sudo rm -f "$BACKUP_TMP" "$BACKUP_TMP.gz"' EXIT
-            sudo python3 - "$BACKUP_TMP" <<'PY'
-            import sqlite3
-            import sys
-
-            source = sqlite3.connect("/data/udn.db", timeout=30)
-            target = sqlite3.connect(sys.argv[1], timeout=30)
-            try:
-                source.backup(target, pages=256, sleep=0.05)
-                if target.execute("PRAGMA integrity_check").fetchone() != ("ok",):
-                    raise RuntimeError("SQLite backup integrity check failed")
-            finally:
-                target.close()
-                source.close()
-            PY
+            sudo python3 -c 'import sqlite3,sys; source=sqlite3.connect("/data/udn.db",timeout=30); target=sqlite3.connect(sys.argv[1],timeout=30); source.backup(target,pages=256,sleep=0.05); assert target.execute("PRAGMA integrity_check").fetchone()==("ok",), "SQLite backup integrity check failed"; target.close(); source.close()' "$BACKUP_TMP"
             sudo gzip -f "$BACKUP_TMP"
             sudo mv "$BACKUP_TMP.gz" "$BACKUP_FILE"
             sudo chmod 600 "$BACKUP_FILE"
