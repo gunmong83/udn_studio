@@ -50,13 +50,47 @@ jobs:
     steps:
       - name: Deploy image to Lightsail
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          EPOST_POLLING_TOKEN: ${{ secrets.EPOST_POLLING_TOKEN }}
         with:
           host: ${{ secrets.LIGHTSAIL_UBUNTU_HOST }}
           username: ${{ secrets.LIGHTSAIL_UBUNTU_USER }}
           key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY }}
+          envs: EPOST_POLLING_TOKEN
           script_stop: true
           script: |
             set -eu
+            if [ -z "${EPOST_POLLING_TOKEN:-}" ]; then
+              echo 'EPOST_POLLING_TOKEN GitHub secret is missing.' >&2
+              exit 1
+            fi
+            test -f /opt/udn_studio/.env.production
+            sudo --preserve-env=EPOST_POLLING_TOKEN python3 - <<'PY'
+            import os
+            import pathlib
+            import tempfile
+
+            path = pathlib.Path('/opt/udn_studio/.env.production')
+            token = os.environ['EPOST_POLLING_TOKEN']
+            if not token or '\n' in token or '\r' in token:
+                raise SystemExit('EPOST_POLLING_TOKEN is empty or malformed.')
+            original = path.read_text()
+            lines = [line for line in original.splitlines() if not line.startswith('EPOST_POLLING_TOKEN=')]
+            lines.append('EPOST_POLLING_TOKEN=' + token)
+            content = '\n'.join(lines) + '\n'
+            fd, temporary = tempfile.mkstemp(prefix='.env.production.', dir=path.parent)
+            try:
+                with os.fdopen(fd, 'w') as output:
+                    output.write(content)
+                    output.flush()
+                    os.fsync(output.fileno())
+                os.chmod(temporary, 0o600)
+                os.replace(temporary, path)
+            finally:
+                if os.path.exists(temporary):
+                    os.unlink(temporary)
+            PY
+            echo 'EPOST polling token configured in the production environment.'
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:${{ github.sha }}"
             sudo docker pull "$IMAGE"
             # The hardened Nginx virtual-host is versioned with the image so
@@ -66,7 +100,12 @@ jobs:
             sudo docker cp udn-nginx-config:/nginx_https_next.conf /tmp/udn-https.conf
             sudo docker rm udn-nginx-config >/dev/null
             sudo mkdir -p /opt/udn_studio /data
-            test -f /opt/udn_studio/.env.production
+            for name in EPOST_SERVICE_KEY SENS_ALIMTALK_SERVICE_ID SENS_ALIMTALK_CHANNEL_ID SENS_ACCESS_KEY SENS_SECRET_KEY; do
+              if ! sudo grep -q "^${name}=." /opt/udn_studio/.env.production; then
+                echo "${name} is missing from the production environment." >&2
+                exit 1
+              fi
+            done
             # NICEPAY v1 서버승인은 ClientKey(R2_ 운영 / S2_ 테스트)와
             # SecretKey를 Basic 인증에 사용한다. 구형 배포 설정의
             # NICEPAY_MERCHANT_KEY도 호환 목적으로 허용하되 값은 출력하지 않는다.
