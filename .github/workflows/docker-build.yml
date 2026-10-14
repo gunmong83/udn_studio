@@ -52,11 +52,12 @@ jobs:
         uses: appleboy/ssh-action@v1.2.0
         env:
           EPOST_POLLING_TOKEN: ${{ secrets.EPOST_POLLING_TOKEN }}
+          EPOST_SERVICE_KEY: ${{ secrets.EPOST_SERVICE_KEY }}
         with:
           host: ${{ secrets.LIGHTSAIL_UBUNTU_HOST }}
           username: ${{ secrets.LIGHTSAIL_UBUNTU_USER }}
           key: ${{ secrets.LIGHTSAIL_UBUNTU_KEY }}
-          envs: EPOST_POLLING_TOKEN
+          envs: EPOST_POLLING_TOKEN,EPOST_SERVICE_KEY
           script_stop: true
           script: |
             set -eu
@@ -64,9 +65,13 @@ jobs:
               echo 'EPOST_POLLING_TOKEN GitHub secret is missing.' >&2
               exit 1
             fi
+            if [ -z "${EPOST_SERVICE_KEY:-}" ]; then
+              echo 'EPOST_SERVICE_KEY GitHub secret is missing.' >&2
+              exit 1
+            fi
             test -f /opt/udn_studio/.env.production
-            sudo --preserve-env=EPOST_POLLING_TOKEN python3 -c 'import os,pathlib,tempfile; p=pathlib.Path("/opt/udn_studio/.env.production"); t=os.environ["EPOST_POLLING_TOKEN"]; assert t and "\n" not in t and "\r" not in t, "EPOST_POLLING_TOKEN is malformed"; lines=[line for line in p.read_text().splitlines() if not line.startswith("EPOST_POLLING_TOKEN=")]; lines.append("EPOST_POLLING_TOKEN="+t); content="\n".join(lines)+"\n"; fd,tmp=tempfile.mkstemp(prefix=".env.production.",dir=p.parent); out=os.fdopen(fd,"w"); out.write(content); out.flush(); os.fsync(out.fileno()); out.close(); os.chmod(tmp,0o600); os.replace(tmp,p)'
-            echo 'EPOST polling token configured in the production environment.'
+            sudo --preserve-env=EPOST_POLLING_TOKEN,EPOST_SERVICE_KEY python3 -c 'import os,pathlib,tempfile; p=pathlib.Path("/opt/udn_studio/.env.production"); values={name:os.environ[name] for name in ("EPOST_POLLING_TOKEN","EPOST_SERVICE_KEY")}; assert all(value and "\n" not in value and "\r" not in value for value in values.values()), "EPOST secret is malformed"; lines=[line for line in p.read_text().splitlines() if not any(line.startswith(name+"=") for name in values)]; lines.extend(name+"="+value for name,value in values.items()); content="\n".join(lines)+"\n"; fd,tmp=tempfile.mkstemp(prefix=".env.production.",dir=p.parent); out=os.fdopen(fd,"w"); out.write(content); out.flush(); os.fsync(out.fileno()); out.close(); os.chmod(tmp,0o600); os.replace(tmp,p)'
+            echo 'EPOST credentials configured in the production environment.'
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:${{ github.sha }}"
             sudo docker pull "$IMAGE"
             # The hardened Nginx virtual-host is versioned with the image so

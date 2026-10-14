@@ -70,6 +70,7 @@ GitHub Actions의 **Production release** 워크플로에서 **Run workflow**를 
   - `SENS_ALIMTALK_SERVICE_ID`, `SENS_ALIMTALK_CHANNEL_ID`, `SENS_ACCESS_KEY`, `SENS_SECRET_KEY`: 승인된 NAVER Cloud SENS Biz Message 서비스와 채널 설정 (SMS 서비스 ID와 구분)
   - `EPOST_SERVICE_KEY`: 우체국 국내우편물 종적조회 OpenAPI의 운영 서비스 인증키
   - `EPOST_POLLING_TOKEN`: 매시간 배송조회 작업을 인증하는 비밀 토큰 (같은 값을 GitHub Actions secret에도 설정)
+- GitHub Actions 저장소 시크릿 `EPOST_SERVICE_KEY`와 `EPOST_POLLING_TOKEN`은 배포 시 Lightsail의 `.env.production`에 안전하게 반영됩니다. 두 시크릿은 서로 다른 목적의 값이며, 우체국에서 발급한 키는 `EPOST_SERVICE_KEY`뿐입니다.
 - **서버 적용 방법**:
   - Lightsail 서버 접속 후 `/opt/udn_studio/.env.production` 파일 생성 또는 수정
   - GitHub Actions의 Docker 배포 시 `--env-file /opt/udn_studio/.env.production` 옵션으로 컨테이너에 주입됩니다.

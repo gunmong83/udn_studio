@@ -54,10 +54,6 @@ function SuccessContent() {
     let isMounted = true;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15_000);
-    setLoading(true);
-    setError(null);
-    setOrder(null);
-
     async function loadOrder() {
       try {
         // 읽기 전용 조회: Strict Mode의 setup → cleanup → setup에서도 다시 실행한다.
