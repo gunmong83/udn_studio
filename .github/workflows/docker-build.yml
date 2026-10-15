@@ -73,9 +73,6 @@ jobs:
             sudo --preserve-env=EPOST_POLLING_TOKEN,EPOST_SERVICE_KEY python3 -c 'import os,pathlib,tempfile; p=pathlib.Path("/opt/udn_studio/.env.production"); values={name:os.environ[name] for name in ("EPOST_POLLING_TOKEN","EPOST_SERVICE_KEY")}; assert all(value and "\n" not in value and "\r" not in value for value in values.values()), "EPOST secret is malformed"; lines=[line for line in p.read_text().splitlines() if not any(line.startswith(name+"=") for name in values)]; lines.extend(name+"="+value for name,value in values.items()); content="\n".join(lines)+"\n"; fd,tmp=tempfile.mkstemp(prefix=".env.production.",dir=p.parent); out=os.fdopen(fd,"w"); out.write(content); out.flush(); os.fsync(out.fileno()); out.close(); os.chmod(tmp,0o600); os.replace(tmp,p)'
             sudo install -d -m 700 /etc/udn_studio
             sudo --preserve-env=EPOST_POLLING_TOKEN python3 -c 'import os,pathlib,tempfile; value=os.environ["EPOST_POLLING_TOKEN"]; assert value and "\n" not in value and "\r" not in value, "EPOST polling token is malformed"; p=pathlib.Path("/etc/udn_studio/epost-poll.env"); fd,tmp=tempfile.mkstemp(prefix=".epost-poll.",dir=p.parent); out=os.fdopen(fd,"w"); out.write("EPOST_POLLING_TOKEN="+value+"\n"); out.flush(); os.fsync(out.fileno()); out.close(); os.chmod(tmp,0o600); os.replace(tmp,p)'
-            sudo install -o root -g root -m 755 /tmp/udn-epost-poll /usr/local/sbin/udn-epost-poll
-            sudo install -o root -g root -m 644 /tmp/udn-epost-poll.service /etc/systemd/system/udn-epost-poll.service
-            sudo install -o root -g root -m 644 /tmp/udn-epost-poll.timer /etc/systemd/system/udn-epost-poll.timer
             echo 'EPOST credentials configured in the production environment.'
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/udn-studio:${{ github.sha }}"
             sudo docker pull "$IMAGE"
@@ -88,6 +85,9 @@ jobs:
             sudo docker cp udn-nginx-config:/udn-epost-poll.service /tmp/udn-epost-poll.service
             sudo docker cp udn-nginx-config:/udn-epost-poll.timer /tmp/udn-epost-poll.timer
             sudo docker rm udn-nginx-config >/dev/null
+            sudo install -o root -g root -m 755 /tmp/udn-epost-poll /usr/local/sbin/udn-epost-poll
+            sudo install -o root -g root -m 644 /tmp/udn-epost-poll.service /etc/systemd/system/udn-epost-poll.service
+            sudo install -o root -g root -m 644 /tmp/udn-epost-poll.timer /etc/systemd/system/udn-epost-poll.timer
             sudo mkdir -p /opt/udn_studio /data
             for name in EPOST_SERVICE_KEY SENS_ALIMTALK_SERVICE_ID SENS_ALIMTALK_CHANNEL_ID SENS_ACCESS_KEY SENS_SECRET_KEY; do
               if ! sudo grep -q "^${name}=." /opt/udn_studio/.env.production; then
