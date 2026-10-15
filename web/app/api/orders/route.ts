@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     items.map((item: { productId?: string }) => item.productId).filter((id: unknown): id is string => typeof id === "string"),
   );
   if (products.some((product) => product.soldOut && requestedProductIds.has(product.slug))) {
-    return NextResponse.json({ error: "품절된 상품은 주문할 수 없습니다." }, { status: 409 });
+    return NextResponse.json({ error: "출시 예정 상품은 주문할 수 없습니다." }, { status: 409 });
   }
 
   const orderItems: ({ productId: string; title: string; unitPrice: number; quantity: number } | null)[] = items.map((item: { productId?: string; quantity?: number }) => {
