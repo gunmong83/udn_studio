@@ -408,7 +408,7 @@ Amethyst Post Card
 The first work in Buhm[範], a series of vessels that hold The Law of Structure, transforms into a graphic composition a geometric net created by my eldest child, who loves mathematics. This vessel—holding the fundamental principle that runs through all structure—expresses the structural order inherent within things. The form is unfolded into a net and carried across the front and reverse, allowing us to perceive intuitively how, and how greatly, a thing may differ from the structure concealed within its outward appearance. In that space between the visible form and its underlying order, the work invites you to imagine. The title Amethyst was chosen by the child who drew the net. They felt that its form resembled the crystalline structure of an amethyst.`,
     price: 2000,
     priceLabel: "2,000 KRW",
-    soldOut: true,
+    soldOut: false,
   },
   {
     slug: "che-sticker-2026-fruits",
