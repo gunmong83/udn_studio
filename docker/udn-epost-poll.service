@@ -1,0 +1,16 @@
+[Unit]
+Description=Poll active EPOST shipments for studioUDN
+After=docker.service
+Wants=docker.service
+
+[Service]
+Type=oneshot
+User=www-data
+EnvironmentFile=/etc/udn_studio/epost-poll.env
+ExecStart=/usr/local/sbin/udn-epost-poll
+TimeoutStartSec=25min
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict

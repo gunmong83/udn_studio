@@ -36,8 +36,11 @@ COPY --from=build /app/next.config.ts ./next.config.ts
 COPY --from=build /app/public ./public
 COPY --from=build /app/prisma ./prisma
 COPY docker/start.sh /start.sh
+COPY docker/udn-epost-poll.sh /usr/local/sbin/udn-epost-poll
+COPY docker/udn-epost-poll.service /udn-epost-poll.service
+COPY docker/udn-epost-poll.timer /udn-epost-poll.timer
 COPY nginx_https_next.conf /nginx_https_next.conf
-RUN chmod +x /start.sh
+RUN chmod +x /start.sh /usr/local/sbin/udn-epost-poll
 
 EXPOSE 3000
 CMD ["/start.sh"]

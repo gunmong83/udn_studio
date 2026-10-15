@@ -70,7 +70,11 @@
 
 ## 환경 변수 및 DB 적용
 
-로컬은 `web/.env.local`, 운영은 서버의 `/opt/udn_studio/.env.production`에 설정한다. API 키를 코드·GitHub 저장소·문서에 넣지 않는다. 자동 조회에는 임의 생성한 긴 비밀값을 운영 환경의 `EPOST_POLLING_TOKEN`과 GitHub 저장소 Actions secret `EPOST_POLLING_TOKEN` 양쪽에 동일하게 설정한다. 토큰은 저장소에 기록하지 않는다. 운영 서버 환경변수를 변경한 뒤에는 컨테이너 재시작/배포가 필요하다. Actions 스케줄은 GitHub의 부하에 따라 시작이 지연될 수 있으므로 정확한 시각이 중요한 경우에는 Lightsail의 systemd timer가 대안이다.
+로컬은 `web/.env.local`, 운영은 서버의 `/opt/udn_studio/.env.production`에 설정한다. API 키를 코드·GitHub 저장소·문서에 넣지 않는다. `EPOST_POLLING_TOKEN`은 강한 임의 비밀값이며 저장소에 기록하지 않는다. GitHub Actions secret의 동일 값은 현재 배포 workflow가 운영 `.env.production`과 root 소유의 `/etc/udn_studio/epost-poll.env`를 안전하게 갱신하는 용도로만 필요하고, GitHub의 시간별 polling workflow는 사용하지 않는다. 토큰 변경은 다음 배포에 반영한다.
+
+자동 조회는 Lightsail 호스트의 `udn-epost-poll.timer`가 매시간 실행한다. 타이머는 `:17`부터 최대 3분 무작위 지연 후 호스트의 loopback 주소 `http://127.0.0.1:3001/api/cron/epost-tracking`을 호출한다. 요청은 Cloudflare 공개 경로를 통과하지 않으며, 애플리케이션의 Bearer 토큰 검증은 계속 적용된다. 서비스는 `www-data`로 실행되고 토큰만 `/etc/udn_studio/epost-poll.env`에서 읽는다. systemd oneshot 서비스는 이전 실행이 끝나기 전에 중복 실행되지 않고, 실행 로그는 `journalctl -u udn-epost-poll.service`에서 확인한다. `Persistent=true`로 호스트가 꺼져 예약 시각을 놓친 경우 재부팅 후 놓친 작업을 보정한다.
+
+polling은 `SHIPPED` 상태의 우체국 주문을 한 건씩 조회하므로 부하는 활성 배송 건수에 비례한다. 호출마다 동시 실행하지 않고 최대 20분 시간 제한을 둔다. 배송 건수가 늘거나 조회가 제한시간에 가까워지면 batch 크기/우체국 API 호출 제한을 검토한다.
 
 ```dotenv
 SENS_ALIMTALK_SERVICE_ID=ncp:kkobizmsg:kr:112583704463198:homepage_katalk_alarm
@@ -112,6 +116,7 @@ pnpm build
 
 - 실제 키의 Biz Message 발송 권한과 서비스 ID/채널 일치 여부
 - 운영 서버 환경 변수 주입과 최신 코드·DB 스키마 반영
+- 배포 후 `systemctl status udn-epost-poll.timer` 및 `systemctl list-timers udn-epost-poll.timer`로 타이머 활성화와 다음 실행 시각 확인
 - 본인 번호로 두 템플릿의 실제 수신 및 택배사 링크 확인
 - 실제 고객을 대상으로 하기 전 발송 과금과 장애 대응 확인
 

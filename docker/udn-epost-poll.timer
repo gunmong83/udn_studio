@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly EPOST shipment status polling
+
+[Timer]
+OnCalendar=*-*-* *:17:00
+RandomizedDelaySec=3m
+Persistent=true
+Unit=udn-epost-poll.service
+
+[Install]
+WantedBy=timers.target
