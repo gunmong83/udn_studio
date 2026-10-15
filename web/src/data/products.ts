@@ -408,7 +408,7 @@ Amethyst Post Card
 The first work in Buhm[範], a series of vessels that hold The Law of Structure, transforms into a graphic composition a geometric net created by my eldest child, who loves mathematics. This vessel—holding the fundamental principle that runs through all structure—expresses the structural order inherent within things. The form is unfolded into a net and carried across the front and reverse, allowing us to perceive intuitively how, and how greatly, a thing may differ from the structure concealed within its outward appearance. In that space between the visible form and its underlying order, the work invites you to imagine. The title Amethyst was chosen by the child who drew the net. They felt that its form resembled the crystalline structure of an amethyst.`,
     price: 2000,
     priceLabel: "2,000 KRW",
-    soldOut: true,
+    soldOut: false,
   },
   {
     slug: "che-sticker-2026-fruits",
@@ -704,6 +704,7 @@ With a thought of someone dear, Che[彩] the edible flower cards hold what you w
       { src: "/assets/portfolio_images/portfolio_2/2.jpg", aspect: "1206/1206" },
       { src: "/assets/portfolio_images/portfolio_2/3.jpeg", aspect: "750/939" },
       { src: "/assets/portfolio_images/portfolio_2/4.jpeg", aspect: "750/938" },
+      { src: "/assets/portfolio_images/portfolio_2/5.png", aspect: "3959/2922" },
     ],
     description:
       "the cake house in Naju, Jeonam, Korea convey the meaning of speed in right time, NeRyGe, on its logo with its cakebox and businesscard ",
@@ -1151,6 +1152,9 @@ May it remind you that your life matters more than numbers, and that growing in 
     kind: "work",
     image: "/assets/portfolio_images/twice-a-day-blue-hour-poster/rep.jpg",
     aspect: "3959/2922",
+    detailImages: [
+      { src: "/assets/portfolio_images/twice-a-day-blue-hour-poster/detail_1.png", aspect: "2048/1512" },
+    ],
     description:
       "297 × 420 mm. A poster for An Sun Young’s solo exhibition, Twice a Day, Blue Hour, at Redboots Gallery. The painting’s layered blues, luminous moon, and delicate butterflies set the atmosphere, while white typography carries the exhibition title and information. The composition preserves the artwork’s texture and quiet sense of light, reflecting the fleeting blue hours at dawn and dusk.",
   },
@@ -1177,6 +1181,36 @@ May it remind you that your life matters more than numbers, and that growing in 
     description:
       "Jazz Club in Seoul, Gangnam. 40 × 90 mm. The client requested a design that would immediately convey the bar’s identity as a place to enjoy jazz while clearly presenting its name, C’est Si Bon.",
   },
+  {
+    slug: "dohwaji-artist-business-card",
+    title: "Business Card for Artist Dohwaji",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/dohwaji-artist-business-card/rep.png",
+    aspect: "3959/2922",
+    description:
+      "50 × 90 mm. Designed to showcase a selected work from the artist’s own collection, the card gives the artwork centre stage. The artist’s name is stamped in gold foil that echoes the background colour, leaving the personal details quietly concealed to be discovered on closer inspection. On the reverse, the artwork’s vivid horizontal composition almost becomes a pattern.",
+  },
+  {
+    slug: "maenbal-cooperative-business-cards",
+    title: "Business Cards for Maenbal Cooperative Childcare Center",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/maenbal-cooperative-business-cards/rep.png",
+    aspect: "3959/2922",
+    description:
+      "Maenbal is a parent-run cooperative childcare center built around a shared commitment to raising children together. Each year, parents elect fellow members to lead areas such as education, publicity, and facilities. These business cards were created as a farewell gift for Maikol, the outgoing education director. Adults in the community use nicknames so children can address them as friends; the card reflects that warm, informal culture. With the chairperson Mr. White (HaYang)’s generous support and his family’s printing expertise, the project explored a range of print finishes. The design follows Maenbal’s existing identity, while a later T-shirt project opened the door to introduce a new visual direction.",
+  },
+  {
+    slug: "artis-artec-business-card",
+    title: "ARTIS + ARTEC Business Card",
+    category: "Total Branding",
+    kind: "work",
+    image: "/assets/portfolio_images/artis-artec-business-card/rep.png",
+    aspect: "3959/2922",
+    description:
+      "90 × 50 mm. During my time at ARTIS, I led the company’s branding. The name combines “Art” and “Is”; a line above “IS” highlights the idea and creates an identity that can flex across business areas. When ARTIS expanded into printing as ARTEC, I designed a distinctive card for the CEO that brings both identities together. Blue foil, the established brand colour, is applied to translucent plastic for a striking layered finish. The experience taught me how much energy I had invested in building another company’s brand, and how strongly I wanted to put that energy into my own.",
+  },
 ];
 
 export function getProduct(slug: string): Product | undefined {
@@ -1197,14 +1231,17 @@ const WORK_DISPLAY_ORDER = [
   "the-tov",
   "seoul-samgaetang-brand-identity",
   "cest-si-bon-business-card",
+  "dohwaji-artist-business-card",
   "the-10th-yaho-festival",
   "korean-afoc-exhibition",
   "farfars-steady-hand-storybook",
+  "artis-artec-business-card",
   "kyungnong-divide-water-packaging",
   "dubgeuk-future-competencies-career-education",
   "rainbow-school-information-session",
   "samsung-caster-2017-calendar",
   "menbal-kindergarten",
+  "maenbal-cooperative-business-cards",
   "dubgeuk-after-school-posters",
   "chusa-art-festival-goods",
   "twice-a-day-blue-hour-poster",

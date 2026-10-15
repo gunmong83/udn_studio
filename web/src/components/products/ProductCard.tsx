@@ -59,7 +59,7 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.displayPriceLabel ?? product.priceLabel}
           </p>
         )}
-        {product.soldOut && <p className="text-util font-medium text-muted">SOLD OUT</p>}
+        {product.soldOut && <p className="text-util font-medium text-muted">COMING SOON</p>}
       </div>
     </Link>
   );

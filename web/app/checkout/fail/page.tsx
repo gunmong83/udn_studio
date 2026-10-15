@@ -3,6 +3,7 @@
 import { Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { trackCommerce } from "@/src/lib/analytics-client";
 
 function FailContent() {
   const searchParams = useSearchParams();
@@ -11,6 +12,7 @@ function FailContent() {
   const orderId = searchParams.get("orderId");
 
   useEffect(() => {
+    trackCommerce("payment_error", { reason: "provider_return" });
     if (orderId) {
       fetch(`/api/orders?id=${orderId}`, { method: "DELETE" }).catch(() => {});
     }

@@ -67,7 +67,7 @@ export default function ProductOptions({
                 >
                   <span className="block font-semibold">{option.optionLabel}</span>
                   <span className={isSelected ? "text-bg/80" : "text-muted"}>
-                    {option.priceLabel}
+                    {option.soldOut ? "COMING SOON" : option.priceLabel}
                   </span>
                 </button>
               );

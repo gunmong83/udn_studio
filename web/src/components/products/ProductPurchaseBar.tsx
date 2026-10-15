@@ -29,7 +29,7 @@ export default function ProductPurchaseBar({
           disabled
           className="h-10 w-full border border-line bg-soft px-2 text-nav font-medium text-muted"
         >
-          SOLD OUT
+          COMING SOON
         </button>
       </div>
     );

@@ -133,7 +133,7 @@ export default async function ProductDetailPage({
             {product.displayPriceLabel ?? product.priceLabel}
           </p>
         )}
-          {product.soldOut && <p className="text-util font-medium text-muted">SOLD OUT</p>}
+          {product.soldOut && <p className="text-util font-medium text-muted">COMING SOON</p>}
         {product.description && (
           <p className="mt-4 whitespace-pre-line text-body leading-[21.6px] text-text">
             {product.description}
