@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { trackCommerce } from "@/src/lib/analytics-client";
 
 // localStorage 기반 mock 저장소(장바구니·위시리스트·가짜 세션·언어).
 // 실제 인증·결제 연동 없음(지시서 MUST NOT).
@@ -91,6 +92,7 @@ export function addToCart(slug: string, qty = 1): void {
   if (found) found.qty += qty;
   else cart.push({ slug, qty });
   write(CART_KEY, cart, CART_EVENT);
+  trackCommerce("add_to_cart", { productId: slug, quantity: qty });
 }
 
 export function setCartQty(slug: string, qty: number): void {

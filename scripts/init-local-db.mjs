@@ -125,7 +125,43 @@ CREATE TABLE IF NOT EXISTS ShipmentNotification (
   FOREIGN KEY (orderId) REFERENCES "Order"(id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS ShipmentNotification_status_updatedAt_idx ON ShipmentNotification(status, updatedAt);
+CREATE TABLE IF NOT EXISTS AnalyticsSession (
+  id TEXT PRIMARY KEY NOT NULL, visitorId TEXT NOT NULL, userId TEXT, ip TEXT,
+  country TEXT, networkType TEXT, rtt INTEGER, screenWidth INTEGER, screenHeight INTEGER,
+  language TEXT, referrer TEXT, referrerDomain TEXT, entryPath TEXT NOT NULL,
+  device TEXT, browser TEXT, os TEXT, duration INTEGER NOT NULL DEFAULT 0,
+  pageCount INTEGER NOT NULL DEFAULT 1, measurementVersion INTEGER NOT NULL DEFAULT 0,
+  utmSource TEXT, utmMedium TEXT, utmCampaign TEXT, utmContent TEXT,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) REFERENCES User(id) ON DELETE SET NULL
+);
+CREATE TABLE IF NOT EXISTS AnalyticsPageView (
+  id TEXT PRIMARY KEY NOT NULL, sessionId TEXT NOT NULL, path TEXT NOT NULL, title TEXT,
+  duration INTEGER NOT NULL DEFAULT 0, scrollDepth INTEGER, createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (sessionId) REFERENCES AnalyticsSession(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS AnalyticsEvent (
+  id TEXT PRIMARY KEY NOT NULL, sessionId TEXT NOT NULL, name TEXT NOT NULL, path TEXT NOT NULL,
+  productId TEXT, quantity INTEGER, reason TEXT, createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (sessionId) REFERENCES AnalyticsSession(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS AnalyticsSession_createdAt_idx ON AnalyticsSession(createdAt);
+CREATE INDEX IF NOT EXISTS AnalyticsSession_visitorId_idx ON AnalyticsSession(visitorId);
+CREATE INDEX IF NOT EXISTS AnalyticsPageView_sessionId_idx ON AnalyticsPageView(sessionId);
+CREATE INDEX IF NOT EXISTS AnalyticsPageView_createdAt_idx ON AnalyticsPageView(createdAt);
+CREATE INDEX IF NOT EXISTS AnalyticsEvent_sessionId_createdAt_idx ON AnalyticsEvent(sessionId, createdAt);
+CREATE INDEX IF NOT EXISTS AnalyticsEvent_name_createdAt_idx ON AnalyticsEvent(name, createdAt);
 `);
+for (const [table, column, type] of [
+  ["Order", "analyticsSessionId", "TEXT"], ["Order", "paidAt", "DATETIME"],
+  ["AnalyticsSession", "utmSource", "TEXT"], ["AnalyticsSession", "utmMedium", "TEXT"],
+  ["AnalyticsSession", "utmCampaign", "TEXT"], ["AnalyticsSession", "utmContent", "TEXT"],
+  ["AnalyticsSession", "measurementVersion", "INTEGER NOT NULL DEFAULT 0"],
+]) {
+  const columns = db.prepare(`PRAGMA table_info("${table}")`).all();
+  if (!columns.some((entry) => entry.name === column)) db.exec(`ALTER TABLE "${table}" ADD COLUMN "${column}" ${type}`);
+}
+db.exec('CREATE INDEX IF NOT EXISTS Order_analyticsSessionId_idx ON "Order"(analyticsSessionId); CREATE INDEX IF NOT EXISTS Order_paidAt_idx ON "Order"(paidAt);');
 for (const column of ["epostDeliveryStatus", "epostLatestEventDate", "epostLatestEventTime", "epostLatestEventLocation", "epostLatestEventStatus"]) {
   try {
     db.exec(`ALTER TABLE "Order" ADD COLUMN ${column} TEXT`);

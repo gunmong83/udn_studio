@@ -3,6 +3,7 @@ import { prisma } from "@/src/lib/prisma";
 import { products } from "@/src/data/products";
 import { getShippingFee, getShippingGroupKey } from "@/src/lib/shipping";
 import { getAuthenticatedUserId } from "@/src/lib/session-user";
+import { readAnalyticsSession } from "@/src/lib/analytics-attribution";
 
 export async function POST(request: Request) {
   const userId = await getAuthenticatedUserId();
@@ -50,8 +51,20 @@ export async function POST(request: Request) {
   );
   const totalAmount = subtotal + (isNonDeliveryTestOrder ? 0 : getShippingFee(subtotal, shippingGroups.size));
 
+  // A signed first-party cookie binds attribution; never trust a posted session/user ID.
+  let analyticsSessionId: string | undefined;
+  const signedSession = readAnalyticsSession(request);
+  if (signedSession && signedSession === body.analyticsSessionId && !includesAdminOnlyProduct) {
+    try {
+      const linked = await prisma.analyticsSession.findFirst({
+        where: { id: signedSession, OR: [{ userId }, { userId: null }] }, select: { id: true },
+      });
+      analyticsSessionId = linked?.id;
+    } catch { /* Analytics availability must not prevent an order. */ }
+  }
   const order = await prisma.order.create({
     data: {
+      analyticsSessionId,
       userId,
       totalAmount,
       recipientName: String(body.recipientName).slice(0, 80),

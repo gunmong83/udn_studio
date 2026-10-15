@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "@/src/components/ui/ProgressiveImage";
 import { useSession } from "next-auth/react";
@@ -10,6 +10,7 @@ import { openNicePayment, type NicePaymentFields } from "@/src/lib/nicepay";
 import { FREE_SHIPPING_THRESHOLD, getShippingFee, getShippingGroupKey, getShippingGroupLabel } from "@/src/lib/shipping";
 import PostcodeSearch from "@/src/components/orders/PostcodeSearch";
 import { formatPostcodeAddress } from "@/src/lib/postcode";
+import { analyticsIdentity, trackCommerce } from "@/src/lib/analytics-client";
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
@@ -42,6 +43,8 @@ export default function CheckoutPage() {
     .map((group) => ({ group, items: items.filter(({ product }) => (product.freeShipping ? "free" : getShippingGroupKey(product)) === group) }));
   const shippingFee = shippingGroups.length === 0 ? 0 : getShippingFee(total, shippingGroups.length);
   const finalTotal = total + shippingFee;
+  const emptyCheckout = status === "authenticated" && items.length === 0;
+  useEffect(() => { if (emptyCheckout) trackCommerce("checkout_empty"); }, [emptyCheckout]);
 
   const handleSearchAddress = () => setAddressSearchOpen(true);
 
@@ -130,25 +133,30 @@ export default function CheckoutPage() {
     const trimmedAddress = address.trim();
 
     if (!trimmedName) {
+      trackCommerce("payment_error", { reason: "required_name" });
       setErrorMessage("받으시는 분 성함을 입력해주세요.");
       return;
     }
     if (!trimmedPhone || trimmedPhone.length < 9) {
+      trackCommerce("payment_error", { reason: "invalid_phone" });
       setErrorMessage("올바른 연락처(전화번호)를 입력해주세요.");
       return;
     }
     if (!trimmedAddress) {
+      trackCommerce("payment_error", { reason: "required_address" });
       setErrorMessage("배송지 주소를 검색하여 입력해주세요.");
       return;
     }
 
     setLoading(true);
+    trackCommerce("payment_attempt");
     let createdOrderId: string | null = null;
 
     try {
       // 1. 서버에 주문 생성 (금액 및 재고 서버 검증)
       const fullDeliveryAddress = zonecode ? `(${zonecode}) ${trimmedAddress}` : trimmedAddress;
       const orderPayload = {
+        analyticsSessionId: analyticsIdentity()?.sessionId,
         recipientName: trimmedName,
         phone: trimmedPhone,
         address: fullDeliveryAddress,
@@ -192,10 +200,12 @@ export default function CheckoutPage() {
         setLoading((current) => {
           if (!current) return current;
           setErrorMessage("결제창 응답이 없습니다. 결제창을 닫고 다시 시도해주세요.");
+          trackCommerce("payment_error", { reason: "payment_timeout" });
           return false;
         });
       }, 30000);
     } catch (err: unknown) {
+      trackCommerce("payment_error", { reason: "order_or_payment" });
       if (createdOrderId) {
         fetch(`/api/orders?id=${createdOrderId}`, { method: "DELETE" }).catch(() => {});
       }
@@ -290,7 +300,11 @@ export default function CheckoutPage() {
         </section>
 
         {/* 배송지 및 주문자 정보 입력 */}
-        <form onSubmit={handlePayment} className="mt-6 space-y-6">
+        <form onSubmit={handlePayment} onInvalidCapture={(event) => {
+          const id = (event.target as HTMLInputElement).id;
+          const reason = id === "recipientName" ? "required_name" : id === "phone" ? "invalid_phone" : id === "address" ? "required_address" : undefined;
+          if (reason) trackCommerce("payment_error", { reason });
+        }} className="mt-6 space-y-6">
           <section className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-nav font-semibold text-text">배송 정보</h2>

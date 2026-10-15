@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
 import { requireAdmin } from "@/src/lib/admin";
+import { loadCommerceAnalytics } from "@/src/lib/commerce-analytics";
 
 export async function GET(request: Request) {
   try {
@@ -10,19 +11,20 @@ export async function GET(request: Request) {
     const range = searchParams.get("range") || "7d";
 
     const now = new Date();
+    const todayKst = new Date(new Date(now.getTime() + 9 * 3600000).toISOString().slice(0, 10) + "T00:00:00+09:00");
     let startDate: Date;
 
     if (range === "today") {
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+      startDate = todayKst;
     } else if (range === "30d") {
-      startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      startDate = new Date(todayKst.getTime() - 29 * 24 * 60 * 60 * 1000);
     } else if (range === "all") {
       startDate = new Date(0);
     } else {
-      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      startDate = new Date(todayKst.getTime() - 6 * 24 * 60 * 60 * 1000);
     }
 
-    const [sessions, pageviews, loginLogs] = await Promise.all([
+    const [sessions, pageviews, loginLogs, commerce] = await Promise.all([
       prisma.analyticsSession.findMany({
         where: { createdAt: { gte: startDate } },
         include: { user: { select: { id: true, email: true, name: true } } },
@@ -38,6 +40,7 @@ export async function GET(request: Request) {
         orderBy: { createdAt: "desc" },
         take: 50,
       }),
+      loadCommerceAnalytics(startDate),
     ]);
 
     // 1. 핵심 요약 KPI
@@ -62,10 +65,7 @@ export async function GET(request: Request) {
     // 2. 일별 추이 (Daily Trends)
     const dailyMap = new Map<string, { date: string; sessions: number; pageviews: number; visitors: Set<string> }>();
     const formatDateKey = (d: Date) => {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
+      return new Date(d.getTime() + 9 * 3600000).toISOString().slice(0, 10);
     };
 
     const daysCount = range === "today" ? 1 : range === "30d" ? 30 : 7;
@@ -231,6 +231,7 @@ export async function GET(request: Request) {
     }));
 
     return NextResponse.json({
+      commerce,
       summary: {
         totalVisitors: uniqueVisitors,
         totalSessions,

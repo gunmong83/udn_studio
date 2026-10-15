@@ -58,7 +58,7 @@ export async function POST(request: Request) {
   }
 
   const paymentKey = String(approval?.tid || tid);
-  const updatedResult = await prisma.order.updateMany({ where: { id: order.id, paymentStatus: "UNPAID", status: "PENDING" }, data: { paymentKey, paymentStatus: "PAID", status: "PAID" } });
+  const updatedResult = await prisma.order.updateMany({ where: { id: order.id, paymentStatus: "UNPAID", status: "PENDING" }, data: { paymentKey, paymentStatus: "PAID", status: "PAID", paidAt: new Date() } });
   const updated = await prisma.order.findUnique({
     where: { id: order.id },
     include: { items: true, user: { select: { email: true, name: true } } },

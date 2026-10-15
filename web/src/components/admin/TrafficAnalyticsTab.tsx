@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import CommerceAnalyticsPanel from "@/src/components/admin/CommerceAnalyticsPanel";
+import type { CommerceReport } from "@/src/lib/commerce-report";
 
 interface AnalyticsSummary {
   totalVisitors: number;
@@ -82,6 +84,7 @@ interface SecuritySummary {
 }
 
 interface AnalyticsData {
+  commerce: CommerceReport;
   summary: AnalyticsSummary;
   dailyTrends: DailyTrend[];
   topPages: TopPage[];
@@ -112,7 +115,7 @@ function formatShortDate(dateStr: string): string {
 }
 
 export default function TrafficAnalyticsTab() {
-  const [subTab, setSubTab] = useState<"traffic" | "security">("traffic");
+  const [subTab, setSubTab] = useState<"conversion" | "traffic" | "security">("conversion");
   const [range, setRange] = useState<"today" | "7d" | "30d" | "all">("7d");
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -153,6 +156,7 @@ export default function TrafficAnalyticsTab() {
         <div className="flex items-center gap-2">
           {/* 서브 모드 전환 버튼 */}
           <div className="flex rounded-xs bg-bg p-0.5 border border-line">
+            <button type="button" onClick={() => setSubTab("conversion")} className={`px-3 py-1 text-util font-medium ${subTab === "conversion" ? "bg-text text-bg" : "text-muted hover:text-text"}`}>유입 → 구매 분석</button>
             <button
               type="button"
               onClick={() => setSubTab("traffic")}
@@ -224,6 +228,7 @@ export default function TrafficAnalyticsTab() {
       {/* ──────────────────────────────────────────────────────────── */}
       {/* 1. 서브 탭: 트래픽 & 사용자 분석 */}
       {/* ──────────────────────────────────────────────────────────── */}
+      {subTab === "conversion" && data?.commerce && <CommerceAnalyticsPanel data={data.commerce} />}
       {subTab === "traffic" && data && (
         <>
           {/* KPI 카드 6개 */}

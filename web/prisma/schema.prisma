@@ -140,11 +140,17 @@ model Order {
   epostLatestEventTime String?
   epostLatestEventLocation String?
   epostLatestEventStatus String?
+  analyticsSessionId String?
+  paidAt        DateTime?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items         OrderItem[]
   shipmentNotification ShipmentNotification?
+  analyticsSession AnalyticsSession? @relation(fields: [analyticsSessionId], references: [id], onDelete: SetNull)
+
+  @@index([analyticsSessionId])
+  @@index([paidAt])
 }
 
 // One shipment-start notice per order. SENS acceptance is not delivery success.
@@ -213,6 +219,11 @@ model AnalyticsSession {
   referrer       String?
   referrerDomain String?
   entryPath      String
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  utmContent     String?
+  measurementVersion Int             @default(0)
   device         String?             // Mobile, Desktop, Tablet
   browser        String?             // Chrome, Safari, Whale, etc.
   os             String?             // iOS, Android, Windows, Mac, etc.
@@ -222,12 +233,29 @@ model AnalyticsSession {
   updatedAt      DateTime            @updatedAt
   user           User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   pageviews      AnalyticsPageView[]
+  events         AnalyticsEvent[]
+  orders         Order[]
 
   @@index([createdAt])
   @@index([visitorId])
   @@index([userId])
   @@index([referrerDomain])
   @@index([ip])
+}
+
+model AnalyticsEvent {
+  id          String           @id
+  sessionId   String
+  name        String
+  path        String
+  productId   String?
+  quantity    Int?
+  reason      String?
+  createdAt   DateTime         @default(now())
+  session     AnalyticsSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@index([name, createdAt])
 }
 
 model AnalyticsPageView {
