@@ -710,6 +710,22 @@ With a thought of someone dear, Che[彩] the edible flower cards hold what you w
       "the cake house in Naju, Jeonam, Korea convey the meaning of speed in right time, NeRyGe, on its logo with its cakebox and businesscard ",
   },
   {
+    slug: "neryge-to-slow-packaging",
+    title: "NeRyGe : To Slow Packaging",
+    category: "Packaging Design",
+    kind: "work",
+    image: "/assets/portfolio_images/portfolio_2/2.jpg",
+    aspect: "1206/1206",
+    // Packaging-only entry: photos 3–5 on the original page (counting the
+    // original hero as photo 1); the first selected photo is this entry's hero.
+    detailImages: [
+      { src: "/assets/portfolio_images/portfolio_2/3.jpeg", aspect: "750/939" },
+      { src: "/assets/portfolio_images/portfolio_2/4.jpeg", aspect: "750/938" },
+    ],
+    description:
+      "Custom takeaway packaging for NeRyGe, a dessert house in Naju. The periwinkle carry box brings the brand identity onto a practical package for cakes and baked treats, with a colorful patterned band adding a distinctive finishing touch.",
+  },
+  {
     slug: "the-tov",
     title: "the TOV",
     category: "Total Branding",
@@ -1237,6 +1253,7 @@ const WORK_DISPLAY_ORDER = [
   "farfars-steady-hand-storybook",
   "artis-artec-business-card",
   "kyungnong-divide-water-packaging",
+  "neryge-to-slow-packaging",
   "dubgeuk-future-competencies-career-education",
   "rainbow-school-information-session",
   "samsung-caster-2017-calendar",
