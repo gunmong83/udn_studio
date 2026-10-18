@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   description: site.description,
   keywords: site.keywords.split(","),
   icons: { icon: site.assets.favicon },
+  // Google Search Console 소유권 확인(URL 접두어 속성) — 2026-10-18 등록.
+  // Google 안내상 확인 후에도 메타태그를 삭제하지 않는다(삭제하면 소유권이 풀린다).
+  verification: { google: "mVaIG78EMHPE7Gi9rmLUy-YZzhuGdU7488ZTvnXndpY" },
   // canonical은 루트 레이아웃에서 지정하지 않는다. App Router는 루트 metadata를 모든 하위
   // 페이지에 상속하므로 여기서 "/"를 선언하면 /about·/products·/journal·/faq·/notice 전부가
   // "내 정본은 홈페이지"라고 신고해 색인에서 제외된다(2026-10-18 진단).
