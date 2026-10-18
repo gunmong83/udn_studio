@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { journalEntries } from "@/src/data/journal";
 import JournalCard from "@/src/components/journal/JournalCard";
 
-export const metadata: Metadata = { title: "JOURNAL" };
+export const metadata: Metadata = {
+  title: "JOURNAL",
+  alternates: { canonical: "/journal" },
+};
 
 // 저널 보드 — mujagi /board/journal 실측 (가이드 §4-2·§5-1):
 // 2열, 좌우·상하 간격 전부 0 — 완전 밀착 타일(카드 375×432, 캔버스 에지부터).

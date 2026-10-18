@@ -26,6 +26,21 @@ const nextConfig: NextConfig = {
       `child-src 'self' https://pay.nicepay.co.kr https://*.nicepay.co.kr https://postcode.map.daum.net https://postcode.map.kakao.com https://*.daumcdn.net${postcodeDevFrame}`,
     ].join("; ");
 
+    // 2026-10-18 — 개인화·거래 페이지는 색인 대상이 아니다. 이전에는 루트 레이아웃의
+    // canonical "/" 이 이 페이지들까지 덮어 "홈의 중복"으로 처리됐지만, canonical을
+    // 페이지별로 바꾼 뒤에는 명시적으로 제외해야 한다(로그인 필요·얇은 페이지 색인 방지).
+    const privatePaths = [
+      "/cart",
+      "/checkout/:path*",
+      "/login",
+      "/signup",
+      "/mypage",
+      "/orders",
+      "/wishlist",
+      "/search",
+      "/admin",
+    ];
+
     return [{
       source: "/(.*)",
       headers: [
@@ -36,7 +51,10 @@ const nextConfig: NextConfig = {
         { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
         { key: "Content-Security-Policy", value: contentSecurityPolicy },
       ],
-    }];
+    }, ...privatePaths.map((source) => ({
+      source,
+      headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
+    }))];
   },
   // 개발 서버 직접 IP 접속 허용 — 파동6 원인 수리(wave6-hero-rootcause.md).
   // Next 16.3.7 dev 의 block-cross-site-dev Origin 검증이 IP 오리진

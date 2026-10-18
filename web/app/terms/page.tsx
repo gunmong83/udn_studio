@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-export const metadata = { title: "이용약관 | Studio Undesignated" };
+export const metadata = {
+  title: "이용약관 | Studio Undesignated",
+  alternates: { canonical: "/terms" },
+};
 
 export default function TermsPage() {
   return (

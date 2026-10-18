@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "공지사항",
+  alternates: { canonical: "/notice" },
+};
+
 export default function NoticePage() {
   return (
     <div className="w-full px-3 pb-section pt-section">

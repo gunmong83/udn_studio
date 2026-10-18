@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-export const metadata = { title: "개인정보처리방침 | Studio Undesignated" };
+export const metadata = {
+  title: "개인정보처리방침 | Studio Undesignated",
+  alternates: { canonical: "/privacy" },
+};
 
 export default function PrivacyPage() {
   return (

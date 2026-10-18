@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FAQ",
+  alternates: { canonical: "/faq" },
+};
+
 export default function FaqPage() {
   return (
     <div className="w-full px-3 pb-section pt-section">

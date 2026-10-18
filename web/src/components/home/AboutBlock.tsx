@@ -12,7 +12,9 @@ import { site } from "@/src/data/site";
 export default function AboutBlock() {
   return (
     <section className="w-full px-3 pt-section">
-      <h1 className="text-label font-bold text-text">ABOUT</h1>
+      {/* 문서 H1은 홈(page.tsx)의 브랜드명 sr-only H1 — 이 라벨은 섹션 제목(h2)이었다.
+          마크업 레벨만 변경(클래스·시각 동일). */}
+      <h2 className="text-label font-bold text-text">ABOUT</h2>
 
       <div className="mt-3 space-y-2 text-body leading-[21.6px] text-text">
         {site.philosophy.paragraphs.map((p) => (

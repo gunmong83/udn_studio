@@ -15,7 +15,24 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const entry = getJournalEntry(slug);
-  return { title: entry ? entry.title : "JOURNAL" };
+  if (!entry) {
+    return { title: "JOURNAL", robots: { index: false, follow: true } };
+  }
+  // 2026-10-18 — 이전에는 루트 레이아웃의 canonical "/" 을 상속해 저널 상세 전건이
+  // "홈의 중복"으로 신고됐다(색인 제외). 이제 자기 경로를 선언한다.
+  return {
+    title: entry.title,
+    description: entry.excerpt,
+    alternates: { canonical: `/journal/${entry.slug}` },
+    openGraph: {
+      type: "article",
+      url: `https://studioundesignated.com/journal/${entry.slug}`,
+      title: entry.title,
+      description: entry.excerpt,
+      images: [`https://studioundesignated.com${entry.image}`],
+    },
+    robots: { index: true, follow: true },
+  };
 }
 
 // 저널 상세 — mujagi 저널 카드 문법 확장(§5-1 — 상세 페이지는 미측정):

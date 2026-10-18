@@ -21,10 +21,23 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
+  if (!product) return { title: "PRODUCTS", robots: { index: false, follow: true } };
+  // 2026-10-18 — 작품(kind="work")은 PORTFOLIO 축이다. 같은 slug가 /products/<slug>로도
+  // 200을 반환해 /portfolio/<slug>와 완전 중복이었다 → 작품은 자기 주소를 /portfolio로
+  // 신고한다(중복 신호 제거). 판매 상품만 /products/<slug>를 정본으로 가진다.
+  const isWork = product.kind === "work";
+  const canonical = isWork ? `/portfolio/${slug}` : `/products/${slug}`;
   return {
-    title: product ? product.title : "PRODUCTS",
-    description: product?.description ?? `${product?.title ?? "Studio UDN 상품"} 온라인 판매 페이지`,
-    alternates: { canonical: `/products/${slug}` },
+    title: product.title,
+    description: product.description ?? `${product.title} 온라인 판매 페이지`,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      url: `https://studioundesignated.com${canonical}`,
+      title: product.title,
+      description: product.description ?? `${product.title} — Studio UDN`,
+      images: [`https://studioundesignated.com${product.image}`],
+    },
   };
 }
 

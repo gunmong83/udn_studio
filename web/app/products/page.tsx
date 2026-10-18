@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import ProductBrowser from "@/src/components/products/ProductBrowser";
 
-export const metadata: Metadata = { title: "PRODUCTS" };
+export const metadata: Metadata = {
+  title: "PRODUCTS",
+  alternates: { canonical: "/products" },
+};
 
 // mujagi 목록 페이지(§2-2): h1 라벨(현재 카테고리명, 14px/700)은
 // 클라이언트 필터 상태와 연동되어 ProductBrowser가 렌더한다.

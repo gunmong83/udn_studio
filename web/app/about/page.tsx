@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { site } from "@/src/data/site";
 import { NativeDeck } from "@/src/components/about/NativeDeck";
 
-export const metadata: Metadata = { title: "ABOUT" };
+export const metadata: Metadata = {
+  title: "ABOUT",
+  alternates: { canonical: "/about" },
+};
 
 // ABOUT — 파동8-② 3차: 장표 5종 HTML 네이티브 렌더(board mup972cufj56 · 대표 지시
 // mup7lwvo20c3 "완전히 똑같게 그냥 직접 렌더링…다른 색들 안넣고 흰색 검은색 필요하면 약한
