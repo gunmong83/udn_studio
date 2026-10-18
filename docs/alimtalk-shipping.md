@@ -77,7 +77,7 @@
 polling은 `SHIPPED` 상태의 우체국 주문을 한 건씩 조회하므로 부하는 활성 배송 건수에 비례한다. 호출마다 동시 실행하지 않고 최대 20분 시간 제한을 둔다. 배송 건수가 늘거나 조회가 제한시간에 가까워지면 batch 크기/우체국 API 호출 제한을 검토한다.
 
 ```dotenv
-SENS_ALIMTALK_SERVICE_ID=ncp:kkobizmsg:kr:112583704463198:homepage_katalk_alarm
+SENS_ALIMTALK_SERVICE_ID=<service id>
 SENS_ALIMTALK_CHANNEL_ID=@studioudn
 SENS_ACCESS_KEY=<NCloud access key>
 SENS_SECRET_KEY=<NCloud secret key>
