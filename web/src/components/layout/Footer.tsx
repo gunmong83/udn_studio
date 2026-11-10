@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { site } from "@/src/data/site";
+import { business } from "@/src/data/business";
 
 // 푸터 — mujagi 푸터 실측 (가이드 §5-5):
 // padding 30px 0 80px (파동4 §⑤-3 — px-3 수평 패딩 제거, 0 기준) ·
@@ -48,7 +49,7 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
   {
     title: "비지니스",
     links: [
-      { label: "이메일: studioudn@naver.com", href: "mailto:studioudn@naver.com" },
+      { label: `이메일: ${business.email}`, href: `mailto:${business.email}` },
     ],
   },
   {
@@ -87,6 +88,15 @@ const BLOCKS: { title: string; links: FooterLink[] }[] = [
     ],
   },
 ];
+
+const BUSINESS_DETAILS = [
+  { label: "상호", value: business.name },
+  { label: "대표자", value: business.representative },
+  { label: "주소", value: business.address },
+  { label: "사업자등록번호", value: business.registrationNumber },
+  { label: "전화", value: business.phone },
+  { label: "통신판매업 신고번호", value: business.commerceRegistrationNumber },
+].filter((detail): detail is { label: string; value: string } => Boolean(detail.value));
 
 export default function Footer() {
   const sessionState = useSession();
@@ -158,10 +168,24 @@ export default function Footer() {
         ))}
       </div>
 
-      {/* 사업자 정보 라인 — 원본에 없는 수치(사업자번호·전화 등)는 기재하지 않음 */}
-      <div className="mt-10">
-        <p className="text-util leading-[23px] text-muted">© {site.name}</p>
-      </div>
+      <section aria-labelledby="business-info-heading" className="mt-12 border-t border-line pt-6">
+        <h2 id="business-info-heading" className="text-label font-bold text-text">사업자 정보</h2>
+        <dl className="mt-3 grid grid-cols-1 gap-x-8 gap-y-1.5 text-util leading-[23px] sm:grid-cols-2">
+          {BUSINESS_DETAILS.map(({ label, value }) => (
+            <div key={label} className={`flex min-w-0 gap-2 ${label === "주소" ? "sm:col-span-2" : ""}`}>
+              <dt className="shrink-0 text-muted">{label}</dt>
+              <dd className="min-w-0 break-words text-ink-strong">
+                {label === "전화" ? <a href={`tel:${value.replaceAll("-", "")}`} className="hover:text-text hover:underline">{value}</a> : value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-util leading-[23px] text-muted">
+          <Link href="/terms" className="hover:text-text hover:underline">이용약관</Link>
+          <Link href="/privacy" className="hover:text-text hover:underline">개인정보처리방침</Link>
+          <span>© {site.name}</span>
+        </div>
+      </section>
     </footer>
   );
 }
